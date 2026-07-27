@@ -41,7 +41,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.8 Beta • İlk ekran ve tetkik motoru düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.8.1 Beta • Hızlı panel ve tetkik motoru düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -493,8 +493,8 @@ function testRecommendationHTML(compact=false){
 }
 function renderTestStewardship(){const box=el('testStewardshipPanel');if(box)box.innerHTML=testRecommendationHTML(true)}
 function activeSmartQs(){
- const key=Object.keys(smartQs).find(k=>k===S.complaint)||Object.keys(smartQs).find(k=>S.complaint&&S.complaint.includes(k))||S.complaint;
- let qs=[...(smartQs[key]||genericSmartQs)];
+ const key=Object.keys(smartQsByComplaint).find(k=>k===S.complaint)||Object.keys(smartQsByComplaint).find(k=>S.complaint&&S.complaint.includes(k))||S.complaint;
+ let qs=[...(smartQsByComplaint[key]||genericSmartQs)];
  qs=qs.filter(q=>!(q.q&&q.q.includes('Gebelik olasılığı')&&!pregnancyRelevant()));
  qs=qs.map(q=>{
   if(q.value==='Komplike enfeksiyon riski'){
