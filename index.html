@@ -41,7 +41,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.9 Beta • Klinik QA paneli</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.9.1 Beta • Gebelik filtresi düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -278,7 +278,8 @@ const smartQsByComplaint={
   {key:'symptoms',q:'Yeni nörolojik defisit, konuşma bozukluğu veya nöbet var mı?',multi:'symptoms',value:'Nörolojik defisit/nöbet'},
   {key:'symptoms',q:'Ateş, ense sertliği veya döküntü var mı?',multi:'symptoms',value:'Menenjizm/enfeksiyon'},
   {key:'symptoms',q:'Bilinç değişikliği veya tekrarlayan kusma var mı?',multi:'symptoms',value:'Bilinç/kusma'},
-  {key:'symptoms',q:'Yakın travma, antikoagülan kullanımı veya gebelik/postpartum dönem var mı?',multi:'symptoms',value:'Sekonder risk'},
+  {key:'symptoms',q:'Yakın travma veya antikoagülan kullanımı var mı?',multi:'symptoms',value:'Sekonder risk'},
+  {key:'symptoms',q:'Gebelik veya postpartum dönem var mı?',multi:'symptoms',value:'Sekonder risk',femaleRelevant:true},
   {key:'symptoms',q:'Bu hayatındaki ilk veya en şiddetli baş ağrısı mı?',multi:'symptoms',value:'İlk/en şiddetli'}
  ],
  'Ateş':[
@@ -353,7 +354,8 @@ const smartQsByComplaint={
   {key:'onset',q:'Nöbet ne zaman başladı ve kendiliğinden sonlandı mı?',text:true,ph:'Örn. 10 dakika önce, 2 dakika sürdü'},
   {key:'symptoms',q:'Nöbet 5 dakikadan uzun sürdü mü veya arada bilinç açılmadan tekrar etti mi?',multi:'symptoms',value:'Status epileptikus riski'},
   {key:'symptoms',q:'İlk nöbet mi?',multi:'symptoms',value:'İlk nöbet'},
-  {key:'symptoms',q:'Gebelik/postpartum, ateş, travma veya toksin maruziyeti var mı?',multi:'symptoms',value:'Sekonder neden riski'},
+  {key:'symptoms',q:'Ateş, travma veya toksin maruziyeti var mı?',multi:'symptoms',value:'Sekonder neden riski'},
+  {key:'symptoms',q:'Gebelik veya postpartum dönem var mı?',multi:'symptoms',value:'Sekonder neden riski',femaleRelevant:true},
   {key:'symptoms',q:'Fokal başlangıç veya kalıcı nörolojik defisit var mı?',multi:'symptoms',value:'Fokal nöbet/nörolojik defisit'},
   {key:'symptoms',q:'Antiepileptik ilaç uyumsuzluğu veya yakın doz değişikliği var mı?',multi:'symptoms',value:'İlaç uyumsuzluğu'}
  ],
@@ -509,7 +511,7 @@ const genericSmartQs=[
 function activeSmartQs(){
  const key=Object.keys(smartQsByComplaint).find(k=>k===S.complaint)||Object.keys(smartQsByComplaint).find(k=>S.complaint&&S.complaint.includes(k))||S.complaint;
  let qs=[...(smartQsByComplaint[key]||genericSmartQs)];
- qs=qs.filter(q=>!(q.q&&q.q.includes('Gebelik olasılığı')&&!pregnancyRelevant()));
+ qs=qs.filter(q=>!((q.femaleRelevant||(q.q&&q.q.includes('Gebelik olasılığı')))&&!pregnancyRelevant()));
  qs=qs.map(q=>{
   if(q.value==='Komplike enfeksiyon riski'){
    const extra=pregnancyRelevant()?'Gebelik, kateter, üriner anomalisi, taş/obstrüksiyon veya immünsüpresyon var mı?':'Kateter, üriner anomalisi, taş/obstrüksiyon, yakın üriner girişim veya immünsüpresyon var mı?';
