@@ -59,7 +59,7 @@ function esc(x){return String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function render(){
  el('mainTitle').textContent=steps[currentStep];el('stepName').textContent=`${currentStep+1}. ${steps[currentStep]}`;el('stepCount').textContent=`${currentStep+1}/${steps.length}`;el('progressBar').style.width=`${(currentStep+1)/steps.length*100}%`;el('backBtn').disabled=currentStep===0;el('nextBtn').textContent=currentStep===steps.length-1?'Vakayı tamamla':'Devam et';
  const c=el('stepContent');
- if(currentStep===0)c.innerHTML=`<div class="panel info"><h3>Yeni: şikâyete göre akıllı anamnez</h3><p>Göğüs ağrısı modülü klinik karar desteğiyle aktiftir. Diğer şikâyetlerde şimdilik güvenlik taraması ve akıllı anamnez aktiftir; tanı/tedavi modülleri aşamalı olarak eklenecektir.</p></div><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma'].map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label>${input('Şiddet (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4" placeholder="Şikâyetin başlangıcını ve hastanın kendi ifadesini yazın...">${esc(S.notes)}</textarea></label>`;
+ if(currentStep===0)c.innerHTML=`<div class="panel info"><h3>Yeni: şikâyete göre akıllı anamnez</h3><p>Semptom odaklı akıllı anamnez ve göreli ayırıcı tanı desteği aktiftir. İlaç önerileri yalnızca doğrulanmış güvenlik kontrolleri ve hekim değerlendirmesiyle kullanılmalıdır.</p></div><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'].map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label>${input('Şiddet (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4" placeholder="Şikâyetin başlangıcını ve hastanın kendi ifadesini yazın...">${esc(S.notes)}</textarea></label>`;
  if(currentStep===1)c.innerHTML=`<div class="panel warn"><h3>Önce yaşamı tehdit eden durumları kontrol et</h3><p>Vital bulguları ve aşağıdaki kırmızı bayrakları gir. Kritik veri saptanırsa rutin akış bekletilmez.</p></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('Solunum sayısı','rr','number','16')}${input('SpO₂ (%)','spo2','number','97')}${input('Ateş (°C)','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><div class="question"><div class="question-title">Kırmızı bayraklar</div>${choices('redFlags',[["Devam eden şiddetli/artan ağrı","Devam eden şiddetli veya artan ağrı"],["Senkop/bilinç değişikliği","Senkop veya bilinç değişikliği"],["Ani yırtılır tarzda ağrı","Ani, maksimum şiddette veya yırtılır tarzda ağrı"],["İki kol arasında belirgin TA/nabız farkı","İki kol arasında belirgin tansiyon/nabız farkı"],["Yeni nörolojik defisit","Yeni nörolojik defisit"],["Belirgin solunum sıkıntısı","Belirgin solunum sıkıntısı"],["Hemoptizi","Hemoptizi"],["Tek taraflı bacak şişliği","Tek taraflı bacak şişliği"],["Tek taraflı solunum sesi azalması","Tek taraflı solunum sesi azalması"],["Aktif ciddi kanama","Aktif ciddi kanama"]])}</div>`;
  if(currentStep===2)c.innerHTML=renderSmartAnamnesis();
  if(currentStep===3)c.innerHTML=`<div class="question"><div class="question-title">Kronik hastalık ve riskler</div>${choices('history',[["KAH/MI/PCI/CABG","KAH, MI, PCI veya CABG"],["Hipertansiyon","Hipertansiyon"],["Diyabet","Diyabet"],["Dislipidemi","Dislipidemi"],["Kalp yetersizliği","Kalp yetersizliği"],["Aort hastalığı","Aort hastalığı"],["DVT/PE","DVT veya PE öyküsü"],["Kanser","Aktif kanser"],["Böbrek hastalığı","Kronik böbrek hastalığı"],["Kanama öyküsü","Önemli kanama öyküsü"],["Erken aile KAH","Erken aile koroner hastalık öyküsü"],["Yakın cerrahi/immobilizasyon","Yakın cerrahi veya immobilizasyon"]])}</div><div class="grid">${select('Sigara','smoking',[['','Seçiniz'],['Yok','Yok'],['Aktif','Aktif'],['Bırakmış','Bırakmış']])}${select('Madde kullanımı','substance',[['','Seçiniz'],['Yok','Yok'],['Kokain/amfetamin','Kokain veya amfetamin'],['Diğer','Diğer']])}</div><label style="margin-top:11px">Düzenli ilaçlar<textarea id="meds" rows="3" placeholder="Antikoagülan, antiagregan, PDE-5 inhibitörü vb.">${esc(S.meds)}</textarea></label><div class="grid" style="margin-top:11px">${input('İlaç/kontrast alerjisi','allergy','text','Yok')}${input('Geçirilmiş ameliyatlar','surgery','text','Yok')}</div><div class="question"><div class="question-title">Tedavi güvenlik kontrolü</div>${choices('treatmentSafety',[["ASA/NSAİİ alerjisi","Aspirin/NSAİİ alerjisi veya ciddi intoleransı"],["Aktif ciddi kanama","Aktif ciddi kanama"],["Oral antikoagülan","Oral antikoagülan kullanıyor"],["PDE5 yakın kullanım","Yakın zamanda PDE-5 inhibitörü kullanımı"],["Gebelik olasılığı","Gebelik olasılığı"],["Bilinen ciddi trombositopeni","Bilinen ciddi trombositopeni"]])}</div>`;
@@ -136,6 +136,65 @@ const smartQsByComplaint={
   {key:'symptoms',q:'İlaç, alkol, madde veya toksin maruziyeti olasılığı var mı?',multi:'symptoms',value:'Toksik maruziyet'},
   {key:'symptoms',q:'Diyabet, hipoglisemi riski veya uzun süre açlık var mı?',multi:'symptoms',value:'Glukoz riski'}
  ],
+ 'Çarpıntı':[
+  {key:'onset',q:'Çarpıntı ani mi başladı, ani mi sonlandı?',opts:[['Ani','Ani başlayıp sonlanıyor'],['Kademeli','Kademeli'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'duration',q:'Atak ne kadar sürüyor ve ne sıklıkla tekrarlıyor?',text:true,ph:'Örn. 20 dakika, bugün 3 kez'},
+  {key:'symptoms',q:'Göğüs ağrısı veya nefes darlığı eşlik ediyor mu?',multi:'symptoms',value:'Göğüs ağrısı/dispne'},
+  {key:'symptoms',q:'Senkop, presenkop veya belirgin baş dönmesi oldu mu?',multi:'symptoms',value:'Senkop/presenkop'},
+  {key:'symptoms',q:'Ritim çok hızlı, çok yavaş veya düzensiz hissediliyor mu?',multi:'symptoms',value:'Hızlı/yavaş/düzensiz ritim'},
+  {key:'symptoms',q:'Ateş, tiroid yakınması, kansızlık belirtisi veya sıvı kaybı var mı?',multi:'symptoms',value:'Sekonder tetikleyici'},
+  {key:'symptoms',q:'Kafein, enerji içeceği, dekongestan veya uyarıcı madde kullanımı var mı?',multi:'symptoms',value:'Uyarıcı maruziyeti'}
+ ],
+ 'Senkop / presenkop':[
+  {key:'onset',q:'Olay ani mi gelişti?',opts:[['Ani','Ani'],['Prodromlu','Öncesinde belirti oldu'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'duration',q:'Bilinç kaybı ne kadar sürdü?',text:true,ph:'Örn. 30 saniye'},
+  {key:'symptoms',q:'Efor sırasında veya yatarken mi oldu?',multi:'symptoms',value:'Yüksek riskli zamanlama'},
+  {key:'symptoms',q:'Göğüs ağrısı, çarpıntı veya nefes darlığı eşlik etti mi?',multi:'symptoms',value:'Kardiyopulmoner eşlik'},
+  {key:'symptoms',q:'Nöbet, dil ısırma, inkontinans veya uzamış konfüzyon oldu mu?',multi:'symptoms',value:'Nöbet bulgusu'},
+  {key:'symptoms',q:'Kanama, melena, yoğun adet veya sıvı kaybı var mı?',multi:'symptoms',value:'Kanama/hipovolemi'},
+  {key:'symptoms',q:'Yeni nörolojik defisit veya şiddetli baş ağrısı var mı?',multi:'symptoms',value:'Nörolojik kırmızı bayrak'}
+ ],
+ 'Bulantı-kusma / ishal':[
+  {key:'duration',q:'Yakınmalar ne kadar süredir var?',text:true,ph:'Örn. 12 saat'},
+  {key:'symptoms',q:'Kanlı kusma, kahve telvesi, melena veya kanlı ishal var mı?',multi:'symptoms',value:'GİS kanama'},
+  {key:'symptoms',q:'Şiddetli karın ağrısı, distansiyon veya gaz-gaita çıkaramama var mı?',multi:'symptoms',value:'Akut batın/obstrüksiyon'},
+  {key:'symptoms',q:'İdrar azalması, ağız kuruluğu, ortostatik yakınma veya senkop var mı?',multi:'symptoms',value:'Dehidratasyon'},
+  {key:'symptoms',q:'Gebelik olasılığı var mı?',multi:'symptoms',value:'Gebelik olasılığı'},
+  {key:'symptoms',q:'Yakın antibiyotik, seyahat, salgın veya şüpheli gıda öyküsü var mı?',multi:'symptoms',value:'Enfeksiyöz risk'}
+ ],
+ 'Bel-sırt ağrısı':[
+  {key:'onset',q:'Ağrı ani mi başladı?',opts:[['Ani','Ani'],['Kademeli','Kademeli'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'duration',q:'Ne kadar süredir var?',text:true,ph:'Örn. 3 gün'},
+  {key:'symptoms',q:'Bacakta güçsüzlük, uyuşma veya yürüme bozukluğu var mı?',multi:'symptoms',value:'Motor/duyu defisiti'},
+  {key:'symptoms',q:'İdrar retansiyonu/kaçırma, gaita kaçırma veya eyer tarzı uyuşma var mı?',multi:'symptoms',value:'Kauda ekuina bulgusu'},
+  {key:'symptoms',q:'Ateş, bağışıklık baskılanması veya IV madde kullanımı var mı?',multi:'symptoms',value:'Spinal enfeksiyon riski'},
+  {key:'symptoms',q:'Travma, osteoporoz veya uzun süre steroid kullanımı var mı?',multi:'symptoms',value:'Kırık riski'},
+  {key:'symptoms',q:'Karın/göğüs ağrısı, nabız farkı veya senkop eşlik ediyor mu?',multi:'symptoms',value:'Vasküler yansıyan ağrı'}
+ ],
+ 'İdrar yakınması':[
+  {key:'duration',q:'Yakınmalar ne kadar süredir var?',text:true,ph:'Örn. 2 gün'},
+  {key:'symptoms',q:'Dizüri, sık idrara çıkma veya aciliyet var mı?',multi:'symptoms',value:'Alt üriner semptom'},
+  {key:'symptoms',q:'Ateş, titreme veya yan ağrısı var mı?',multi:'symptoms',value:'Pyelonefrit bulgusu'},
+  {key:'symptoms',q:'Hematüri veya kolik tarzda ağrı var mı?',multi:'symptoms',value:'Taş/hematüri'},
+  {key:'symptoms',q:'İdrar yapamama veya suprapubik dolgunluk var mı?',multi:'symptoms',value:'Akut retansiyon'},
+  {key:'symptoms',q:'Gebelik, erkek cinsiyet, kateter veya immünsüpresyon gibi komplike edici durum var mı?',multi:'symptoms',value:'Komplike enfeksiyon riski'}
+ ],
+ 'Döküntü / alerjik reaksiyon':[
+  {key:'onset',q:'Döküntü veya reaksiyon ne kadar hızlı gelişti?',opts:[['Dakikalar içinde','Dakikalar içinde'],['Saatler içinde','Saatler içinde'],['Günler içinde','Günler içinde']]},
+  {key:'symptoms',q:'Dudak-dil-boğaz şişliği, ses kısıklığı veya stridor var mı?',multi:'symptoms',value:'Havayolu tutulumu'},
+  {key:'symptoms',q:'Nefes darlığı, hırıltı veya hipoksemi var mı?',multi:'symptoms',value:'Solunum tutulumu'},
+  {key:'symptoms',q:'Hipotansiyon, senkop veya yaygın halsizlik var mı?',multi:'symptoms',value:'Dolaşım tutulumu'},
+  {key:'symptoms',q:'Yeni ilaç, gıda, böcek sokması veya kontrast maruziyeti oldu mu?',multi:'symptoms',value:'Olası tetikleyici'},
+  {key:'symptoms',q:'Mukozal erozyon, bül, purpura veya cilt ağrısı var mı?',multi:'symptoms',value:'Ciddi kutanöz reaksiyon'}
+ ],
+ 'Nöbet':[
+  {key:'onset',q:'Nöbet ne zaman başladı ve kendiliğinden sonlandı mı?',text:true,ph:'Örn. 10 dakika önce, 2 dakika sürdü'},
+  {key:'symptoms',q:'Nöbet 5 dakikadan uzun sürdü mü veya arada bilinç açılmadan tekrar etti mi?',multi:'symptoms',value:'Status epileptikus riski'},
+  {key:'symptoms',q:'İlk nöbet mi?',multi:'symptoms',value:'İlk nöbet'},
+  {key:'symptoms',q:'Gebelik/postpartum, ateş, travma veya toksin maruziyeti var mı?',multi:'symptoms',value:'Sekonder neden riski'},
+  {key:'symptoms',q:'Fokal başlangıç veya kalıcı nörolojik defisit var mı?',multi:'symptoms',value:'Fokal nöbet/nörolojik defisit'},
+  {key:'symptoms',q:'Antiepileptik ilaç uyumsuzluğu veya yakın doz değişikliği var mı?',multi:'symptoms',value:'İlaç uyumsuzluğu'}
+ ],
  'Travma':[
   {key:'onset',q:'Travmanın oluş zamanı nedir?',text:true,ph:'Örn. 30 dakika önce'},
   {key:'painType',q:'Travma mekanizması nedir?',opts:[['Trafik kazası','Trafik kazası'],['Yüksekten düşme','Yüksekten düşme'],['Darp','Darp'],['Kesici/delici','Kesici/delici'],['Diğer','Diğer']]},
@@ -204,6 +263,37 @@ function genericComplaintDx(){
   if(S.symptoms.includes('Glukoz riski'))add(d[0],28,'Glukoz riski'); if(S.symptoms.includes('Fokal nörolojik defisit'))add(d[1],34,'Fokal nörolojik defisit'); if(S.symptoms.includes('Nöbet'))add(d[2],30,'Nöbet bulgusu');
   if(S.symptoms.includes('Enfeksiyon'))add(d[3],26,'Enfeksiyon bulgusu'); if(S.symptoms.includes('Toksik maruziyet'))add(d[4],30,'Toksik maruziyet'); if(n(S.spo2)!=null&&n(S.spo2)<90)add(d[5],30,'Hipoksemi');
  }
+ else if(S.complaint==='Çarpıntı'){
+  d=[mk('Supraventriküler taşikardi / atriyal aritmi',18),mk('Sinüs taşikardisi ve sekonder neden',16),mk('Ventriküler aritmi',8),mk('Bradikardi / iletim bozukluğu',8),mk('Anksiyete ilişkili çarpıntı',10)];
+  if(S.onset==='Ani')add(d[0],20,'Ani başlangıç/sonlanma'); if(S.symptoms.includes('Hızlı/yavaş/düzensiz ritim'))add(d[0],20,'Ritim algısı');
+  if(S.symptoms.includes('Sekonder tetikleyici'))add(d[1],24,'Sekonder tetikleyici'); if(S.symptoms.includes('Senkop/presenkop')){add(d[2],24,'Senkop/presenkop');add(d[3],18,'Senkop/presenkop')};
+  if(S.ecg==='Taşikardi/aritmi')add(d[0],30,'EKG aritmi'); if(n(S.pulse)!=null&&n(S.pulse)>150)add(d[2],15,'Çok hızlı nabız'); if(n(S.pulse)!=null&&n(S.pulse)<50)add(d[3],25,'Bradikardi');
+ }
+ else if(S.complaint==='Senkop / presenkop'){
+  d=[mk('Refleks/ortostatik senkop',18),mk('Kardiyak senkop',14),mk('Nöbet',10),mk('Kanama/hipovolemi',10),mk('Nörolojik olay',7),mk('Pulmoner emboli',6)];
+  if(S.onset==='Prodromlu')add(d[0],20,'Prodrom var'); if(S.symptoms.includes('Yüksek riskli zamanlama')||S.symptoms.includes('Kardiyopulmoner eşlik'))add(d[1],30,'Yüksek riskli özellik');
+  if(S.symptoms.includes('Nöbet bulgusu'))add(d[2],30,'Nöbet bulgusu'); if(S.symptoms.includes('Kanama/hipovolemi'))add(d[3],30,'Kanama/hipovolemi'); if(S.symptoms.includes('Nörolojik kırmızı bayrak'))add(d[4],30,'Nörolojik bulgu');
+ }
+ else if(S.complaint==='Bulantı-kusma / ishal'){
+  d=[mk('Gastroenterit / gıda kaynaklı hastalık',18),mk('Dehidratasyon / elektrolit bozukluğu',14),mk('Akut batın / obstrüksiyon',10),mk('GİS kanaması',8),mk('Gebelik ilişkili kusma',6),mk('Toksik-metabolik neden',7)];
+  if(S.symptoms.includes('Enfeksiyöz risk'))add(d[0],24,'Enfeksiyöz risk'); if(S.symptoms.includes('Dehidratasyon'))add(d[1],28,'Dehidratasyon bulgusu'); if(S.symptoms.includes('Akut batın/obstrüksiyon'))add(d[2],32,'Akut batın bulgusu'); if(S.symptoms.includes('GİS kanama'))add(d[3],36,'GİS kanama'); if(S.symptoms.includes('Gebelik olasılığı'))add(d[4],30,'Gebelik olasılığı');
+ }
+ else if(S.complaint==='Bel-sırt ağrısı'){
+  d=[mk('Mekanik bel ağrısı / radikülopati',20),mk('Kauda ekuina / spinal kord basısı',6),mk('Spinal enfeksiyon',6),mk('Vertebra kırığı',7),mk('Renal kolik / pyelonefrit',8),mk('Aortik/vasküler acil',5)];
+  if(S.symptoms.includes('Motor/duyu defisiti'))add(d[0],16,'Radiküler bulgu'); if(S.symptoms.includes('Kauda ekuina bulgusu'))add(d[1],45,'Kauda ekuina bulgusu'); if(S.symptoms.includes('Spinal enfeksiyon riski'))add(d[2],35,'Enfeksiyon riski'); if(S.symptoms.includes('Kırık riski'))add(d[3],30,'Kırık riski'); if(S.symptoms.includes('Vasküler yansıyan ağrı')||S.onset==='Ani')add(d[5],30,'Vasküler kırmızı bayrak');
+ }
+ else if(S.complaint==='İdrar yakınması'){
+  d=[mk('Alt üriner sistem enfeksiyonu',18),mk('Pyelonefrit',12),mk('Üreter taşı / renal kolik',12),mk('Akut üriner retansiyon',8),mk('Komplike üriner enfeksiyon',9)];
+  if(S.symptoms.includes('Alt üriner semptom'))add(d[0],26,'Alt üriner semptom'); if(S.symptoms.includes('Pyelonefrit bulgusu'))add(d[1],34,'Ateş/yan ağrısı'); if(S.symptoms.includes('Taş/hematüri'))add(d[2],32,'Kolik/hematüri'); if(S.symptoms.includes('Akut retansiyon'))add(d[3],40,'Retansiyon bulgusu'); if(S.symptoms.includes('Komplike enfeksiyon riski'))add(d[4],28,'Komplike edici durum');
+ }
+ else if(S.complaint==='Döküntü / alerjik reaksiyon'){
+  d=[mk('Ürtiker / hafif alerjik reaksiyon',18),mk('Anafilaksi',10),mk('Ciddi kutanöz ilaç reaksiyonu',7),mk('Enfeksiyöz döküntü',8),mk('Vaskülit / purpura',6)];
+  if(S.symptoms.includes('Havayolu tutulumu')||S.symptoms.includes('Solunum tutulumu')||S.symptoms.includes('Dolaşım tutulumu'))add(d[1],50,'Anafilaksi organ tutulumu'); if(S.symptoms.includes('Olası tetikleyici')){add(d[0],18,'Tetikleyici');add(d[1],15,'Tetikleyici')}; if(S.symptoms.includes('Ciddi kutanöz reaksiyon'))add(d[2],45,'Mukozal/büllöz/purpural bulgu');
+ }
+ else if(S.complaint==='Nöbet'){
+  d=[mk('Epileptik nöbet',18),mk('Status epileptikus',8),mk('Akut semptomatik nöbet',12),mk('İnme / intrakraniyal olay',8),mk('Psikojenik nonepileptik olay',6)];
+  if(S.symptoms.includes('Status epileptikus riski'))add(d[1],55,'Uzamış/tekrarlayan nöbet'); if(S.symptoms.includes('İlk nöbet'))add(d[2],20,'İlk nöbet'); if(S.symptoms.includes('Sekonder neden riski'))add(d[2],30,'Sekonder neden riski'); if(S.symptoms.includes('Fokal nöbet/nörolojik defisit'))add(d[3],32,'Fokal bulgu'); if(S.symptoms.includes('İlaç uyumsuzluğu'))add(d[0],24,'İlaç uyumsuzluğu');
+ }
  else if(S.complaint==='Travma'){
   d=[mk('Kafa travması / intrakraniyal yaralanma',13),mk('Servikal omurga yaralanması',10),mk('Toraks travması',10),mk('Batın içi yaralanma',10),mk('Aktif kanama / hemorajik şok',9),mk('Ekstremite kırığı / nörovasküler yaralanma',10)];
   if(S.symptoms.includes('Kafa travması riski'))add(d[0],30,'Bilinç kaybı/amnezi/nöbet'); if(S.symptoms.includes('Servikal yaralanma riski'))add(d[1],30,'Boyun ağrısı veya nörolojik bulgu');
@@ -238,6 +328,13 @@ function actionPlan(){
  'Baş ağrısı':['Tam nörolojik muayene, GKS, pupiller ve fundoskopik değerlendirme yap.','Thunderclap, nörolojik defisit veya enfeksiyon bulgusunda acil görüntüleme/LP yolunu yerel protokole göre değerlendir.'],
  'Ateş':['Olası odağı sistematik ara; perfüzyon ve organ disfonksiyonu bulgularını değerlendir.','Sepsis şüphesinde laktat, kültürler ve erken tedavi paketini yerel protokole göre geciktirme.'],
  'Bilinç değişikliği':['Yatak başı glukozu hemen ölç; GKS, pupiller ve fokal nörolojik muayeneyi kaydet.','Hipoksi, toksin, enfeksiyon, nöbet ve inme için hedefli tetkik/görüntüleme planla.'],
+ 'Çarpıntı':['Monitörizasyon ve 12 derivasyon EKG ile ritmi belgelemeye çalış.','Elektrolit, hemoglobin, tiroid ve sekonder tetikleyicileri klinik gerekliliğe göre değerlendir.'],
+ 'Senkop / presenkop':['Ortostatik vital bulgular, EKG, glukoz ve travma değerlendirmesini tamamla.','Eforla/yatarak senkop, ailede ani ölüm veya anormal EKG varsa yüksek riskli kardiyak yolu değerlendir.'],
+ 'Bulantı-kusma / ishal':['Dehidratasyon, peritonit ve GİS kanama bulgularını hedefli değerlendir.','Gebelik testi, glukoz, elektrolitler ve görüntülemeyi klinik olasılığa göre seç.'],
+ 'Bel-sırt ağrısı':['Motor-duyu-refleks, perine duyusu ve mesane işlevini kırmızı bayrak varsa gecikmeden değerlendir.','Kauda ekuina, enfeksiyon, kırık veya vasküler neden şüphesinde acil görüntüleme/konsültasyon yoluna geç.'],
+ 'İdrar yakınması':['Ateş, sepsis, obstrüksiyon ve gebelik/komplike enfeksiyon riskini değerlendir.','İdrar analizi-kültür, gebelik testi ve görüntülemeyi klinik gerekliliğe göre seç.'],
+ 'Döküntü / alerjik reaksiyon':['Havayolu, solunum ve dolaşım tutulumunu hemen değerlendir; anafilaksi şüphesinde rutin akışı bekletme.','Mukozal tutulum, bül, purpura ve yeni ilaç öyküsünü kaydet.'],
+ 'Nöbet':['Nöbet sürüyorsa süre tut, havayolunu koru, glukozu ölç ve status protokolünü geciktirme.','İlk nöbet veya fokal bulguda sekonder nedenler için hedefli laboratuvar/görüntüleme planla.'],
  'Travma':['Primer ve sekonder travma bakısını tamamla; servikal stabilizasyon gereksinimini değerlendir.','Kanama kontrolü, FAST/POCUS ve mekanizmaya göre görüntüleme planını uygula.']};
  now.push(S.complaint+' için akıllı anamnez sorularını tamamla.'); (maps[S.complaint]||[]).forEach(x=>now.push(x));
  wait.push('Klinik kötüleşme, vital değişiklik veya yeni kırmızı bayrak açısından seri yeniden değerlendirme yap.');
