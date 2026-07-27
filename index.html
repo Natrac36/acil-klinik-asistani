@@ -41,7 +41,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.6 Beta • Yenilenen hızlı arayüz</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.7 Beta • Klinik QA ve panel düzeltmeleri</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -109,12 +109,32 @@ function select(label,id,opts){return `<label>${label}<select id="${id}">${opts.
 function choices(name,items){return `<div class="choices">${items.map(([v,t])=>`<label class="choice"><input type="checkbox" name="${name}" value="${esc(v)}" ${(S[name]||[]).includes(v)?'checked':''}>${t}</label>`).join('')}</div>`}
 function esc(x){return String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;')}
 
+function redFlagItems(){
+ const common=[["Senkop/bilinç değişikliği","Senkop / bilinç değişikliği"],["Yeni nörolojik defisit","Yeni nörolojik defisit"],["Belirgin solunum sıkıntısı","Belirgin solunum sıkıntısı"],["Aktif ciddi kanama","Aktif ciddi kanama"]];
+ const map={
+  'Göğüs ağrısı':[["Devam eden şiddetli/artan ağrı","Şiddetli / artan ağrı"],["Ani yırtılır tarzda ağrı","Ani / yırtılır ağrı"],["İki kol arasında belirgin TA/nabız farkı","İki kolda TA / nabız farkı"],["Hemoptizi","Hemoptizi"],["Tek taraflı bacak şişliği","Tek taraflı bacak şişliği"]],
+  'Nefes darlığı':[["Konuşamama/siyanoz","Konuşamama veya siyanoz"],["Tek taraflı solunum sesi azalması","Tek taraflı solunum sesi azalması"],["Hemoptizi","Hemoptizi"],["Tek taraflı bacak şişliği","Tek taraflı bacak şişliği"]],
+  'Karın ağrısı':[["Peritonit bulgusu","Defans / rijidite / rebound"],["Şok bulgusu","Şok veya hipoperfüzyon"],["GİS kanama","Hematemez / melena / hematokezya"],["Gebelikte ağrı/kanama","Gebelik olasılığı ile ağrı / kanama"]],
+  'Baş ağrısı':[["Ani en şiddetli baş ağrısı","Ani, hayatının en şiddetli baş ağrısı"],["Menenjizm","Ateş / ense sertliği / purpura"],["Yeni nöbet","Yeni nöbet"],["Görme kaybı","Ani görme kaybı / göz ağrısı"]],
+  'Ateş':[["Hipotansiyon/hipoperfüzyon","Hipotansiyon veya hipoperfüzyon"],["Menenjizm","Ense sertliği / nöbet / bilinç değişikliği"],["Purpura","Purpura veya hızla yayılan döküntü"],["İmmünsüpresyon/nötropeni","İmmünsüpresyon / nötropeni"]],
+  'Bilinç değişikliği':[["Hipoglisemi olasılığı","Hipoglisemi olasılığı"],["Toksik maruziyet","İlaç / madde / toksin maruziyeti"],["Yeni nöbet","Yeni veya devam eden nöbet"]],
+  'Travma':[["Masif kanama","Masif / kontrolsüz kanama"],["Havayolu tehdidi","Havayolu tehdidi"],["Servikal yaralanma","Servikal yaralanma şüphesi"],["Nörovasküler kayıp","Ekstremitede nörovasküler kayıp"]],
+  'Çarpıntı':[["İnstabil aritmi bulgusu","Hipotansiyon, iskemi, akciğer ödemi veya bilinç bozukluğu"],["Sürekli geniş QRS taşikardi","Sürekli geniş QRS taşikardi"]],
+  'Senkop / presenkop':[["Efor sırasında senkop","Efor sırasında veya supin senkop"],["Ailede ani ölüm","Ailede genç yaşta ani ölüm"],["Ciddi travma","Senkopa bağlı ciddi travma"]],
+  'Bulantı-kusma / ishal':[["Şiddetli dehidratasyon","Şiddetli dehidratasyon / oligüri"],["Akut batın","Defans, rijidite veya obstrüksiyon"],["GİS kanama","Kanlı kusma / melena / kanlı dışkı"]],
+  'Bel-sırt ağrısı':[["Kauda ekuina","İdrar retansiyonu, eyer anestezisi veya bilateral güçsüzlük"],["Spinal enfeksiyon","Ateş ve spinal hassasiyet"],["Vasküler acil","Ani ağrı, senkop veya nabız farkı"]],
+  'İdrar yakınması':[["Ürosepsis bulgusu","Hipotansiyon, konfüzyon veya yüksek ateş"],["Akut retansiyon","Akut üriner retansiyon"],["Tek böbrek/obstrüksiyon","Tek böbrek veya obstrüksiyon şüphesi"]],
+  'Döküntü / alerjik reaksiyon':[["Havayolu tutulumu","Dil / dudak ödemi veya stridor"],["Anafilaktik şok","Hipotansiyon / kollaps"],["Ciddi kutanöz reaksiyon","Mukozal tutulum, bül veya cilt ayrışması"],["Purpura","Basıyla solmayan purpura"]],
+  'Nöbet':[["Devam eden nöbet","≥5 dakika süren veya tekrarlayan nöbet"],["Kalıcı bilinç bozukluğu","Beklenenden uzun postiktal bilinç bozukluğu"],["Fokal defisit","Yeni fokal nörolojik defisit"]]
+ };
+ return [...(map[S.complaint]||[]),...common];
+}
 function quickOneScreenHTML(){
  const complaints=['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'];
  const tests=['EKG','Troponin','Hemogram','Biyokimya','Glukoz','Kan gazı','Laktat','D-dimer','Akciğer grafisi','Kontrastsız beyin BT','BT anjiyografi','Abdominal görüntüleme','Gebelik testi','İdrar tahlili'];
  return `<div class="quick-note"><b>Tek ekran hızlı acil:</b> Temel veri, kırmızı bayrak, en fazla 5 soru ve tetkik durumu aynı ekranda. Ayrıntılar gerektiğinde açılır.</div>
  <div class="panel info"><div class="section-title"><h3>1 · Hasta ve ana şikâyet</h3><span class="phase-badge">≈ 10 sn</span></div><div class="grid3">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${complaints.map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label></div><label style="margin-top:9px">Tek cümle hasta ifadesi<textarea id="notes" rows="2" placeholder="Örn. 45 dakikadır baskı tarzında göğüs ağrısı">${esc(S.notes)}</textarea></label></div>
- <div class="panel neutral"><div class="section-title"><h3>2 · Vital ve ilk bakış</h3><span class="phase-badge">≈ 15 sn</span></div><div class="compact-actions"><button class="primary" onclick="applyVitalPreset('stable')">✓ Stabil profil</button><button class="danger" onclick="applyVitalPreset('critical')">⚠ Kritik profil</button></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('SS','rr','number','16')}${input('SpO₂','spo2','number','97')}${input('Ateş','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><details style="margin-top:9px"><summary><b>Kırmızı bayrak ekle</b></summary>${choices('redFlags',[["Devam eden şiddetli/artan ağrı","Şiddetli/artan ağrı"],["Senkop/bilinç değişikliği","Senkop/bilinç değişikliği"],["Ani yırtılır tarzda ağrı","Ani/yırtılır ağrı"],["Yeni nörolojik defisit","Yeni nörolojik defisit"],["Belirgin solunum sıkıntısı","Belirgin solunum sıkıntısı"],["Aktif ciddi kanama","Aktif ciddi kanama"]])}</details></div>
+ <div class="panel neutral"><div class="section-title"><h3>2 · Vital ve ilk bakış</h3><span class="phase-badge">≈ 15 sn</span></div><div class="compact-actions"><button class="primary" onclick="applyVitalPreset('stable')">✓ Stabil profil</button><button class="danger" onclick="applyVitalPreset('critical')">⚠ Kritik profil</button></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('SS','rr','number','16')}${input('SpO₂','spo2','number','97')}${input('Ateş','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><details style="margin-top:9px"><summary><b>Kırmızı bayrak ekle</b></summary>${choices('redFlags',redFlagItems())}</details></div>
  <div class="panel neutral" id="smartAnamnesisContainer"><div class="section-title"><h3>3 · Şikâyete özel kritik sorular</h3><span class="phase-badge">en fazla 5</span></div>${renderSmartAnamnesis()}</div>
  <div class="panel neutral"><div class="section-title"><h3>4 · Tetkik ve çıkan sonuç</h3><button onclick="recommendTests()">Önerilenleri seç</button></div><div class="choices">${tests.map(t=>`<label class="choice"><input type="checkbox" name="orderedTests" value="${esc(t)}" ${(S.orderedTests||[]).includes(t)?'checked':''}>${esc(t)}</label>`).join('')}</div><details style="margin-top:10px"><summary><b>Çıkan sonuçları ekle</b> <span class="muted">(gelmeyenler bekleniyor kalabilir)</span></summary><div class="grid" style="margin-top:9px">${select('EKG','ecg',['Bekleniyor','Normal / akut iskemi yok','ST elevasyonu','ST depresyonu/T negatifliği','Taşikardi/aritmi','Bradikardi/iletim bozukluğu','Diğer anormal'])}${select('İlk troponin','troponin',['Bekleniyor','Normal','Yüksek','Sınırda'])}${select('D-dimer','ddimer',['Bekleniyor','Normal','Yüksek'])}${select('Akciğer grafisi','cxr',['Bekleniyor','Normal','İnfiltrasyon','Konjesyon/ödem','Pnömotoraks','Mediasten geniş','Diğer anormal'])}${input('Glukoz','glucose','number','mg/dL')}${input('Laktat','lactate','number','mmol/L')}</div></details></div>
  <details class="risk-inputs"><summary>Risk skorları için ek kısa veri (gerektiğinde)</summary><div class="grid" style="margin-top:9px">${select('HEART öykü şüphesi','heartHistory',[['','Seçiniz'],['0','Az şüpheli'],['1','Orta şüpheli'],['2','Yüksek şüpheli']])}${select('HEART risk faktörü sayısı','heartRiskCount',[['','Seçiniz'],['0','0'],['1','1–2'],['2','≥3 veya bilinen ateroskleroz']])}${select('Ek oksijen alıyor mu?','newsOxygen',['Hayır','Evet'])}</div><div class="tiny-checks">${choices('peRisk',[["Klinik DVT bulgusu","Klinik DVT bulgusu"],["PE en olası tanı","PE en olası tanı"],["Yakın cerrahi/immobilizasyon","Son 4 haftada cerrahi/immobilizasyon"],["Önceki DVT/PE","Önceki DVT/PE"],["Hemoptizi","Hemoptizi"],["Aktif malignite","Aktif malignite"],["Östrojen kullanımı","Östrojen kullanımı"]])}</div></details><div class="panel info"><h3>Canlı ilk karar</h3>${quickConsultantHTML()}</div>`;
@@ -126,7 +146,7 @@ function render(){
  el('modeToggle').textContent=quickMode?'Ayrıntılı moda geç':'Hızlı moda dön';
  const c=el('stepContent');
  if(page===0)c.innerHTML=quickMode?quickOneScreenHTML():`<div class="panel info"><h3>Ayrıntılı hasta girişi</h3><p>Hızlı moddaki tüm bilgiler korunur. Burada ayrıntılı değerlendirme için temel hasta verilerini düzenleyebilirsin.</p></div><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'].map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label>${input('Şiddet (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4">${esc(S.notes)}</textarea></label>`;
- if(page===1)c.innerHTML=`<div class="panel warn"><h3>Önce yaşamı tehdit eden durumları kontrol et</h3><p>Vital bulguları ve kırmızı bayrakları gir. Kritik veri saptanırsa rutin akış bekletilmez.</p><div class="actions"><button class="primary big-action" onclick="applyVitalPreset(\'stable\')">✓ Stabil / normal vitaller</button><button class="danger big-action" onclick="applyVitalPreset(\'critical\')">⚠ Kritik hasta profili</button></div></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('Solunum sayısı','rr','number','16')}${input('SpO₂ (%)','spo2','number','97')}${input('Ateş (°C)','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><div class="question"><div class="question-title">Kırmızı bayraklar</div>${choices('redFlags',[["Devam eden şiddetli/artan ağrı","Devam eden şiddetli veya artan ağrı"],["Senkop/bilinç değişikliği","Senkop veya bilinç değişikliği"],["Ani yırtılır tarzda ağrı","Ani, maksimum şiddette veya yırtılır tarzda ağrı"],["İki kol arasında belirgin TA/nabız farkı","İki kol arasında belirgin tansiyon/nabız farkı"],["Yeni nörolojik defisit","Yeni nörolojik defisit"],["Belirgin solunum sıkıntısı","Belirgin solunum sıkıntısı"],["Hemoptizi","Hemoptizi"],["Tek taraflı bacak şişliği","Tek taraflı bacak şişliği"],["Tek taraflı solunum sesi azalması","Tek taraflı solunum sesi azalması"],["Aktif ciddi kanama","Aktif ciddi kanama"]])}</div>`;
+ if(page===1)c.innerHTML=`<div class="panel warn"><h3>Önce yaşamı tehdit eden durumları kontrol et</h3><p>Vital bulguları ve kırmızı bayrakları gir. Kritik veri saptanırsa rutin akış bekletilmez.</p><div class="actions"><button class="primary big-action" onclick="applyVitalPreset(\'stable\')">✓ Stabil / normal vitaller</button><button class="danger big-action" onclick="applyVitalPreset(\'critical\')">⚠ Kritik hasta profili</button></div></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('Solunum sayısı','rr','number','16')}${input('SpO₂ (%)','spo2','number','97')}${input('Ateş (°C)','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><div class="question"><div class="question-title">Kırmızı bayraklar</div>${choices('redFlags',redFlagItems())}</div>`;
  if(page===2)c.innerHTML=`<div id="smartAnamnesisContainer">${renderSmartAnamnesis()}</div>`;
  if(page===3)c.innerHTML=`<div class="question"><div class="question-title">Kronik hastalık ve riskler</div>${choices('history',[["KAH/MI/PCI/CABG","KAH, MI, PCI veya CABG"],["Hipertansiyon","Hipertansiyon"],["Diyabet","Diyabet"],["Dislipidemi","Dislipidemi"],["Kalp yetersizliği","Kalp yetersizliği"],["Aort hastalığı","Aort hastalığı"],["DVT/PE","DVT veya PE öyküsü"],["Kanser","Aktif kanser"],["Böbrek hastalığı","Kronik böbrek hastalığı"],["Kanama öyküsü","Önemli kanama öyküsü"],["Erken aile KAH","Erken aile koroner hastalık öyküsü"],["Yakın cerrahi/immobilizasyon","Yakın cerrahi veya immobilizasyon"]])}</div><div class="grid">${select('Sigara','smoking',[['','Seçiniz'],['Yok','Yok'],['Aktif','Aktif'],['Bırakmış','Bırakmış']])}${select('Madde kullanımı','substance',[['','Seçiniz'],['Yok','Yok'],['Kokain/amfetamin','Kokain veya amfetamin'],['Diğer','Diğer']])}</div><label style="margin-top:11px">Düzenli ilaçlar<textarea id="meds" rows="3" placeholder="Antikoagülan, antiagregan, PDE-5 inhibitörü vb.">${esc(S.meds)}</textarea></label><div class="grid" style="margin-top:11px">${input('İlaç/kontrast alerjisi','allergy','text','Yok')}${input('Geçirilmiş ameliyatlar','surgery','text','Yok')}</div><div class="question"><div class="question-title">Tedavi güvenlik kontrolü</div>${choices('treatmentSafety',[["ASA/NSAİİ alerjisi","Aspirin/NSAİİ alerjisi veya ciddi intoleransı"],["Aktif ciddi kanama","Aktif ciddi kanama"],["Oral antikoagülan","Oral antikoagülan kullanıyor"],["PDE5 yakın kullanım","Yakın zamanda PDE-5 inhibitörü kullanımı"],["Gebelik olasılığı","Gebelik olasılığı"],["Bilinen ciddi trombositopeni","Bilinen ciddi trombositopeni"]])}</div>`;
  if(page===4)c.innerHTML=`<div class="panel info"><h3>Şikâyete uygun hedefli muayene</h3><p>Her bulguyu gerçekten değerlendirdikten sonra işaretle. Kritik bulgular rutin akışı keser.</p></div>${choices('exam',[["Genel durum kötü/soğuk-soluk-terli","Genel durum kötü, soğuk-soluk-terli"],["Yeni üfürüm","Yeni üfürüm"],["Perikardiyal frotman","Perikardiyal frotman"],["Raller/S3/periferik ödem","Ral, S3 veya periferik ödem"],["Tek taraflı solunum sesi azalması","Tek taraflı solunum sesi azalması"],["Göğüs duvarında hassasiyet","Palpasyonla ağrı/hassasiyet"],["DVT bulgusu","Tek taraflı DVT bulgusu"],["Nabız defisiti","Periferik nabız defisiti"],["Yeni nörolojik defisit","Yeni nörolojik defisit"],["Epigastrik hassasiyet","Epigastrik hassasiyet"],["Muayene belirgin özellik göstermiyor","Muayene belirgin özellik göstermiyor"]])}`;
@@ -342,9 +362,9 @@ function testRecommendationEngine(){
   add(avoid,'D-dimer','Karın ağrısında tarama testi olarak kullanılmamalı; spesifik vasküler şüphe varsa doğrudan uygun görüntüleme düşünülür.');
  }
  else if(c==='Baş ağrısı'){
-  if(S.onset==='Ani'||S.symptoms.includes('En şiddetli baş ağrısı')||neuro||S.mental!=='Normal') add(required,'Beyin BT','Ani başlangıç, nörolojik defisit veya bilinç değişikliğinde sekonder nedenleri dışlamak için.');
+  if(S.onset==='Ani'||S.symptoms.includes('İlk/en şiddetli')||neuro||S.mental!=='Normal') add(required,'Beyin BT','Ani başlangıç, nörolojik defisit veya bilinç değişikliğinde sekonder nedenleri dışlamak için.');
   else add(defer,'Beyin BT','Kırmızı bayrak yoksa rutin görüntüleme yerine klinik değerlendirme önceliklidir.');
-  if(S.temp&&n(S.temp)>=38 || S.symptoms.includes('Meningismus')) add(consider,'Hemogram','Enfeksiyon/menenjit şüphesinde destekleyici değerlendirme.');
+  if(S.temp&&n(S.temp)>=38 || S.symptoms.includes('Menenjizm/enfeksiyon')) add(consider,'Hemogram','Enfeksiyon/menenjit şüphesinde destekleyici değerlendirme.');
  }
  else if(c==='Ateş'){
   add(required,'Hemogram','Enfeksiyon ve sitopeni değerlendirmesi.');
@@ -352,7 +372,7 @@ function testRecommendationEngine(){
   if(unstable||infection||n(S.lactate)!==null&&n(S.lactate)>=2) add(required,'Kan gazı-laktat','Hipoperfüzyon ve şok değerlendirmesi.');
   else add(consider,'Kan gazı-laktat','Sepsis/hipoperfüzyon bulgusu varsa.');
   if(infection||S.temp&&n(S.temp)>=38.5) add(consider,'Kültürler','Antimikrobiyal başlanacak ciddi enfeksiyonda, tedaviyi geciktirmeden uygun örnekler.');
-  if(S.symptoms.includes('Ateş/öksürük')||S.complaint==='Nefes darlığı') add(consider,'Akciğer grafisi','Solunum odağı şüphesinde.');
+  if(S.symptoms.includes('Solunum odağı')) add(consider,'Akciğer grafisi','Solunum odağı şüphesinde.');
  }
  else if(c==='Bilinç değişikliği'){
   add(required,'Parmak ucu glukoz','Hızla düzeltilebilir hipoglisemiyi dışlamak için.');
@@ -365,23 +385,23 @@ function testRecommendationEngine(){
  else if(c==='Nöbet'){
   add(required,'Parmak ucu glukoz','Hızla düzeltilebilir hipoglisemiyi dışlamak için.');
   add(required,'Biyokimya-elektrolit','Sodyum, kalsiyum ve diğer metabolik tetikleyiciler için.');
-  if(S.symptoms.includes('Fokal nöbet/nörolojik defisit')||neuro||S.onset==='İlk nöbet') add(consider,'Beyin BT','İlk nöbet, fokal bulgu, travma veya kalıcı bilinç bozukluğunda.');
+  if(S.symptoms.includes('Fokal nöbet/nörolojik defisit')||neuro||S.symptoms.includes('İlk nöbet')) add(consider,'Beyin BT','İlk nöbet, fokal bulgu, travma veya kalıcı bilinç bozukluğunda.');
   if(S.seizureOngoing==='Evet'||n(S.seizureDuration)>=5) add(required,'Kan gazı-laktat','Status ve fizyolojik bozulmada; tedavi geciktirilmeden.');
  }
  else if(c==='Senkop / presenkop'){
   add(required,'12 derivasyon EKG','Aritmik ve iletim nedenlerini değerlendirmek için.');
-  if(S.history.includes('Kanama öyküsü')||S.symptoms.includes('Aktif kanama')) add(consider,'Hemogram','Kanama/anemi şüphesinde.'); else add(defer,'Hemogram','Kanama veya anemi şüphesi yoksa rutin istem her hastada gerekli değildir.');
+  if(S.history.includes('Kanama öyküsü')||(S.symptoms.includes('Aktif kanama')||S.symptoms.includes('Kanama/nörovasküler risk'))) add(consider,'Hemogram','Kanama/anemi şüphesinde.'); else add(defer,'Hemogram','Kanama veya anemi şüphesi yoksa rutin istem her hastada gerekli değildir.');
   if(neuro) add(consider,'Beyin BT','Yalnız yeni nörolojik defisit, ciddi kafa travması veya sekonder neden şüphesinde.'); else add(avoid,'Beyin BT','Basit senkopta nörolojik bulgu yoksa rutin beyin BT düşük verimlidir.');
   add(avoid,'D-dimer','PE için özgül klinik şüphe yoksa rutin istem önerilmez.');
  }
  else if(c==='Çarpıntı'){
   add(required,'12 derivasyon EKG','Ritmi belgelemek ve iletim/QT değerlendirmek için.');
   add(consider,'Biyokimya-elektrolit','Süren aritmi, ilaç kullanımı veya elektrolit bozukluğu riski varsa.');
-  if(S.symptoms.includes('Göğüs ağrısı')||unstable) add(consider,'Troponin','İskemi/instabilite eşlik ediyorsa.'); else add(defer,'Troponin','İskemi bulgusu olmayan izole çarpıntıda rutin olmayabilir.');
+  if((S.symptoms.includes('Göğüs ağrısı')||S.symptoms.includes('Göğüs ağrısı/dispne'))||unstable) add(consider,'Troponin','İskemi/instabilite eşlik ediyorsa.'); else add(defer,'Troponin','İskemi bulgusu olmayan izole çarpıntıda rutin olmayabilir.');
  }
  else if(c==='Travma'){
-  if(unstable||S.symptoms.includes('Batın travması')||S.symptoms.includes('Aktif kanama')) add(required,'Kan gazı-laktat','Şok ve gizli kanama değerlendirmesi.');
-  if(S.symptoms.includes('Aktif kanama')||S.symptoms.includes('Batın travması')) add(required,'Hemogram','Kanama için başlangıç değeri; erken normal sonuç kanamayı dışlamaz.');
+  if(unstable||S.symptoms.includes('Batın travması')||(S.symptoms.includes('Aktif kanama')||S.symptoms.includes('Kanama/nörovasküler risk'))) add(required,'Kan gazı-laktat','Şok ve gizli kanama değerlendirmesi.');
+  if((S.symptoms.includes('Aktif kanama')||S.symptoms.includes('Kanama/nörovasküler risk'))||S.symptoms.includes('Batın travması')) add(required,'Hemogram','Kanama için başlangıç değeri; erken normal sonuç kanamayı dışlamaz.');
   if(S.symptoms.includes('Kafa travması riski')||neuro) add(consider,'Beyin BT','Karar kuralı ve klinik risklere göre.');
   add(consider,'Hedefli görüntüleme','Mekanizma ve muayene bulgusuna göre; rutin tüm-vücut görüntüleme yerine seçici yaklaşım.');
  }
@@ -395,7 +415,7 @@ function testRecommendationEngine(){
   if(unstable) add(consider,'Biyokimya-elektrolit','AKI, obstrüksiyon veya sepsis şüphesinde.');
  }
  else if(c==='Döküntü / alerjik reaksiyon'){
-  if(unstable||S.symptoms.includes('Hırıltı')) add(consider,'Kan gazı-laktat','Anafilaksi/şokta klinik tedaviyi geciktirmeden perfüzyon değerlendirmesi.');
+  if(unstable||(S.symptoms.includes('Hırıltı')||S.symptoms.includes('Solunum tutulumu'))) add(consider,'Kan gazı-laktat','Anafilaksi/şokta klinik tedaviyi geciktirmeden perfüzyon değerlendirmesi.');
   add(avoid,'Hemogram','Basit alerjik reaksiyonda rutin laboratuvar tanıyı doğrulamaz.');
   add(avoid,'Biyokimya-elektrolit','Komplike olmayan alerjik reaksiyonda rutin istem gerekmez.');
  }
@@ -430,7 +450,7 @@ function activeSmartQs(){
 }
 function changeComplaint(v){
  S.complaint=String(v||'').trim();
- S.qIndex=0;S.chatLog=[];S.radiation=[];S.symptoms=[];
+ S.qIndex=0;S.chatLog=[];S.radiation=[];S.symptoms=[];S.redFlags=[];S.orderedTests=[];
  ['onset','duration','painType','exertional','pleuritic','positional','palpation'].forEach(k=>S[k]='');
  render();
  updateAll();
@@ -467,28 +487,28 @@ function genericComplaintDx(){
  if(S.complaint==='Nefes darlığı'){
   d=[mk('Akut kalp yetersizliği / pulmoner ödem',18),mk('Pnömoni / alt solunum yolu enfeksiyonu',16),mk('Astım / KOAH alevlenmesi',16),mk('Pulmoner emboli',12),mk('Pnömotoraks',8),mk('Akut koroner sendrom eşdeğeri',8)];
   if(S.symptoms.includes('Ortopne/PND'))add(d[0],24,'Ortopne veya PND'); if(S.symptoms.includes('Ateş/öksürük'))add(d[1],24,'Ateş/öksürük');
-  if(S.symptoms.includes('Hırıltı'))add(d[2],25,'Hırıltı'); if(S.symptoms.includes('Hemoptizi'))add(d[3],18,'Hemoptizi'); if(S.symptoms.includes('Tek taraflı bacak şişliği'))add(d[3],22,'DVT düşündüren bulgu');
+  if((S.symptoms.includes('Hırıltı')||S.symptoms.includes('Solunum tutulumu')))add(d[2],25,'Hırıltı'); if((S.symptoms.includes('Hemoptizi')||S.symptoms.includes('VTE bulgusu')))add(d[3],18,'Hemoptizi'); if((S.symptoms.includes('Tek taraflı bacak şişliği')||S.symptoms.includes('VTE bulgusu')))add(d[3],22,'DVT düşündüren bulgu');
   if(S.onset==='Ani') {add(d[3],10,'Ani başlangıç');add(d[4],18,'Ani başlangıç')}; if(n(S.spo2)!=null&&n(S.spo2)<90)d.forEach(x=>add(x,8,'Hipoksemi'));
  }
  else if(S.complaint==='Karın ağrısı'){
   d=[mk('Akut apandisit',14),mk('Biliyer patoloji / kolesistit',13),mk('Pankreatit',10),mk('Gastroenterit',12),mk('Üriner sistem patolojisi',11),mk('Barsak obstrüksiyonu',9),mk('Vasküler / perforasyon acili',8),mk('Jinekolojik acil',6)];
   if(S.painType==='Sağ alt kadran')add(d[0],26,'Sağ alt kadran yerleşimi'); if(S.painType==='Sağ üst kadran')add(d[1],26,'Sağ üst kadran yerleşimi'); if(S.painType==='Epigastrik')add(d[2],18,'Epigastrik ağrı');
-  if(S.symptoms.includes('Kusma/ishal'))add(d[3],20,'Kusma/ishal'); if(S.symptoms.includes('Dizüri/hematüri'))add(d[4],24,'Üriner semptom'); if(S.symptoms.includes('Gaz-gaita çıkaramama'))add(d[5],28,'Obstrüksiyon bulgusu');
-  if(S.symptoms.includes('Senkop/kanama')||S.onset==='Ani')add(d[6],24,'Ani başlangıç veya senkop/kanama'); if(S.sex==='Kadın'&&S.symptoms.includes('Gebelik olasılığı'))add(d[7],30,'Gebelik olasılığı');
+  if((S.symptoms.includes('Kusma/ishal')||S.symptoms.includes('Kusma/oral alamama')))add(d[3],20,'Kusma/ishal'); if((S.symptoms.includes('Dizüri/hematüri')||S.symptoms.includes('Üriner odak')))add(d[4],24,'Üriner semptom'); if((S.symptoms.includes('Gaz-gaita çıkaramama')||S.symptoms.includes('Obstrüksiyon bulgusu')))add(d[5],28,'Obstrüksiyon bulgusu');
+  if((S.symptoms.includes('Senkop/kanama')||S.symptoms.includes('Şok bulgusu')||S.symptoms.includes('GİS kanama'))||S.onset==='Ani')add(d[6],24,'Ani başlangıç veya senkop/kanama'); if(S.sex==='Kadın'&&(S.symptoms.includes('Gebelik olasılığı')||S.symptoms.includes('Gebelik/jinekolojik risk')))add(d[7],30,'Gebelik olasılığı');
  }
  else if(S.complaint==='Baş ağrısı'){
   d=[mk('Primer baş ağrısı / migren',18),mk('Subaraknoid kanama',8),mk('Menenjit / ensefalit',8),mk('İnme / intrakraniyal olay',8),mk('Akut glokom',5),mk('Hipertansif acil',6)];
-  if(S.symptoms.includes('Fotofobi/fonofobi'))add(d[0],20,'Fotofobi/fonofobi'); if(S.onset==='Ani')add(d[1],30,'Ani başlangıç'); if(S.symptoms.includes('Ense sertliği/ateş'))add(d[2],30,'Ateş/ense sertliği');
-  if(S.symptoms.includes('Fokal nörolojik defisit'))add(d[3],34,'Fokal nörolojik defisit'); if(S.symptoms.includes('Göz ağrısı/görme kaybı'))add(d[4],32,'Göz ağrısı veya görme kaybı'); if(n(S.sbp)!=null&&n(S.sbp)>=180)add(d[5],20,'Çok yüksek sistolik TA');
+  if((S.symptoms.includes('Fotofobi/fonofobi')||S.symptoms.includes('İlk/en şiddetli')))add(d[0],20,'Fotofobi/fonofobi'); if(S.onset==='Ani')add(d[1],30,'Ani başlangıç'); if((S.symptoms.includes('Ense sertliği/ateş')||S.symptoms.includes('Menenjizm/enfeksiyon')))add(d[2],30,'Ateş/ense sertliği');
+  if((S.symptoms.includes('Fokal nörolojik defisit')||S.symptoms.includes('Nörolojik defisit/nöbet')))add(d[3],34,'Fokal nörolojik defisit'); if(S.symptoms.includes('Göz ağrısı/görme kaybı'))add(d[4],32,'Göz ağrısı veya görme kaybı'); if(n(S.sbp)!=null&&n(S.sbp)>=180)add(d[5],20,'Çok yüksek sistolik TA');
  }
  else if(S.complaint==='Ateş'){
   d=[mk('Solunum yolu enfeksiyonu / pnömoni',16),mk('Üriner sistem enfeksiyonu',12),mk('Gastrointestinal enfeksiyon',10),mk('Sepsis odağı belirsiz',9),mk('Menenjit / santral sinir sistemi enfeksiyonu',6),mk('Deri-yumuşak doku enfeksiyonu',7)];
-  if(S.symptoms.includes('Öksürük/dispne'))add(d[0],26,'Öksürük/dispne'); if(S.symptoms.includes('Dizüri/yan ağrısı'))add(d[1],26,'Üriner semptom'); if(S.symptoms.includes('Kusma/ishal'))add(d[2],22,'Gastrointestinal semptom');
-  if(S.symptoms.includes('Bilinç değişikliği')||n(S.sbp)<90||n(S.rr)>22)add(d[3],28,'Organ disfonksiyonu olasılığı'); if(S.symptoms.includes('Ense sertliği'))add(d[4],32,'Ense sertliği'); if(S.symptoms.includes('Döküntü/yara'))add(d[5],24,'Deri odağı');
+  if((S.symptoms.includes('Öksürük/dispne')||S.symptoms.includes('Solunum odağı')))add(d[0],26,'Öksürük/dispne'); if((S.symptoms.includes('Dizüri/yan ağrısı')||S.symptoms.includes('Üriner odak')))add(d[1],26,'Üriner semptom'); if((S.symptoms.includes('Kusma/ishal')||S.symptoms.includes('Kusma/oral alamama')))add(d[2],22,'Gastrointestinal semptom');
+  if((S.symptoms.includes('Bilinç değişikliği')||S.symptoms.includes('SSS enfeksiyonu bulgusu'))||n(S.sbp)<90||n(S.rr)>22)add(d[3],28,'Organ disfonksiyonu olasılığı'); if((S.symptoms.includes('Ense sertliği')||S.symptoms.includes('SSS enfeksiyonu bulgusu')))add(d[4],32,'Ense sertliği'); if((S.symptoms.includes('Döküntü/yara')||S.symptoms.includes('Cilt/purpura')))add(d[5],24,'Deri odağı');
  }
  else if(S.complaint==='Bilinç değişikliği'){
   d=[mk('Hipoglisemi / metabolik neden',18),mk('İnme / intrakraniyal olay',12),mk('Nöbet sonrası durum',11),mk('Enfeksiyon / sepsis',10),mk('Toksikolojik neden',10),mk('Hipoksi / hiperkapni',9)];
-  if(S.symptoms.includes('Glukoz riski'))add(d[0],28,'Glukoz riski'); if(S.symptoms.includes('Fokal nörolojik defisit'))add(d[1],34,'Fokal nörolojik defisit'); if(S.symptoms.includes('Nöbet'))add(d[2],30,'Nöbet bulgusu');
+  if(S.symptoms.includes('Glukoz riski'))add(d[0],28,'Glukoz riski'); if((S.symptoms.includes('Fokal nörolojik defisit')||S.symptoms.includes('Nörolojik defisit/nöbet')))add(d[1],34,'Fokal nörolojik defisit'); if(S.symptoms.includes('Nöbet'))add(d[2],30,'Nöbet bulgusu');
   if(S.symptoms.includes('Enfeksiyon'))add(d[3],26,'Enfeksiyon bulgusu'); if(S.symptoms.includes('Toksik maruziyet'))add(d[4],30,'Toksik maruziyet'); if(n(S.spo2)!=null&&n(S.spo2)<90)add(d[5],30,'Hipoksemi');
  }
  else if(S.complaint==='Çarpıntı'){
@@ -504,7 +524,7 @@ function genericComplaintDx(){
  }
  else if(S.complaint==='Bulantı-kusma / ishal'){
   d=[mk('Gastroenterit / gıda kaynaklı hastalık',18),mk('Dehidratasyon / elektrolit bozukluğu',14),mk('Akut batın / obstrüksiyon',10),mk('GİS kanaması',8),mk('Gebelik ilişkili kusma',6),mk('Toksik-metabolik neden',7)];
-  if(S.symptoms.includes('Enfeksiyöz risk'))add(d[0],24,'Enfeksiyöz risk'); if(S.symptoms.includes('Dehidratasyon'))add(d[1],28,'Dehidratasyon bulgusu'); if(S.symptoms.includes('Akut batın/obstrüksiyon'))add(d[2],32,'Akut batın bulgusu'); if(S.symptoms.includes('GİS kanama'))add(d[3],36,'GİS kanama'); if(S.symptoms.includes('Gebelik olasılığı'))add(d[4],30,'Gebelik olasılığı');
+  if(S.symptoms.includes('Enfeksiyöz risk'))add(d[0],24,'Enfeksiyöz risk'); if(S.symptoms.includes('Dehidratasyon'))add(d[1],28,'Dehidratasyon bulgusu'); if(S.symptoms.includes('Akut batın/obstrüksiyon'))add(d[2],32,'Akut batın bulgusu'); if(S.symptoms.includes('GİS kanama'))add(d[3],36,'GİS kanama'); if((S.symptoms.includes('Gebelik olasılığı')||S.symptoms.includes('Gebelik/jinekolojik risk')))add(d[4],30,'Gebelik olasılığı');
  }
  else if(S.complaint==='Bel-sırt ağrısı'){
   d=[mk('Mekanik bel ağrısı / radikülopati',20),mk('Kauda ekuina / spinal kord basısı',6),mk('Spinal enfeksiyon',6),mk('Vertebra kırığı',7),mk('Renal kolik / pyelonefrit',8),mk('Aortik/vasküler acil',5)];
@@ -538,7 +558,7 @@ function diagnoses(){
  const add=(x,v,r)=>{d[x].s+=v;(v>0?d[x].p:d[x].m).push(r)};
  if(S.painType==='Baskı/sıkışma')add('Akut koroner sendrom',18,'Baskı/sıkışma karakteri');if(S.exertional==='Artıyor')add('Akut koroner sendrom',15,'Eforla artma');if(S.radiation.some(x=>['Sol kol/omuz','Her iki kol','Çene/boyun'].includes(x)))add('Akut koroner sendrom',12,'Tipik yayılım');if(S.symptoms.includes('Soğuk terleme'))add('Akut koroner sendrom',10,'Soğuk terleme');if(S.history.some(x=>['KAH/MI/PCI/CABG','Diyabet','Hipertansiyon','Dislipidemi','Erken aile KAH'].includes(x)))add('Akut koroner sendrom',8,'Kardiyovasküler risk/öykü');if(['ST depresyonu/T inversiyonu','ST elevasyonu'].includes(S.ecg))add('Akut koroner sendrom',25,'İskemik EKG');if(['Üst sınırın 1–3 katı','Üst sınırın >3 katı'].includes(S.troponin))add('Akut koroner sendrom',25,'Troponin yüksekliği');if(S.repeatTroponin==='Anlamlı yükseliş/düşüş')add('Akut koroner sendrom',20,'Dinamik troponin');if(S.palpation==='Evet'||S.exam.includes('Göğüs duvarında hassasiyet')){add('Kas-iskelet kaynaklı ağrı',25,'Palpasyonla tekrarlanma');add('Akut koroner sendrom',-6,'Palpasyonla tekrarlanma')}
  if(S.painType==='Yırtılır'||S.onset==='Ani'||S.redFlags.includes('Ani yırtılır tarzda ağrı'))add('Akut aort sendromu',22,'Ani/yırtılır başlangıç');if(S.radiation.includes('Sırt'))add('Akut aort sendromu',12,'Sırta yayılım');if(S.redFlags.includes('İki kol arasında belirgin TA/nabız farkı')||S.exam.includes('Nabız defisiti'))add('Akut aort sendromu',25,'Nabız/TA farkı');if(S.exam.includes('Yeni nörolojik defisit')||S.redFlags.includes('Yeni nörolojik defisit'))add('Akut aort sendromu',20,'Nörolojik defisit');if(S.cxr==='Mediasten genişliği')add('Akut aort sendromu',18,'Mediasten genişliği');
- if(S.pleuritic==='Evet')add('Pulmoner emboli',12,'Plevritik ağrı');if(S.symptoms.includes('Dispne'))add('Pulmoner emboli',10,'Dispne');if(S.symptoms.includes('Hemoptizi')||S.redFlags.includes('Hemoptizi'))add('Pulmoner emboli',15,'Hemoptizi');if(S.symptoms.includes('Tek taraflı bacak şişliği')||S.exam.includes('DVT bulgusu'))add('Pulmoner emboli',22,'DVT bulgusu');if(S.history.some(x=>['DVT/PE','Kanser','Yakın cerrahi/immobilizasyon'].includes(x)))add('Pulmoner emboli',15,'VTE risk faktörü');if(n(S.pulse)>=100)add('Pulmoner emboli',8,'Taşikardi');if(S.ddimer==='Pozitif')add('Pulmoner emboli',12,'D-dimer pozitif');if(S.ddimer==='Negatif')add('Pulmoner emboli',-18,'D-dimer negatif');
+ if(S.pleuritic==='Evet')add('Pulmoner emboli',12,'Plevritik ağrı');if(S.symptoms.includes('Dispne'))add('Pulmoner emboli',10,'Dispne');if((S.symptoms.includes('Hemoptizi')||S.symptoms.includes('VTE bulgusu'))||S.redFlags.includes('Hemoptizi'))add('Pulmoner emboli',15,'Hemoptizi');if((S.symptoms.includes('Tek taraflı bacak şişliği')||S.symptoms.includes('VTE bulgusu'))||S.exam.includes('DVT bulgusu'))add('Pulmoner emboli',22,'DVT bulgusu');if(S.history.some(x=>['DVT/PE','Kanser','Yakın cerrahi/immobilizasyon'].includes(x)))add('Pulmoner emboli',15,'VTE risk faktörü');if(n(S.pulse)>=100)add('Pulmoner emboli',8,'Taşikardi');if(S.ddimer==='Pozitif')add('Pulmoner emboli',12,'D-dimer pozitif');if(S.ddimer==='Negatif')add('Pulmoner emboli',-18,'D-dimer negatif');
  if(S.positional==='Öne eğilmekle azalıyor'||S.positional==='Yatmakla artıyor')add('Perikardit',20,'Pozisyonel ağrı');if(S.exam.includes('Perikardiyal frotman'))add('Perikardit',25,'Frotman');if(S.ecg==='Yaygın ST elevasyonu/PR depresyonu')add('Perikardit',28,'Uyumlu EKG');
  if(S.exam.includes('Tek taraflı solunum sesi azalması')||S.redFlags.includes('Tek taraflı solunum sesi azalması'))add('Pnömotoraks',28,'Tek taraflı solunum sesi azalması');if(S.cxr==='Pnömotoraks')add('Pnömotoraks',35,'Grafide pnömotoraks');
  if(S.exam.includes('Raller/S3/periferik ödem'))add('Akut kalp yetersizliği',25,'Konjesyon bulguları');if(S.cxr==='Konjesyon/ödem')add('Akut kalp yetersizliği',30,'Grafide konjesyon');if(S.history.includes('Kalp yetersizliği'))add('Akut kalp yetersizliği',15,'Kalp yetersizliği öyküsü');
@@ -919,7 +939,7 @@ function integratedReasoning(){
  if(S.ecg==='ST elevasyonu' && S.troponin==='Normal')contradictions.push('ST elevasyonu ile tek normal troponin akut koroner oklüzyonu dışlamaz.');
  if(S.spo2 && +S.spo2<90 && S.response==='Belirgin düzelme')contradictions.push('Belirgin düzelme kaydına rağmen kontrol dışı hipoksemi olabilir; yeniden ölçüm doğrulanmalı.');
  if(S.redFlags.includes('Ani yırtılır tarzda ağrı')||S.exam.includes('Nabız defisiti'))mustNotMiss.push('Akut aort sendromu');
- if(S.symptoms.includes('Hemoptizi')||S.symptoms.includes('Tek taraflı bacak şişliği'))mustNotMiss.push('Pulmoner emboli');
+ if((S.symptoms.includes('Hemoptizi')||S.symptoms.includes('VTE bulgusu'))||(S.symptoms.includes('Tek taraflı bacak şişliği')||S.symptoms.includes('VTE bulgusu')))mustNotMiss.push('Pulmoner emboli');
  if(S.ecgFindings.includes('Brugada paterni')||S.ecgFindings.includes('Ventriküler taşikardi'))mustNotMiss.push('Malign aritmi / ani ölüm riski');
  if(S.strokeDeficit.length||S.exam.includes('Yeni nörolojik defisit'))mustNotMiss.push('Akut inme / intrakraniyal kanama');
  if(S.sepsisSuspected!=='Hayır' && ((S.sbp&&+S.sbp<90)||(S.lactate&&+S.lactate>=4)))mustNotMiss.push('Septik şok');
