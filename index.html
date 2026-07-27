@@ -18,7 +18,7 @@ ul.compact{margin:5px 0 0;padding-left:19px}ul.compact li{margin:4px 0}.dx{displ
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hekim için adım adım, açıklanabilir klinik karar desteği</p></div><div class="status">v0.4 • Akıllı anamnez</div></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hekim için adım adım, açıklanabilir klinik karar desteği</p></div><div class="status">v0.5 • Çoklu şikâyet başlangıcı</div></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main>
 <div class="layout">
 <section>
@@ -59,7 +59,7 @@ function esc(x){return String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function render(){
  el('mainTitle').textContent=steps[currentStep];el('stepName').textContent=`${currentStep+1}. ${steps[currentStep]}`;el('stepCount').textContent=`${currentStep+1}/${steps.length}`;el('progressBar').style.width=`${(currentStep+1)/steps.length*100}%`;el('backBtn').disabled=currentStep===0;el('nextBtn').textContent=currentStep===steps.length-1?'Vakayı tamamla':'Devam et';
  const c=el('stepContent');
- if(currentStep===0)c.innerHTML=`<p class="muted">Önce temel bilgileri gir. Bu sürümde ana şikâyet olarak göğüs ağrısı desteklenmektedir.</p><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}${select('Ana şikâyet','complaint',[['Göğüs ağrısı','Göğüs ağrısı']])}${input('Ağrı şiddeti (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4" placeholder="Örn: 30 dakikadır göğsümde baskı var...">${esc(S.notes)}</textarea></label>`;
+ if(currentStep===0)c.innerHTML=`<div class="panel info"><h3>Yeni: şikâyete göre akıllı anamnez</h3><p>Göğüs ağrısı modülü klinik karar desteğiyle aktiftir. Diğer şikâyetlerde şimdilik güvenlik taraması ve akıllı anamnez aktiftir; tanı/tedavi modülleri aşamalı olarak eklenecektir.</p></div><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma'].map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label>${input('Şiddet (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4" placeholder="Şikâyetin başlangıcını ve hastanın kendi ifadesini yazın...">${esc(S.notes)}</textarea></label>`;
  if(currentStep===1)c.innerHTML=`<div class="panel warn"><h3>Önce yaşamı tehdit eden durumları kontrol et</h3><p>Vital bulguları ve aşağıdaki kırmızı bayrakları gir. Kritik veri saptanırsa rutin akış bekletilmez.</p></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('Solunum sayısı','rr','number','16')}${input('SpO₂ (%)','spo2','number','97')}${input('Ateş (°C)','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><div class="question"><div class="question-title">Kırmızı bayraklar</div>${choices('redFlags',[["Devam eden şiddetli/artan ağrı","Devam eden şiddetli veya artan ağrı"],["Senkop/bilinç değişikliği","Senkop veya bilinç değişikliği"],["Ani yırtılır tarzda ağrı","Ani, maksimum şiddette veya yırtılır tarzda ağrı"],["İki kol arasında belirgin TA/nabız farkı","İki kol arasında belirgin tansiyon/nabız farkı"],["Yeni nörolojik defisit","Yeni nörolojik defisit"],["Belirgin solunum sıkıntısı","Belirgin solunum sıkıntısı"],["Hemoptizi","Hemoptizi"],["Tek taraflı bacak şişliği","Tek taraflı bacak şişliği"],["Tek taraflı solunum sesi azalması","Tek taraflı solunum sesi azalması"],["Aktif ciddi kanama","Aktif ciddi kanama"]])}</div>`;
  if(currentStep===2)c.innerHTML=renderSmartAnamnesis();
  if(currentStep===3)c.innerHTML=`<div class="question"><div class="question-title">Kronik hastalık ve riskler</div>${choices('history',[["KAH/MI/PCI/CABG","KAH, MI, PCI veya CABG"],["Hipertansiyon","Hipertansiyon"],["Diyabet","Diyabet"],["Dislipidemi","Dislipidemi"],["Kalp yetersizliği","Kalp yetersizliği"],["Aort hastalığı","Aort hastalığı"],["DVT/PE","DVT veya PE öyküsü"],["Kanser","Aktif kanser"],["Böbrek hastalığı","Kronik böbrek hastalığı"],["Kanama öyküsü","Önemli kanama öyküsü"],["Erken aile KAH","Erken aile koroner hastalık öyküsü"],["Yakın cerrahi/immobilizasyon","Yakın cerrahi veya immobilizasyon"]])}</div><div class="grid">${select('Sigara','smoking',[['','Seçiniz'],['Yok','Yok'],['Aktif','Aktif'],['Bırakmış','Bırakmış']])}${select('Madde kullanımı','substance',[['','Seçiniz'],['Yok','Yok'],['Kokain/amfetamin','Kokain veya amfetamin'],['Diğer','Diğer']])}</div><label style="margin-top:11px">Düzenli ilaçlar<textarea id="meds" rows="3" placeholder="Antikoagülan, antiagregan, PDE-5 inhibitörü vb.">${esc(S.meds)}</textarea></label><div class="grid" style="margin-top:11px">${input('İlaç/kontrast alerjisi','allergy','text','Yok')}${input('Geçirilmiş ameliyatlar','surgery','text','Yok')}</div><div class="question"><div class="question-title">Tedavi güvenlik kontrolü</div>${choices('treatmentSafety',[["ASA/NSAİİ alerjisi","Aspirin/NSAİİ alerjisi veya ciddi intoleransı"],["Aktif ciddi kanama","Aktif ciddi kanama"],["Oral antikoagülan","Oral antikoagülan kullanıyor"],["PDE5 yakın kullanım","Yakın zamanda PDE-5 inhibitörü kullanımı"],["Gebelik olasılığı","Gebelik olasılığı"],["Bilinen ciddi trombositopeni","Bilinen ciddi trombositopeni"]])}</div>`;
@@ -69,37 +69,96 @@ function render(){
  updateAll();renderTimeline();
 }
 
-const smartQs=[
- {key:'onset',q:'Ağrı nasıl başladı?',opts:[['Ani','Ani, bir anda'],['Dakikalar içinde','Dakikalar içinde'],['Yavaş','Yavaş gelişti']]},
- {key:'duration',q:'Ağrı ne kadar süredir var?',text:true,ph:'Örn. 30 dakika'},
- {key:'painType',q:'Ağrının karakteri nasıl?',opts:[['Baskı/sıkışma','Baskı / sıkışma'],['Batıcı','Batıcı'],['Yırtılır','Yırtılır tarzda'],['Yanıcı','Yanıcı'],['Belirsiz','Belirsiz']]},
- {key:'exertional',q:'Eforla artıyor mu?',opts:[['Artıyor','Evet'],['İlişkisiz','Hayır / ilişkisiz'],['Bilinmiyor','Bilinmiyor']]},
- {key:'pleuritic',q:'Derin nefes veya öksürükle artıyor mu?',opts:[['Evet','Evet'],['Hayır','Hayır']]},
- {key:'positional',q:'Pozisyonla değişiyor mu?',opts:[['Öne eğilmekle azalıyor','Öne eğilmekle azalıyor'],['Yatmakla artıyor','Yatmakla artıyor'],['Değişmiyor','Değişmiyor']]},
- {key:'palpation',q:'Göğüs duvarına basmakla aynı ağrı oluşuyor mu?',opts:[['Evet','Evet'],['Hayır','Hayır']]},
- {key:'radiation',q:'Ağrı sol kola veya omuza yayılıyor mu?',multi:'radiation',value:'Sol kol/omuz'},
- {key:'radiation',q:'Ağrı çene veya boyuna yayılıyor mu?',multi:'radiation',value:'Çene/boyun'},
- {key:'radiation',q:'Ağrı sırta yayılıyor mu?',multi:'radiation',value:'Sırt'},
- {key:'symptoms',q:'Nefes darlığı eşlik ediyor mu?',multi:'symptoms',value:'Dispne'},
- {key:'symptoms',q:'Soğuk terleme eşlik ediyor mu?',multi:'symptoms',value:'Soğuk terleme'},
- {key:'symptoms',q:'Bulantı veya kusma var mı?',multi:'symptoms',value:'Bulantı/kusma'},
- {key:'symptoms',q:'Senkop veya presenkop oldu mu?',multi:'symptoms',value:'Senkop'},
- {key:'symptoms',q:'Hemoptizi var mı?',multi:'symptoms',value:'Hemoptizi'},
- {key:'symptoms',q:'Tek taraflı bacak şişliği var mı?',multi:'symptoms',value:'Tek taraflı bacak şişliği'},
- {key:'symptoms',q:'Yeni gelişen nörolojik belirti var mı?',multi:'symptoms',value:'Yeni nörolojik belirti'}
-];
+const smartQsByComplaint={
+ 'Göğüs ağrısı':[
+  {key:'onset',q:'Ağrı nasıl başladı?',opts:[['Ani','Ani, bir anda'],['Dakikalar içinde','Dakikalar içinde'],['Yavaş','Yavaş gelişti']]},
+  {key:'duration',q:'Ağrı ne kadar süredir var?',text:true,ph:'Örn. 30 dakika'},
+  {key:'painType',q:'Ağrının karakteri nasıl?',opts:[['Baskı/sıkışma','Baskı / sıkışma'],['Batıcı','Batıcı'],['Yırtılır','Yırtılır tarzda'],['Yanıcı','Yanıcı'],['Belirsiz','Belirsiz']]},
+  {key:'exertional',q:'Eforla artıyor mu?',opts:[['Artıyor','Evet'],['İlişkisiz','Hayır / ilişkisiz'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'pleuritic',q:'Derin nefes veya öksürükle artıyor mu?',opts:[['Evet','Evet'],['Hayır','Hayır']]},
+  {key:'positional',q:'Pozisyonla değişiyor mu?',opts:[['Öne eğilmekle azalıyor','Öne eğilmekle azalıyor'],['Yatmakla artıyor','Yatmakla artıyor'],['Değişmiyor','Değişmiyor']]},
+  {key:'palpation',q:'Göğüs duvarına basmakla aynı ağrı oluşuyor mu?',opts:[['Evet','Evet'],['Hayır','Hayır']]},
+  {key:'radiation',q:'Ağrı sol kola veya omuza yayılıyor mu?',multi:'radiation',value:'Sol kol/omuz'},
+  {key:'radiation',q:'Ağrı çene veya boyuna yayılıyor mu?',multi:'radiation',value:'Çene/boyun'},
+  {key:'radiation',q:'Ağrı sırta yayılıyor mu?',multi:'radiation',value:'Sırt'},
+  {key:'symptoms',q:'Nefes darlığı eşlik ediyor mu?',multi:'symptoms',value:'Dispne'},
+  {key:'symptoms',q:'Soğuk terleme eşlik ediyor mu?',multi:'symptoms',value:'Soğuk terleme'},
+  {key:'symptoms',q:'Bulantı veya kusma var mı?',multi:'symptoms',value:'Bulantı/kusma'},
+  {key:'symptoms',q:'Senkop veya presenkop oldu mu?',multi:'symptoms',value:'Senkop'},
+  {key:'symptoms',q:'Hemoptizi var mı?',multi:'symptoms',value:'Hemoptizi'},
+  {key:'symptoms',q:'Tek taraflı bacak şişliği var mı?',multi:'symptoms',value:'Tek taraflı bacak şişliği'},
+  {key:'symptoms',q:'Yeni gelişen nörolojik belirti var mı?',multi:'symptoms',value:'Yeni nörolojik belirti'}
+ ],
+ 'Nefes darlığı':[
+  {key:'onset',q:'Nefes darlığı ani mi başladı?',opts:[['Ani','Ani'],['Kademeli','Kademeli'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'duration',q:'Ne kadar süredir devam ediyor?',text:true,ph:'Örn. 2 saat'},
+  {key:'symptoms',q:'Göğüs ağrısı eşlik ediyor mu?',multi:'symptoms',value:'Göğüs ağrısı'},
+  {key:'symptoms',q:'Hırıltı veya uzamış ekspirasyon var mı?',multi:'symptoms',value:'Hırıltı'},
+  {key:'symptoms',q:'Ateş veya öksürük var mı?',multi:'symptoms',value:'Ateş/öksürük'},
+  {key:'symptoms',q:'Ortopne veya paroksismal nokturnal dispne var mı?',multi:'symptoms',value:'Ortopne/PND'},
+  {key:'symptoms',q:'Tek taraflı bacak şişliği veya yakın immobilizasyon var mı?',multi:'symptoms',value:'VTE bulgusu'},
+  {key:'symptoms',q:'Senkop, siyanoz veya konuşamama var mı?',multi:'symptoms',value:'Ağır solunum bulgusu'}
+ ],
+ 'Karın ağrısı':[
+  {key:'onset',q:'Ağrı ani mi başladı, kademeli mi?',opts:[['Ani','Ani'],['Kademeli','Kademeli'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'duration',q:'Ne kadar süredir var?',text:true,ph:'Örn. 6 saat'},
+  {key:'painType',q:'Ağrının en belirgin yeri neresi?',opts:[['Epigastrik','Epigastrik'],['Sağ üst kadran','Sağ üst kadran'],['Sağ alt kadran','Sağ alt kadran'],['Sol alt kadran','Sol alt kadran'],['Yaygın','Yaygın']]},
+  {key:'symptoms',q:'Kusma veya oral alamama var mı?',multi:'symptoms',value:'Kusma/oral alamama'},
+  {key:'symptoms',q:'Kanlı kusma, melena veya hematokezya var mı?',multi:'symptoms',value:'GİS kanama'},
+  {key:'symptoms',q:'Gaz-gaita çıkaramama veya belirgin distansiyon var mı?',multi:'symptoms',value:'Obstrüksiyon bulgusu'},
+  {key:'symptoms',q:'Gebelik olasılığı veya vajinal kanama var mı?',multi:'symptoms',value:'Gebelik/jinekolojik risk'},
+  {key:'symptoms',q:'Senkop, hipotansiyon veya soğuk terleme oldu mu?',multi:'symptoms',value:'Şok bulgusu'}
+ ],
+ 'Baş ağrısı':[
+  {key:'onset',q:'Baş ağrısı saniyeler içinde en yüksek şiddete ulaştı mı?',opts:[['Ani','Evet'],['Kademeli','Hayır'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'duration',q:'Ne kadar süredir var?',text:true,ph:'Örn. 3 saat'},
+  {key:'symptoms',q:'Yeni nörolojik defisit, konuşma bozukluğu veya nöbet var mı?',multi:'symptoms',value:'Nörolojik defisit/nöbet'},
+  {key:'symptoms',q:'Ateş, ense sertliği veya döküntü var mı?',multi:'symptoms',value:'Menenjizm/enfeksiyon'},
+  {key:'symptoms',q:'Bilinç değişikliği veya tekrarlayan kusma var mı?',multi:'symptoms',value:'Bilinç/kusma'},
+  {key:'symptoms',q:'Yakın travma, antikoagülan kullanımı veya gebelik/postpartum dönem var mı?',multi:'symptoms',value:'Sekonder risk'},
+  {key:'symptoms',q:'Bu hayatındaki ilk veya en şiddetli baş ağrısı mı?',multi:'symptoms',value:'İlk/en şiddetli'}
+ ],
+ 'Ateş':[
+  {key:'duration',q:'Ateş ne kadar süredir var?',text:true,ph:'Örn. 2 gün'},
+  {key:'symptoms',q:'Bilinç değişikliği, ense sertliği veya nöbet var mı?',multi:'symptoms',value:'SSS enfeksiyonu bulgusu'},
+  {key:'symptoms',q:'Nefes darlığı, göğüs ağrısı veya düşük satürasyon var mı?',multi:'symptoms',value:'Solunum odağı'},
+  {key:'symptoms',q:'İdrar yakınması veya yan ağrısı var mı?',multi:'symptoms',value:'Üriner odak'},
+  {key:'symptoms',q:'Döküntü, purpura veya hızla ilerleyen cilt lezyonu var mı?',multi:'symptoms',value:'Cilt/purpura'},
+  {key:'symptoms',q:'Bağışıklık baskılanması, kemoterapi veya nötropeni riski var mı?',multi:'symptoms',value:'İmmünsüpresyon'}
+ ],
+ 'Bilinç değişikliği':[
+  {key:'onset',q:'Bilinç değişikliği ani mi gelişti?',opts:[['Ani','Ani'],['Kademeli','Kademeli'],['Bilinmiyor','Bilinmiyor']]},
+  {key:'duration',q:'Ne kadar süredir devam ediyor?',text:true,ph:'Örn. 20 dakika'},
+  {key:'symptoms',q:'Fokal nörolojik defisit veya yeni konuşma bozukluğu var mı?',multi:'symptoms',value:'Fokal nörolojik defisit'},
+  {key:'symptoms',q:'Nöbet, dil ısırma veya postiktal dönem düşündüren bulgu var mı?',multi:'symptoms',value:'Nöbet'},
+  {key:'symptoms',q:'Ateş, ense sertliği veya enfeksiyon bulgusu var mı?',multi:'symptoms',value:'Enfeksiyon'},
+  {key:'symptoms',q:'İlaç, alkol, madde veya toksin maruziyeti olasılığı var mı?',multi:'symptoms',value:'Toksik maruziyet'},
+  {key:'symptoms',q:'Diyabet, hipoglisemi riski veya uzun süre açlık var mı?',multi:'symptoms',value:'Glukoz riski'}
+ ],
+ 'Travma':[
+  {key:'onset',q:'Travmanın oluş zamanı nedir?',text:true,ph:'Örn. 30 dakika önce'},
+  {key:'painType',q:'Travma mekanizması nedir?',opts:[['Trafik kazası','Trafik kazası'],['Yüksekten düşme','Yüksekten düşme'],['Darp','Darp'],['Kesici/delici','Kesici/delici'],['Diğer','Diğer']]},
+  {key:'symptoms',q:'Bilinç kaybı, amnezi veya nöbet oldu mu?',multi:'symptoms',value:'Kafa travması riski'},
+  {key:'symptoms',q:'Boyun ağrısı veya nörolojik defisit var mı?',multi:'symptoms',value:'Servikal yaralanma riski'},
+  {key:'symptoms',q:'Nefes darlığı veya göğüs ağrısı var mı?',multi:'symptoms',value:'Toraks travması'},
+  {key:'symptoms',q:'Karın ağrısı, hassasiyet veya distansiyon var mı?',multi:'symptoms',value:'Batın travması'},
+  {key:'symptoms',q:'Aktif kanama veya ekstremite dolaşım bozukluğu var mı?',multi:'symptoms',value:'Kanama/nörovasküler risk'}
+ ]
+};
+function activeSmartQs(){return smartQsByComplaint[S.complaint]||smartQsByComplaint['Göğüs ağrısı']}
+function changeComplaint(v){if(S.complaint!==v){S.complaint=v;S.qIndex=0;S.chatLog=[];S.radiation=[];S.symptoms=[];render();updateAll()}}
 function renderSmartAnamnesis(){
- const done=Math.min(S.qIndex||0,smartQs.length), q=smartQs[done];
+ const smartQs=activeSmartQs(),done=Math.min(S.qIndex||0,smartQs.length), q=smartQs[done];
  const log=(S.chatLog||[]).map(x=>`<div style="margin:7px 0"><div class="muted">Asistan</div><div class="panel neutral" style="margin:3px 0">${esc(x.q)}</div><div style="text-align:right"><span class="pill active">${esc(x.a)}</span></div></div>`).join('');
- if(!q) return `<div class="panel ok"><h3>Akıllı anamnez tamamlandı</h3><p>Yanıtlar ayırıcı tanı ve sonraki adımlara işlendi.</p></div>${log}<div class="actions"><button onclick="restartSmart()">Anamnezi yeniden başlat</button></div>`;
+ if(!q) return `<div class="panel ok"><h3>Akıllı anamnez tamamlandı</h3><p>${esc(S.complaint)} için temel güvenlik soruları tamamlandı.</p></div>${log}<div class="actions"><button onclick="restartSmart()">Anamnezi yeniden başlat</button></div>`;
  let ans='';
  if(q.text) ans=`<div class="actions"><input id="smartText" placeholder="${esc(q.ph||'Yanıt')}" style="flex:1"><button class="primary" onclick="answerSmartText()">Kaydet ve sor</button></div>`;
  else if(q.multi) ans=`<div class="actions"><button class="primary" onclick="answerSmart('Evet')">Evet</button><button onclick="answerSmart('Hayır')">Hayır</button><button onclick="answerSmart('Bilinmiyor')">Bilinmiyor</button></div>`;
  else ans=`<div class="actions">${q.opts.map(o=>`<button onclick="answerSmart('${esc(o[0])}')">${esc(o[1])}</button>`).join('')}</div>`;
- return `<p class="muted">Sistem yanıtınıza göre soruları tek tek ilerletir. Sağdaki ayırıcı tanı ve güvenlik panelleri her yanıtta güncellenir.</p><div class="progress"><span style="width:${Math.round(done/smartQs.length*100)}%"></span></div><p class="muted">Soru ${done+1}/${smartQs.length}</p>${log}<div class="question"><div class="question-title">${esc(q.q)}</div>${ans}</div><div class="actions"><button onclick="skipSmart()">Bu soruyu atla</button><button onclick="restartSmart()">Baştan başla</button></div>`;
+ return `<p class="muted"><b>${esc(S.complaint)}</b> için sorular tek tek ilerler. Kritik vital bulgular her zaman önceliklidir.</p><div class="progress"><span style="width:${Math.round(done/smartQs.length*100)}%"></span></div><p class="muted">Soru ${done+1}/${smartQs.length}</p>${log}<div class="question"><div class="question-title">${esc(q.q)}</div>${ans}</div><div class="actions"><button onclick="skipSmart()">Bu soruyu atla</button><button onclick="restartSmart()">Baştan başla</button></div>`;
 }
 function answerSmart(answer){
- const q=smartQs[S.qIndex||0]; if(!q)return;
+ const smartQs=activeSmartQs(),q=smartQs[S.qIndex||0]; if(!q)return;
  if(q.multi){S[q.multi]=S[q.multi]||[]; const i=S[q.multi].indexOf(q.value); if(answer==='Evet'&&i<0)S[q.multi].push(q.value); if(answer==='Hayır'&&i>=0)S[q.multi].splice(i,1)} else S[q.key]=answer;
  S.chatLog=S.chatLog||[];S.chatLog.push({q:q.q,a:answer});S.qIndex=(S.qIndex||0)+1;render();updateAll();
 }
@@ -114,6 +173,7 @@ function collect(){
 function n(v){const x=parseFloat(v);return Number.isFinite(x)?x:null}
 function criticals(){let a=[];if(n(S.sbp)!==null&&n(S.sbp)<90)a.push('Sistolik TA <90 mmHg');if(n(S.spo2)!==null&&n(S.spo2)<90)a.push('SpO₂ <%90');if(n(S.pulse)!==null&&(n(S.pulse)<40||n(S.pulse)>130))a.push('Kritik nabız');if(n(S.rr)!==null&&(n(S.rr)<8||n(S.rr)>30))a.push('Kritik solunum sayısı');if(S.mental&&S.mental!=='Normal')a.push('Bilinç değişikliği');a.push(...S.redFlags);if(S.exam.includes('Genel durum kötü/soğuk-soluk-terli'))a.push('Genel durum kötü/hipoperfüzyon bulgusu');if(S.exam.includes('Nabız defisiti'))a.push('Nabız defisiti');if(S.exam.includes('Yeni nörolojik defisit'))a.push('Yeni nörolojik defisit');if(S.ecg==='ST elevasyonu')a.push('EKG’de ST elevasyonu');return [...new Set(a)]}
 function diagnoses(){
+ if(S.complaint!=='Göğüs ağrısı') return [{name:S.complaint+' modülü: güvenlik taraması aktif',score:40,plus:['Akıllı anamnez soruları aktif'],minus:['Tanısal puanlama henüz eklenmedi']},{name:'Yaşamı tehdit eden nedenleri dışla',score:30,plus:criticals().length?criticals():['Vital ve kırmızı bayrak değerlendirmesi gerekli'],minus:[]}];
  let d={
  'Akut koroner sendrom':{s:20,p:[],m:[]},'Akut aort sendromu':{s:7,p:[],m:[]},'Pulmoner emboli':{s:8,p:[],m:[]},'Perikardit':{s:5,p:[],m:[]},'Pnömotoraks':{s:4,p:[],m:[]},'Akut kalp yetersizliği':{s:5,p:[],m:[]},'Pnömoni/plevrit':{s:4,p:[],m:[]},'Kas-iskelet kaynaklı ağrı':{s:8,p:[],m:[]},'Gastroözofageal neden':{s:5,p:[],m:[]}};
  const add=(x,v,r)=>{d[x].s+=v;(v>0?d[x].p:d[x].m).push(r)};
@@ -130,7 +190,7 @@ function diagnoses(){
 function actionPlan(){
  const cr=criticals(),dx=diagnoses(),top=dx[0]?.name||'';let now=[],wait=[],avoid=[];
  if(currentStep===0){now=['Yaş, cinsiyet, ana şikâyet ve ağrı şiddetini kaydet.'];wait=['Henüz tetkik beklenmiyor.'];avoid=['Eksik temel veriyle risk sınıflaması yapma.'];return{now,wait,avoid}}
- now.push('ABCDE yaklaşımıyla genel durum ve vital bulguları doğrula.');if(cr.length)now.unshift('Kritik bulgular nedeniyle rutin soru akışını bekletmeden acil stabilizasyon ve kıdemli hekim değerlendirmesine geç.');
+ now.push('ABCDE yaklaşımıyla genel durum ve vital bulguları doğrula.');if(S.complaint!=='Göğüs ağrısı'){now.push(S.complaint+' için akıllı anamnez sorularını tamamla.');now.push('Yatak başı glukozu ve şikâyete uygun hedefli muayeneyi klinik gerekliliğe göre değerlendir.');wait.push('Klinik kötüleşme, vital değişiklik veya yeni kırmızı bayrak açısından seri yeniden değerlendirme yap.');avoid.push('Bu şikâyette tanı/tedavi puanlama modülü tamamlanmadan otomatik sonuç üretme.');if(cr.length)now.unshift('Kritik bulgular nedeniyle rutin akışı bekletmeden acil stabilizasyon ve kıdemli hekim değerlendirmesine geç.');return{now:[...new Set(now)],wait:[...new Set(wait)],avoid:[...new Set(avoid)]}}if(cr.length)now.unshift('Kritik bulgular nedeniyle rutin soru akışını bekletmeden acil stabilizasyon ve kıdemli hekim değerlendirmesine geç.');
  if(currentStep>=1){now.push('12 derivasyon EKG’yi gecikmeden değerlendir ve önceki EKG varsa karşılaştır.');now.push('Ağrı, vital bulgu ve klinik durumu seri olarak yeniden değerlendir.');}
  if(currentStep>=2&&currentStep<5)now.push('Hedefli kardiyak, akciğer, periferik nabız, nörolojik ve DVT muayenesini tamamla.');
  if(currentStep>=4){if(S.ecg==='Bekleniyor')now.push('EKG sonucunu kaydet.');if(S.troponin==='Bekleniyor')now.push('Uygun akut göğüs ağrısı yoluna göre kardiyak troponin sonucunu takip et.');}
@@ -139,6 +199,7 @@ function actionPlan(){
  if(!wait.length)wait.push('Bekleyen tetkik yoksa klinik değişiklik ve seri değerlendirme gereksinimini belirle.');avoid.push('Tek bir normal EKG veya tek troponin sonucuyla, uygun seri değerlendirme tamamlanmadan güvenli dışlama varsayma.');avoid.push('Alerji, kanama riski, böbrek fonksiyonu, gebelik olasılığı ve ilaç etkileşimi doğrulanmadan ilaç/kontrast kararı verme.');if(dx.some(x=>x.name==='Akut aort sendromu'&&x.score>=35))avoid.push('Akut aort sendromu dışlanmadan olası AKS’ye yönelik antitrombotik kararını otomatikleştirme; acil uzman değerlendirmesi yap.');avoid.push('Bu prototipteki sıralamayı tanısal olasılık yüzdesi veya tedavi emri olarak yorumlama.');return{now:[...new Set(now)],wait:[...new Set(wait)],avoid:[...new Set(avoid)]}}
 
 function treatmentPlan(){
+ if(S.complaint!=='Göğüs ağrısı') return {tx:['Bu şikâyet için ilaç öneri modülü henüz etkin değil; ABCDE, vital bulgular, glukoz ve hedefli muayeneyi klinik gerekliliğe göre tamamla.'],contraind:['Tanı netleşmeden otomatik tedavi önerisi kullanılmamalıdır.']};
  const dx=diagnoses(); const acs=dx.find(x=>x.name==='Akut koroner sendrom')?.score||0; const aorta=dx.find(x=>x.name==='Akut aort sendromu')?.score||0;
  let tx=[]; const contraind=[];
  const asaBlocked=S.treatmentSafety.includes('ASA/NSAİİ alerjisi')||S.treatmentSafety.includes('Aktif ciddi kanama')||S.treatmentSafety.includes('Bilinen ciddi trombositopeni')||S.redFlags.includes('Aktif ciddi kanama');
