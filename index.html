@@ -41,7 +41,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.7 Beta • Klinik QA ve panel düzeltmeleri</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.8 Beta • İlk ekran ve tetkik motoru düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -132,6 +132,55 @@ function redFlagItems(){
  };
  return [...(map[S.complaint]||[]),...common];
 }
+
+function recommendedTestsForCurrentCase(){
+ const c=String(S.complaint||'').trim();
+ const map={
+  'Göğüs ağrısı':['EKG','Troponin','Hemogram','Biyokimya','Glukoz'],
+  'Nefes darlığı':['EKG','Akciğer grafisi','Hemogram','Biyokimya','Kan gazı'],
+  'Karın ağrısı':['Hemogram','Biyokimya','Glukoz','İdrar tahlili','Abdominal görüntüleme'],
+  'Baş ağrısı':['Glukoz','Hemogram','Biyokimya'],
+  'Ateş':['Hemogram','Biyokimya','Glukoz','Laktat','İdrar tahlili'],
+  'Bilinç değişikliği':['Glukoz','Hemogram','Biyokimya','Kan gazı','Kontrastsız beyin BT'],
+  'Travma':['Hemogram','Biyokimya','Glukoz'],
+  'Çarpıntı':['EKG','Hemogram','Biyokimya','Glukoz'],
+  'Senkop / presenkop':['EKG','Hemogram','Biyokimya','Glukoz'],
+  'Bulantı-kusma / ishal':['Hemogram','Biyokimya','Glukoz','İdrar tahlili'],
+  'Bel-sırt ağrısı':['Hemogram','Biyokimya','İdrar tahlili'],
+  'İdrar yakınması':['İdrar tahlili','Hemogram','Biyokimya','Glukoz'],
+  'Döküntü / alerjik reaksiyon':['Hemogram','Biyokimya'],
+  'Nöbet':['Glukoz','Hemogram','Biyokimya','Kan gazı','Kontrastsız beyin BT']
+ };
+ let out=[...(map[c]||[])];
+ const symptoms=Array.isArray(S.symptoms)?S.symptoms:[];
+ const flags=Array.isArray(S.redFlags)?S.redFlags:[];
+ if(['Göğüs ağrısı','Nefes darlığı','Senkop / presenkop'].includes(c) && (symptoms.includes('Hemoptizi')||symptoms.includes('VTE bulgusu')||symptoms.includes('Tek taraflı bacak şişliği'))) out.push('D-dimer');
+ if(c==='Nefes darlığı' && (n(S.spo2)!==null&&n(S.spo2)<94)) out.push('Kan gazı');
+ if(['Ateş','Bulantı-kusma / ishal'].includes(c) && ((n(S.sbp)!==null&&n(S.sbp)<100)||(n(S.lactate)!==null&&n(S.lactate)>=2)||flags.length)) out.push('Laktat');
+ if(c==='Baş ağrısı' && (S.onset==='Ani'||symptoms.includes('Nörolojik defisit/nöbet')||symptoms.includes('Bilinç/kusma'))) out.push('Kontrastsız beyin BT');
+ if(c==='Karın ağrısı' && pregnancyRelevant()) out.push('Gebelik testi');
+ if(['Bulantı-kusma / ishal','Karın ağrısı','İdrar yakınması'].includes(c) && pregnancyRelevant()) out.push('Gebelik testi');
+ if(!pregnancyRelevant()) out=out.filter(x=>x!=='Gebelik testi');
+ return [...new Set(out)];
+}
+function recommendTests(){
+ collect();
+ S.orderedTests=recommendedTestsForCurrentCase();
+ render();
+ updateAll();
+ const count=S.orderedTests.length;
+ const btn=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Önerilenleri seç');
+ if(btn){const old=btn.textContent;btn.textContent=`${count} tetkik seçildi`;setTimeout(()=>{if(btn.isConnected)btn.textContent=old},1300)}
+}
+function safeQuickOneScreenHTML(){
+ try{return quickOneScreenHTML()}
+ catch(err){
+  console.error('Hızlı ekran oluşturulamadı:',err);
+  const complaints=['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'];
+  return `<div class="panel warn"><b>Hızlı panelin bir bölümü yüklenemedi.</b><p>Temel hasta bilgileri kullanılabilir. Ayrıntılı moda geçerek değerlendirmeye devam edebilirsin.</p></div><div class="panel info"><div class="section-title"><h3>Hasta ve ana şikâyet</h3></div><div class="grid3">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${complaints.map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label></div><label style="margin-top:9px">Hasta ifadesi<textarea id="notes" rows="3">${esc(S.notes||'')}</textarea></label></div>`;
+ }
+}
+
 function quickOneScreenHTML(){
  const complaints=['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'];
  const tests=['EKG','Troponin','Hemogram','Biyokimya','Glukoz','Kan gazı','Laktat','D-dimer','Akciğer grafisi','Kontrastsız beyin BT','BT anjiyografi','Abdominal görüntüleme','Gebelik testi','İdrar tahlili'];
@@ -148,7 +197,7 @@ function render(){
  el('mainTitle').textContent=fullSteps[page];el('stepName').textContent=`${currentStep+1}. ${fullSteps[page]}`;el('stepCount').textContent=`${currentStep+1}/${total}`;el('progressBar').style.width=`${(currentStep+1)/total*100}%`;el('backBtn').disabled=currentStep===0;el('nextBtn').textContent=currentStep===total-1?'Vakayı tamamla':(quickMode&&currentStep===0?'Karar ekranına geç':'Devam et');
  el('modeToggle').textContent=quickMode?'Ayrıntılı moda geç':'Hızlı moda dön';
  const c=el('stepContent');
- if(page===0)c.innerHTML=quickMode?quickOneScreenHTML():`<div class="panel info"><h3>Ayrıntılı hasta girişi</h3><p>Hızlı moddaki tüm bilgiler korunur. Burada ayrıntılı değerlendirme için temel hasta verilerini düzenleyebilirsin.</p></div><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'].map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label>${input('Şiddet (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4">${esc(S.notes)}</textarea></label>`;
+ if(page===0)c.innerHTML=quickMode?safeQuickOneScreenHTML():`<div class="panel info"><h3>Ayrıntılı hasta girişi</h3><p>Hızlı moddaki tüm bilgiler korunur. Burada ayrıntılı değerlendirme için temel hasta verilerini düzenleyebilirsin.</p></div><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'].map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label>${input('Şiddet (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4">${esc(S.notes)}</textarea></label>`;
  if(page===1)c.innerHTML=`<div class="panel warn"><h3>Önce yaşamı tehdit eden durumları kontrol et</h3><p>Vital bulguları ve kırmızı bayrakları gir. Kritik veri saptanırsa rutin akış bekletilmez.</p><div class="actions"><button class="primary big-action" onclick="applyVitalPreset(\'stable\')">✓ Stabil / normal vitaller</button><button class="danger big-action" onclick="applyVitalPreset(\'critical\')">⚠ Kritik hasta profili</button></div></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('Solunum sayısı','rr','number','16')}${input('SpO₂ (%)','spo2','number','97')}${input('Ateş (°C)','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><div class="question"><div class="question-title">Kırmızı bayraklar</div>${choices('redFlags',redFlagItems())}</div>`;
  if(page===2)c.innerHTML=`<div id="smartAnamnesisContainer">${renderSmartAnamnesis()}</div>`;
  if(page===3)c.innerHTML=`<div class="question"><div class="question-title">Kronik hastalık ve riskler</div>${choices('history',[["KAH/MI/PCI/CABG","KAH, MI, PCI veya CABG"],["Hipertansiyon","Hipertansiyon"],["Diyabet","Diyabet"],["Dislipidemi","Dislipidemi"],["Kalp yetersizliği","Kalp yetersizliği"],["Aort hastalığı","Aort hastalığı"],["DVT/PE","DVT veya PE öyküsü"],["Kanser","Aktif kanser"],["Böbrek hastalığı","Kronik böbrek hastalığı"],["Kanama öyküsü","Önemli kanama öyküsü"],["Erken aile KAH","Erken aile koroner hastalık öyküsü"],["Yakın cerrahi/immobilizasyon","Yakın cerrahi veya immobilizasyon"]])}</div><div class="grid">${select('Sigara','smoking',[['','Seçiniz'],['Yok','Yok'],['Aktif','Aktif'],['Bırakmış','Bırakmış']])}${select('Madde kullanımı','substance',[['','Seçiniz'],['Yok','Yok'],['Kokain/amfetamin','Kokain veya amfetamin'],['Diğer','Diğer']])}</div><label style="margin-top:11px">Düzenli ilaçlar<textarea id="meds" rows="3" placeholder="Antikoagülan, antiagregan, PDE-5 inhibitörü vb.">${esc(S.meds)}</textarea></label><div class="grid" style="margin-top:11px">${input('İlaç/kontrast alerjisi','allergy','text','Yok')}${input('Geçirilmiş ameliyatlar','surgery','text','Yok')}</div><div class="question"><div class="question-title">Tedavi güvenlik kontrolü</div>${choices('treatmentSafety',[["ASA/NSAİİ alerjisi","Aspirin/NSAİİ alerjisi veya ciddi intoleransı"],["Aktif ciddi kanama","Aktif ciddi kanama"],["Oral antikoagülan","Oral antikoagülan kullanıyor"],["PDE5 yakın kullanım","Yakın zamanda PDE-5 inhibitörü kullanımı"],...pregnancySafetyChoice(),["Bilinen ciddi trombositopeni","Bilinen ciddi trombositopeni"]])}</div>`;
