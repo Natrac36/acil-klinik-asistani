@@ -22,7 +22,7 @@ ul.compact{margin:5px 0 0;padding-left:19px}ul.compact li{margin:4px 0}.dx{displ
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Anlık karar, eksik kritik bilgi ve sonuç geldikçe yeniden değerlendirme</p></div><div class="status">v2.3 Beta • Yeniden değerlendirme ve güvenli sonlandırma</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, güvenli sonlandırma ve profesyonel belge üretimi</p></div><div class="status">v2.4 Beta • Profesyonel klinik belge üretimi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main>
 <div class="layout">
 <section>
@@ -33,6 +33,13 @@ ul.compact{margin:5px 0 0;padding-left:19px}ul.compact li{margin:4px 0}.dx{displ
 </div>
 <div class="card">
  <h3>Klinik not taslağı</h3><textarea id="clinicalNote" rows="12" placeholder="Girilen bilgilerle otomatik oluşur..."></textarea>
+</div>
+<div class="card" id="professionalDocCard">
+ <div class="section-title"><h3>Profesyonel klinik belge</h3><span class="phase-badge">v2.4</span></div>
+ <div class="doc-kind"><label>Belge türü<select id="docType" onchange="renderProfessionalDocs()"><option value="consult">Konsültasyon notu</option><option value="referral">Sevk notu</option><option value="discharge">Taburculuk notu</option><option value="epicrisis">Acil epikriz</option><option value="handover">Devir / yatış notu</option></select></label><button class="primary" onclick="renderProfessionalDocs()">Belgeyi oluştur</button></div>
+ <div class="doc-toolbar no-print"><button onclick="copyProfessionalDoc()">Kopyala</button><button onclick="downloadProfessionalDoc()">TXT indir</button><button onclick="printProfessionalDoc()">Yazdır / PDF</button></div>
+ <textarea id="professionalDoc" class="doc-output" placeholder="Vaka bilgileri girildikçe seçilen belge otomatik oluşur."></textarea>
+ <p class="muted">Metin yalnız girilen verilerden oluşturulur. Göndermeden önce hekim tarafından doğrulanmalı ve kurum şablonuna uyarlanmalıdır.</p>
 </div>
 </section>
 <aside>
@@ -1002,7 +1009,7 @@ function loadTestCase(type){
  S={...S,...base,...(cases[type]||{})};S.qIndex=0;S.chatLog=[];currentStep=0;render();
 }
 
-function updateAll(){collect();const cr=criticals(),p=el('criticalPanel');if(el('instantAction'))el('instantAction').innerHTML=`<h3>Şimdi ne yapmalıyım?</h3><strong>${esc(immediateActionText())}</strong>`;if(el('treatmentCard'))el('treatmentCard').open=!quickMode||cr.length>0;if(el('diagnosisCard'))el('diagnosisCard').open=!quickMode;if(el('expertCard'))el('expertCard').open=!quickMode;if(el('livePhase'))el('livePhase').innerHTML=livePhaseHTML();if(cr.length){p.className='panel urgent';el('criticalText').innerHTML=`<b>${cr.length} kritik bulgu:</b><ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`}else{p.className='panel ok';el('criticalText').textContent='Girilen verilere göre kritik eşik saptanmadı; klinik değerlendirme sürdürülmeli.'}const ap=actionPlan();el('doNow').innerHTML=ap.now.map(x=>`<li>${esc(x)}</li>`).join('');const tp=treatmentPlan();el('treatmentPlan').innerHTML=tp.tx.map(x=>`<li>${esc(x)}</li>`).join('')+(tp.contraind.length?`<li><b>Dikkat:</b> ${esc(tp.contraind.join(' | '))}</li>`:'');el('whileWaiting').innerHTML=ap.wait.map(x=>`<li>${esc(x)}</li>`).join('');el('avoidList').innerHTML=ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('');const ds=diagnoses().slice(0,6);el('dxList').innerHTML=ds.map((x,i)=>`<div class="dx-row"><div class="dx-top"><span>${i+1}. ${esc(x.name)}</span><span>${x.score}/100</span></div><div class="bar"><span style="width:${x.score}%"></span></div><div class="evidence">${x.plus.slice(0,3).map(y=>`<span class="pill">+ ${esc(y)}</span>`).join('')||'Henüz destekleyici veri yok'} ${x.minus.slice(0,2).map(y=>`<span class="pill">− ${esc(y)}</span>`).join('')}</div></div>`).join('');el('clinicalNote').value=noteText(ds,cr,ap);if(el('reassessmentBox'))el('reassessmentBox').innerHTML=reassessmentHTML();renderEcgInterpretation();renderLabInterpretation();renderDrugRecommendation();renderExpertPanel();renderSepsis();renderNeuro();renderConsultant();renderRiskScores();renderScoreSafety();renderReasoning();renderDispositionSafety()}
+function updateAll(){collect();const cr=criticals(),p=el('criticalPanel');if(el('instantAction'))el('instantAction').innerHTML=`<h3>Şimdi ne yapmalıyım?</h3><strong>${esc(immediateActionText())}</strong>`;if(el('treatmentCard'))el('treatmentCard').open=!quickMode||cr.length>0;if(el('diagnosisCard'))el('diagnosisCard').open=!quickMode;if(el('expertCard'))el('expertCard').open=!quickMode;if(el('livePhase'))el('livePhase').innerHTML=livePhaseHTML();if(cr.length){p.className='panel urgent';el('criticalText').innerHTML=`<b>${cr.length} kritik bulgu:</b><ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`}else{p.className='panel ok';el('criticalText').textContent='Girilen verilere göre kritik eşik saptanmadı; klinik değerlendirme sürdürülmeli.'}const ap=actionPlan();el('doNow').innerHTML=ap.now.map(x=>`<li>${esc(x)}</li>`).join('');const tp=treatmentPlan();el('treatmentPlan').innerHTML=tp.tx.map(x=>`<li>${esc(x)}</li>`).join('')+(tp.contraind.length?`<li><b>Dikkat:</b> ${esc(tp.contraind.join(' | '))}</li>`:'');el('whileWaiting').innerHTML=ap.wait.map(x=>`<li>${esc(x)}</li>`).join('');el('avoidList').innerHTML=ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('');const ds=diagnoses().slice(0,6);el('dxList').innerHTML=ds.map((x,i)=>`<div class="dx-row"><div class="dx-top"><span>${i+1}. ${esc(x.name)}</span><span>${x.score}/100</span></div><div class="bar"><span style="width:${x.score}%"></span></div><div class="evidence">${x.plus.slice(0,3).map(y=>`<span class="pill">+ ${esc(y)}</span>`).join('')||'Henüz destekleyici veri yok'} ${x.minus.slice(0,2).map(y=>`<span class="pill">− ${esc(y)}</span>`).join('')}</div></div>`).join('');el('clinicalNote').value=noteText(ds,cr,ap);if(el('reassessmentBox'))el('reassessmentBox').innerHTML=reassessmentHTML();renderEcgInterpretation();renderLabInterpretation();renderDrugRecommendation();renderExpertPanel();renderSepsis();renderNeuro();renderConsultant();renderRiskScores();renderScoreSafety();renderReasoning();renderDispositionSafety();renderProfessionalDocs()}
 function noteText(ds,cr,ap){return `ACİL KLİNİK DEĞERLENDİRME TASLAĞI\nVaka aşaması: ${casePhaseAnalysis().phase}\nİstenen tetkikler: ${(S.orderedTests||[]).join(', ')||'henüz seçilmedi'}\nHasta: ${S.age||'?'} yaş, ${S.sex||'cinsiyet belirtilmedi'}\nBaşvuru: ${S.complaint}; şiddet ${S.severity||'?'} /10; ${S.notes||'hasta ifadesi girilmedi'}\nVital: TA ${S.sbp||'?'} / ${S.dbp||'?'} mmHg, nabız ${S.pulse||'?'} /dk, SS ${S.rr||'?'} /dk, SpO₂ %${S.spo2||'?'}, ateş ${S.temp||'?'} °C, bilinç ${S.mental||'?'}\nÖykü: başlangıç ${S.onset||'?'}, süre ${S.duration||'?'}, karakter ${S.painType||'?'}, efor ${S.exertional||'?'}, plevritik ${S.pleuritic||'?'}, pozisyon ${S.positional||'?'}, palpasyon ${S.palpation||'?'}\nYayılım: ${S.radiation.join(', ')||'yok/belirtilmedi'}\nEşlik eden: ${S.symptoms.join(', ')||'yok/belirtilmedi'}\nÖzgeçmiş/risk: ${S.history.join(', ')||'yok/belirtilmedi'}; sigara ${S.smoking||'?'}; madde ${S.substance||'?'}\nİlaçlar: ${S.meds||'belirtilmedi'} | Alerji: ${S.allergy||'belirtilmedi'} | Ameliyat: ${S.surgery||'belirtilmedi'}\nMuayene: ${S.exam.join(', ')||'henüz girilmedi'}\nTetkik: EKG ${S.ecg}; yapılandırılmış EKG: ritim ${S.ecgRhythm}, hız ${S.ecgRate||'?'}/dk, aks ${S.ecgAxis}, PR ${S.ecgPR||'?'} ms, QRS ${S.ecgQRS||'?'} ms, QTc ${S.ecgQTc||'?'} ms, bulgular ${S.ecgFindings.join(', ')||'yok/belirtilmedi'}, bölge ${S.ecgTerritory.join(', ')||'belirtilmedi'}, doktor yorumu ${S.ecgDoctorNote||'yok'}; ilk troponin ${S.troponin}; seri troponin ${S.repeatTroponin}; D-dimer ${S.ddimer}; akciğer grafisi ${S.cxr}; Hb ${S.hb||'?'}; kreatinin ${S.creatinine||'?'}\nLaboratuvar: WBC ${S.wbc||'?'}, Plt ${S.platelet||'?'}, Na ${S.sodium||'?'}, K ${S.potassium||'?'}, Cl ${S.chloride||'?'}, glukoz ${S.glucose||'?'}, eGFR ${S.egfr||'?'}, Ca ${S.calcium||'?'}, albümin ${S.albumin||'?'}, Mg ${S.magnesium||'?'}, CRP ${S.crp||'?'}, PCT ${S.procalcitonin||'?'}, laktat ${S.lactate||'?'}, AST/ALT ${S.ast||'?'}/${S.alt||'?'}, bilirubin ${S.bilirubin||'?'}, lipaz ${S.lipase||'?'}, keton ${S.ketone}, gebelik testi ${S.pregnancyTest}\nKan gazı: pH ${S.ph||'?'}, pCO₂ ${S.pco2||'?'}, HCO₃ ${S.hco3||'?'}, pO₂ ${S.po2||'?'}, BE ${S.baseExcess||'?'}\nLaboratuvar yorumu: ${[...labAnalysis().urgent,...labAnalysis().out,...labAnalysis().calc].join(' | ')}\nSepsis/şok: ${sepsisAnalysis().out.join(' | ')}; uyarılar ${sepsisAnalysis().urgent.join(' | ')||'yok'}; plan ${sepsisAnalysis().actions.join(' | ')||'yok'}
 Nöroloji: ${neuroAnalysis().out.join(' | ')}; uyarılar ${neuroAnalysis().urgent.join(' | ')||'yok'}; plan ${neuroAnalysis().actions.join(' | ')||'yok'}; BT ${S.brainCT}; BTA ${S.ctaResult}; son normal ${S.lastKnownWell||'?'}; antikoagülan ${S.anticoagulantType}.
 Kritik bulgular: ${cr.join(', ')||'girilen verilere göre yok'}\nUzman akış özeti: İlk 10 dk: ${expertDecision().first10.join(' | ')}; İlk 1 saat: ${expertDecision().firstHour.join(' | ')}; Eksikler: ${expertDecision().missing.join(', ')||'yok'}\nÖncelikli olası tanılar: ${ds.slice(0,4).map(x=>`${x.name} (${x.score}/100 göreli destek)`).join('; ')}\nŞimdi yapılacaklar: ${ap.now.join(' | ')}\nTedavi desteği: ${treatmentPlan().tx.join(' | ')}
@@ -1010,6 +1017,121 @@ Kritik bulgular: ${cr.join(', ')||'girilen verilere göre yok'}\nUzman akış ö
 Uygulanan ilaç notu: ${S.drugNotes||'yok'}\nTedavi uyarıları: ${treatmentPlan().contraind.join(' | ')||'yok'}\nBeklerken: ${ap.wait.join(' | ')}\nKonsültasyon: ${S.consult.join(', ')||'girilen yok'}; durum ${S.consultStatus}
 Yeniden değerlendirme: ağrı ${S.rePain}, solunum ${S.reBreathing}, nörolojik ${S.reNeuro}, genel durum ${S.reGeneral}, yanıt ${S.response}; kontrol vital TA ${S.reSbp||'?'} / ${S.reDbp||'?'}, nabız ${S.rePulse||'?'}, SS ${S.reRr||'?'}, SpO₂ ${S.reSpo2||'?'}
 Sonlandırma: ${S.disposition}; gerekçe ${S.dispositionReason||'yok'}; güvenlik ${reassessment().recommendation}; engeller ${reassessment().dischargeBlocks.join(' | ')||'yok'}; takip ${S.followup||'yok'}; geri dönüş uyarıları ${S.returnPrecautions.join(', ')||'yok'}\nRisk skorları: ${riskScores().map(x=>`${x.name} ${x.value}`).join(' | ')}\nSkor–hasta güvenlik kontrolü: ${scoreSafetyAnalysis().map(x=>`${x.title}: ${x.detail}`).join(' | ')}\nKanıt dengesi: ${reasoningSnapshot().top?.name||'oluşmadı'}; güven ${reasoningSnapshot().confidence}; veri tamamlığı %${reasoningSnapshot().dataCompleteness}; kararı değiştirecek veri ${reasoningSnapshot().discriminator}\nAkıllı hızlı konsültan: ${consultantSnapshot().main}; eksik kritik bilgi ${consultantSnapshot().missing}; kararı değiştirecek tetkik ${consultantSnapshot().changeTest}; taburculuk engelleri ${consultantSnapshot().blockers.join(' | ')||'belirgin değil'}\nUYARI: Otomatik karar destek taslağıdır; hekim onayı ve yerel/güncel protokol gerektirir.`}
+
+function cleanList(x){return (x||[]).filter(Boolean).join(', ')||'belirtilmedi'}
+function patientHeader(){
+ return `${S.age||'?'} yaş, ${S.sex||'cinsiyet belirtilmedi'} hasta; başvuru nedeni: ${S.complaint||'belirtilmedi'}.`;
+}
+function vitalLine(prefix='İlk'){
+ const vals=prefix==='Kontrol'?[S.reSbp,S.reDbp,S.rePulse,S.reRr,S.reSpo2,S.reTemp,S.reMental]:[S.sbp,S.dbp,S.pulse,S.rr,S.spo2,S.temp,S.mental];
+ return `${prefix} vital bulgular: TA ${vals[0]||'?'} / ${vals[1]||'?'} mmHg, nabız ${vals[2]||'?'} /dk, solunum ${vals[3]||'?'} /dk, SpO₂ %${vals[4]||'?'}, ateş ${vals[5]||'?'} °C, bilinç ${vals[6]||'?'}.`;
+}
+function compactInvestigationLine(){
+ const tests=[];
+ if(S.ecg&&S.ecg!=='Bekleniyor')tests.push(`EKG: ${S.ecg}`);
+ if(S.troponin&&S.troponin!=='Bekleniyor')tests.push(`troponin: ${S.troponin}`);
+ if(S.repeatTroponin&&S.repeatTroponin!=='Bekleniyor')tests.push(`seri troponin: ${S.repeatTroponin}`);
+ if(S.ddimer&&S.ddimer!=='Bekleniyor')tests.push(`D-dimer: ${S.ddimer}`);
+ if(S.cxr&&S.cxr!=='Bekleniyor')tests.push(`akciğer grafisi: ${S.cxr}`);
+ if(S.brainCT&&S.brainCT!=='Bekleniyor')tests.push(`beyin BT: ${S.brainCT}`);
+ if(S.ctaResult&&S.ctaResult!=='Bekleniyor')tests.push(`BTA: ${S.ctaResult}`);
+ [['Hb',S.hb],['WBC',S.wbc],['Plt',S.platelet],['kreatinin',S.creatinine],['Na',S.sodium],['K',S.potassium],['glukoz',S.glucose],['CRP',S.crp],['laktat',S.lactate],['pH',S.ph]].forEach(([k,v])=>{if(v!=='')tests.push(`${k}: ${v}`)});
+ return tests.length?tests.join('; '):'Sonuçlanmış tetkik bilgisi girilmedi';
+}
+function professionalDocument(type){
+ const ds=diagnoses().slice(0,3).map(x=>x.name).join(', ')||'ön tanı oluşturulamadı';
+ const cr=criticals();
+ const pending=casePhaseAnalysis().waiting||[];
+ const now=actionPlan().now.slice(0,5).join('; ');
+ const course=`Klinik seyir: ${S.clinicalCourse||'ayrıntılı seyir notu girilmedi'}; ağrı ${S.rePain}, solunum ${S.reBreathing}, nörolojik durum ${S.reNeuro}, genel durum ${S.reGeneral}, tedavi/izlem yanıtı ${S.response}.`;
+ const common=`${patientHeader()}
+${vitalLine('İlk')}
+Başvuru öyküsü: ${S.notes||'serbest hasta ifadesi girilmedi'}. Başlangıç ${S.onset||'belirtilmedi'}, süre ${S.duration||'belirtilmedi'}, eşlik eden bulgular ${cleanList(S.symptoms)}.
+Özgeçmiş/riskler: ${cleanList(S.history)}. Düzenli ilaçlar: ${S.meds||'belirtilmedi'}. Alerji: ${S.allergy||'belirtilmedi'}.
+Muayene: ${cleanList(S.exam)}.
+Tetkik özeti: ${compactInvestigationLine()}.
+Kritik bulgular: ${cr.join(', ')||'girilen verilerde belirgin kritik eşik yok'}.
+Öncelikli klinik değerlendirme: ${ds}.`;
+ if(type==='consult')return `KONSÜLTASYON İSTEM NOTU
+
+${common}
+
+Konsültasyon gerekçesi: ${S.clinicalQuestion||S.consult.join(', ')||S.complaint+' açısından uzman değerlendirmesi'}.
+Hekimin ön değerlendirmesi: ${S.clinicianHypothesis||ds}.
+Şimdiye kadar yapılan/planlanan işlemler: ${now||'belirtilmedi'}.
+Beklenen yönetim değiştirici sonuçlar: ${pending.join(', ')||'yok/belirtilmedi'}.
+Konsültasyondan beklenen: tanısal değerlendirme, ileri inceleme ve tedavi/yatış planı konusunda görüş.
+Konsültasyon durumu: ${S.consultStatus}.`;
+ if(type==='referral')return `ACİL SEVK NOTU
+
+${common}
+
+Sevk nedeni: ${S.dispositionReason||'ileri değerlendirme/tedavi gereksinimi'}.
+Klinik öncelik: ${cr.length?'Kritik/yüksek riskli hasta':'Acil değerlendirme gerektiren hasta'}.
+${course}
+${vitalLine('Kontrol')}
+Uygulanan tedavi/ilaçlar: ${S.drugNotes||cleanList(S.administeredMeds)}.
+Yolda/teslimde dikkat: ${actionPlan().avoid.slice(0,4).join('; ')||'seri vital ve klinik izlem'}.
+Görüşülen birim/durum: ${S.consultStatus}; ${cleanList(S.consult)}.
+Sevk sırasında eşlik eden belgeler: tetkik çıktıları, EKG/görüntüleme ve bu klinik özet.`;
+ if(type==='discharge')return `ACİL SERVİS TABURCULUK NOTU
+
+${common}
+
+${course}
+${vitalLine('Kontrol')}
+Taburculuk kararı ve gerekçe: ${S.dispositionReason||'stabil klinik durum ve tamamlanan değerlendirme sonrası'}.
+Takip planı: ${S.followup||'takip planı girilmedi'}.
+Geri dönüş uyarıları: ${cleanList(S.returnPrecautions)}.
+Bekleyen kritik tetkik: ${pending.join(', ')||'yok'}.
+Hasta/yakın bilgilendirmesi: tanı belirsizliği, önerilen takip ve kötüleşme halinde yeniden acil başvuru gereği anlatılmalıdır.
+Not: Taburculuk güvenlik değerlendirmesi: ${reassessment().recommendation}.`;
+ if(type==='handover')return `YATIŞ / DEVİR NOTU
+
+${common}
+
+Yatış/devir nedeni: ${S.dispositionReason||S.disposition}.
+${course}
+${vitalLine('Kontrol')}
+Aktif sorun listesi: ${cr.join('; ')||ds}.
+Uygulanan tedavi: ${S.drugNotes||cleanList(S.administeredMeds)}.
+Bekleyen tetkikler/işler: ${pending.join(', ')||'yok/belirtilmedi'}.
+Önerilen yakın plan: ${actionPlan().wait.slice(0,5).join('; ')}.
+Konsültasyonlar: ${cleanList(S.consult)}; durum ${S.consultStatus}.
+Devir sırasında özellikle izlenecekler: vital trend, bilinç, semptom seyri ve tedavi yanıtı.`;
+ return `ACİL SERVİS EPİKRİZİ
+
+${common}
+
+Yapılan klinik değerlendirme:
+- Kanıt dengesi: ${reasoningSnapshot().top?.name||'oluşmadı'}; güven ${reasoningSnapshot().confidence}; veri tamamlığı %${reasoningSnapshot().dataCompleteness}.
+- Risk skorları: ${riskScores().map(x=>`${x.name} ${x.value}`).join(' | ')||'uygun/tamamlanmış skor yok'}.
+- Skor-klinik uyumsuzluk kontrolü: ${scoreSafetyAnalysis().map(x=>x.title).join(', ')||'uyumsuzluk saptanmadı'}.
+
+Tedavi ve izlem: ${S.drugNotes||cleanList(S.administeredMeds)}. ${course}
+${vitalLine('Kontrol')}
+Sonuç/sonlandırma: ${S.disposition}. Gerekçe: ${S.dispositionReason||'belirtilmedi'}.
+Takip: ${S.followup||'belirtilmedi'}.
+Geri dönüş uyarıları: ${cleanList(S.returnPrecautions)}.
+
+Bu metin otomatik karar destek taslağıdır; hekim doğrulaması sonrası resmi kayda aktarılmalıdır.`;
+}
+function renderProfessionalDocs(){
+ const box=el('professionalDoc');if(!box)return;
+ const type=el('docType')?el('docType').value:'consult';
+ box.value=professionalDocument(type);
+}
+async function copyProfessionalDoc(){
+ renderProfessionalDocs();const text=el('professionalDoc')?.value||'';
+ try{await navigator.clipboard.writeText(text);alert('Belge panoya kopyalandı.')}catch(e){el('professionalDoc').select();document.execCommand('copy');alert('Belge panoya kopyalandı.')}
+}
+function downloadProfessionalDoc(){
+ renderProfessionalDocs();const type=el('docType')?.value||'belge';const blob=new Blob([el('professionalDoc').value],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`acil_${type}_${new Date().toISOString().slice(0,10)}.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function printProfessionalDoc(){
+ renderProfessionalDocs();const text=el('professionalDoc').value;const w=window.open('','_blank');w.document.write(`<html><head><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111} @media print{body{padding:0}}</style></head><body>${esc(text)}</body></html>`);w.document.close();w.focus();w.print();
+}
+
 function summaryHTML(){const ds=diagnoses().slice(0,5),cr=criticals(),ap=actionPlan();return `${trafficHTML()}<div class="panel ${cr.length?'urgent':'ok'}"><h3>${cr.length?'Kritik bulgu mevcut':'Kritik eşik saptanmadı'}</h3>${cr.length?`<ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p>Bu sonuç, yalnız girilen verilere dayanır.</p>'}</div><div class="panel neutral"><h3>Öncelikli düşünülmesi gerekenler</h3><ol>${ds.map(x=>`<li><b>${esc(x.name)}</b> — göreli destek ${x.score}/100<br><span class="muted">Lehine: ${esc(x.plus.slice(0,4).join(', ')||'belirgin veri yok')} ${x.minus.length?' | Aleyhine: '+esc(x.minus.slice(0,2).join(', ')):''}</span></li>`).join('')}</ol></div><div class="panel info"><h3>Şimdi yap</h3><ul class="compact">${ap.now.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="panel info"><h3>Tedavi desteği</h3><ul class="compact">${treatmentPlan().tx.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${treatmentPlan().contraind.length?`<p><b>Dikkat:</b> ${esc(treatmentPlan().contraind.join(' | '))}</p>`:''}</div><div class="panel warn"><h3>Sonuç beklerken</h3><ul class="compact">${ap.wait.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="panel urgent"><h3>Yapma / dikkat</h3><ul class="compact">${ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>${reassessmentHTML()}<div class="panel neutral"><h3>Sonlandırma planı</h3><p><b>${esc(S.disposition||'Belirtilmedi')}</b></p><p>${esc(S.dispositionReason||'Gerekçe yazılmadı')}</p><p><b>Takip:</b> ${esc(S.followup||'Belirtilmedi')}</p></div>`}
 function nextStep(){collect();if(order()[currentStep]===0&&!S.age){alert('Lütfen yaşı girin.');return}if(currentStep<order().length-1)currentStep++;else saveCase();render();window.scrollTo({top:0,behavior:'smooth'})}
 function prevStep(){collect();if(currentStep>0)currentStep--;render();window.scrollTo({top:0,behavior:'smooth'})}
