@@ -41,7 +41,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.8.1 Beta • Hızlı panel ve tetkik motoru düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.9 Beta • Klinik QA paneli</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -60,6 +60,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <textarea id="professionalDoc" class="doc-output" placeholder="Vaka bilgileri girildikçe seçilen belge otomatik oluşur."></textarea>
  <p class="muted">Metin yalnız girilen verilerden oluşturulur. Göndermeden önce hekim tarafından doğrulanmalı ve kurum şablonuna uyarlanmalıdır.</p>
 </div>
+<details class="card collapse-card no-print" id="qaCard">
+ <summary>Klinik QA denetim paneli <span class="phase-badge">v2.9</span></summary>
+ <p class="muted">Soru ağaçları, yaş-cinsiyet filtreleri ve tetkik eşleşmeleri otomatik kontrol edilir. Bu test klinik doğrulamanın yerine geçmez.</p>
+ <div class="compact-actions"><button class="primary" onclick="runQATests()">Tüm otomatik testleri çalıştır</button><button onclick="downloadQAReport()">Raporu TXT indir</button></div>
+ <div id="qaSummary" class="panel neutral">Henüz test çalıştırılmadı.</div>
+ <div id="qaResults" class="safety-grid"></div>
+</details>
 </section>
 <aside>
 <div class="sticky">
@@ -492,6 +499,13 @@ function testRecommendationHTML(compact=false){
  return `${block('Şimdi gerekli',r.required,'urgent')}${block('Klinik duruma göre düşün',r.consider,'info')}${block('Şimdilik ertele / koşullu',r.defer,'neutral')}${block('Rutin isteme',r.avoid,'warn')}<div class="compact-actions"><button class="primary" onclick="applyEssentialTests()">Yalnız gerekli olanları seç</button><button onclick="applySuggestedTests()">Gerekli + düşünülebilir seç</button></div><p class="muted">Bu motor tetkik kararını otomatikleştirmez; klinik olasılık, zamanlama, yerel protokol ve kaynaklara göre hekim kararı gerekir.</p>`;
 }
 function renderTestStewardship(){const box=el('testStewardshipPanel');if(box)box.innerHTML=testRecommendationHTML(true)}
+const genericSmartQs=[
+ {key:'duration',q:'Yakınma ne kadar süredir var?',text:true,ph:'Örn. 2 saat'},
+ {key:'symptoms',q:'Bilinç değişikliği veya senkop var mı?',multi:'symptoms',value:'Bilinç değişikliği/senkop'},
+ {key:'symptoms',q:'Nefes darlığı veya göğüs ağrısı var mı?',multi:'symptoms',value:'Kardiyopulmoner eşlik'},
+ {key:'symptoms',q:'Ateş veya enfeksiyon bulgusu var mı?',multi:'symptoms',value:'Enfeksiyon bulgusu'},
+ {key:'symptoms',q:'Yeni nörolojik belirti var mı?',multi:'symptoms',value:'Yeni nörolojik belirti'}
+];
 function activeSmartQs(){
  const key=Object.keys(smartQsByComplaint).find(k=>k===S.complaint)||Object.keys(smartQsByComplaint).find(k=>S.complaint&&S.complaint.includes(k))||S.complaint;
  let qs=[...(smartQsByComplaint[key]||genericSmartQs)];
@@ -1364,6 +1378,70 @@ function printProfessionalDoc(){
  renderProfessionalDocs();const text=el('professionalDoc').value;const w=window.open('','_blank');w.document.write(`<html><head><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111} @media print{body{padding:0}}
 
 </style></head><body>${esc(text)}</body></html>`);w.document.close();w.focus();w.print();
+}
+
+const qaComplaints=['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'];
+const qaQuickTests=['EKG','Troponin','Hemogram','Biyokimya','Glukoz','Kan gazı','Laktat','D-dimer','Akciğer grafisi','Kontrastsız beyin BT','BT anjiyografi','Abdominal görüntüleme','Gebelik testi','İdrar tahlili'];
+let lastQAReport='';
+function qaResult(level,title,detail){return {level,title,detail}}
+function runQATests(){
+ const original=JSON.parse(JSON.stringify(S));
+ const results=[];
+ try{
+  qaComplaints.forEach(c=>{
+   const qs=smartQsByComplaint[c];
+   if(!Array.isArray(qs))results.push(qaResult('critical',`${c}: soru ağacı yok`,'Bu şikâyet için tanımlı soru listesi bulunamadı.'));
+   else{
+    if(qs.length<5)results.push(qaResult('warning',`${c}: soru sayısı düşük`,`${qs.length} soru tanımlı; hızlı klinik tarama için gözden geçirilmeli.`));
+    else results.push(qaResult('ok',`${c}: soru ağacı mevcut`,`${qs.length} soru tanımlı.`));
+    const invalid=qs.filter(q=>!q.q||(!q.text&&!q.multi&&!Array.isArray(q.opts)));
+    if(invalid.length)results.push(qaResult('critical',`${c}: bozuk soru nesnesi`,`${invalid.length} soruda yanıt tipi veya soru metni eksik.`));
+    const duplicates=qs.map(q=>q.q).filter((q,i,a)=>a.indexOf(q)!==i);
+    if(duplicates.length)results.push(qaResult('warning',`${c}: yinelenen soru`,[...new Set(duplicates)].join(' | ')));
+   }
+  });
+  const missing=qaComplaints.filter(c=>!Object.prototype.hasOwnProperty.call(smartQsByComplaint,c));
+  const extra=Object.keys(smartQsByComplaint).filter(c=>!qaComplaints.includes(c));
+  if(missing.length)results.push(qaResult('critical','Şikâyet listesi eşleşmiyor',`Eksik: ${missing.join(', ')}`));
+  if(extra.length)results.push(qaResult('warning','Tanımsız ek şikâyet anahtarı',extra.join(', ')));
+
+  for(const c of qaComplaints){
+   S.complaint=c;S.sex='Erkek';S.age='35';
+   const maleQs=activeSmartQs();
+   const pregnancyQ=maleQs.filter(q=>/gebelik|vajinal|postpartum/i.test(q.q||''));
+   if(pregnancyQ.length)results.push(qaResult('critical',`${c}: erkek hastada gebelik sorusu`,pregnancyQ.map(q=>q.q).join(' | ')));
+   const maleTests=recommendedTestsForCurrentCase();
+   if(maleTests.includes('Gebelik testi'))results.push(qaResult('critical',`${c}: erkek hastada gebelik testi önerildi`,'Yaş 35, cinsiyet erkek profilinde gebelik testi listede yer aldı.'));
+   const unknown=maleTests.filter(t=>!qaQuickTests.includes(t));
+   if(unknown.length)results.push(qaResult('critical',`${c}: ekranda karşılığı olmayan tetkik`,unknown.join(', ')));
+  }
+
+  S.sex='Kadın';S.age='30';
+  ['Karın ağrısı','Bulantı-kusma / ishal','İdrar yakınması'].forEach(c=>{
+   S.complaint=c;
+   if(!recommendedTestsForCurrentCase().includes('Gebelik testi'))results.push(qaResult('warning',`${c}: uygun kadında gebelik testi yok`,'30 yaş kadın profilinde koşullu gebelik testi önerisi oluşmadı.'));
+  });
+  S.sex='Kadın';S.age='70';S.complaint='Karın ağrısı';
+  if(recommendedTestsForCurrentCase().includes('Gebelik testi'))results.push(qaResult('critical','70 yaş kadın hastada gebelik testi önerildi','Yaş filtresi çalışmıyor.'));
+
+  const quickHTML=quickOneScreenHTML();
+  if(!quickHTML.includes('id="age"')||!quickHTML.includes('id="sex"')||!quickHTML.includes('id="complaint"'))results.push(qaResult('critical','Hızlı ekran temel alanları eksik','Yaş, cinsiyet veya ana şikâyet alanı üretilemedi.'));
+  else results.push(qaResult('ok','Hızlı ekran temel alanları','Yaş, cinsiyet ve ana şikâyet alanları üretildi.'));
+  if(!quickHTML.includes('onclick="recommendTests()"'))results.push(qaResult('critical','Önerilenleri seç düğmesi bağlı değil','recommendTests() çağrısı bulunamadı.'));
+  else results.push(qaResult('ok','Tetkik seçme düğmesi bağlı','recommendTests() çağrısı mevcut.'));
+ }catch(err){results.push(qaResult('critical','QA çalışırken JavaScript hatası',String(err&&err.message||err)))}
+ finally{S=original;}
+ const counts={critical:0,warning:0,ok:0};results.forEach(r=>counts[r.level]++);
+ const status=counts.critical?'urgent':counts.warning?'warn':'ok';
+ const summary=el('qaSummary');if(summary){summary.className=`panel ${status}`;summary.innerHTML=`<b>${counts.critical?'Denetimde hata bulundu':'Otomatik teknik denetim tamamlandı'}</b><br>🔴 ${counts.critical} hata · 🟠 ${counts.warning} uyarı · 🟢 ${counts.ok} geçti`;}
+ const box=el('qaResults');if(box)box.innerHTML=results.map(r=>`<div class="safety-alert ${r.level==='critical'?'safety-critical':r.level==='warning'?'safety-warning':'safety-ok'}"><strong>${r.level==='critical'?'🔴':r.level==='warning'?'🟠':'🟢'} ${esc(r.title)}</strong><div>${esc(r.detail)}</div></div>`).join('');
+ lastQAReport=[`ACİL KLİNİK ASİSTANI QA RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sonuç: ${counts.critical} hata, ${counts.warning} uyarı, ${counts.ok} geçti`,'',...results.map(r=>`${r.level==='critical'?'HATA':r.level==='warning'?'UYARI':'GEÇTİ'} | ${r.title} | ${r.detail}`)].join('\n');
+ const card=el('qaCard');if(card)card.open=true;
+ return results;
+}
+function downloadQAReport(){
+ if(!lastQAReport)runQATests();
+ const blob=new Blob([lastQAReport],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`acil_qa_${new Date().toISOString().slice(0,10)}.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
 function summaryHTML(){const ds=diagnoses().slice(0,5),cr=criticals(),ap=actionPlan();return `${trafficHTML()}<div class="panel ${cr.length?'urgent':'ok'}"><h3>${cr.length?'Kritik bulgu mevcut':'Kritik eşik saptanmadı'}</h3>${cr.length?`<ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p>Bu sonuç, yalnız girilen verilere dayanır.</p>'}</div><div class="panel neutral"><h3>Öncelikli düşünülmesi gerekenler</h3><ol>${ds.map(x=>`<li><b>${esc(x.name)}</b> — göreli destek ${x.score}/100<br><span class="muted">Lehine: ${esc(x.plus.slice(0,4).join(', ')||'belirgin veri yok')} ${x.minus.length?' | Aleyhine: '+esc(x.minus.slice(0,2).join(', ')):''}</span></li>`).join('')}</ol></div><div class="panel info"><h3>Şimdi yap</h3><ul class="compact">${ap.now.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="panel info"><h3>Tedavi desteği</h3><ul class="compact">${treatmentPlan().tx.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${treatmentPlan().contraind.length?`<p><b>Dikkat:</b> ${esc(treatmentPlan().contraind.join(' | '))}</p>`:''}</div><div class="panel warn"><h3>Sonuç beklerken</h3><ul class="compact">${ap.wait.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="panel urgent"><h3>Yapma / dikkat</h3><ul class="compact">${ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>${reassessmentHTML()}<div class="panel neutral"><h3>Sonlandırma planı</h3><p><b>${esc(S.disposition||'Belirtilmedi')}</b></p><p>${esc(S.dispositionReason||'Gerekçe yazılmadı')}</p><p><b>Takip:</b> ${esc(S.followup||'Belirtilmedi')}</p></div>`}
