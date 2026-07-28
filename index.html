@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.0.3 Beta • GKS Eksik Veri Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.1.0 Beta • Klinik Doğrulama Kaydı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -128,6 +128,29 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions"><button class="primary" onclick="runDocumentationScenarioTests()">6 dokümantasyon senaryosunu çalıştır</button><button onclick="downloadDocumentationScenarioReport()">Raporu TXT indir</button></div>
  <div id="documentationScenarioSummary" class="panel neutral">Henüz dokümantasyon testi çalıştırılmadı.</div>
  <div id="documentationScenarioResults" class="safety-grid"></div>
+</details>
+<details class="card collapse-card no-print" id="clinicalValidationCard">
+ <summary>Klinik doğrulama kayıt paneli <span class="phase-badge">v4.1</span></summary>
+ <p class="muted">Mevcut vakadaki uygulama önerilerini, hekimin referans değerlendirmesiyle karşılaştırarak anonim kalite kaydı oluşturur. Ad, T.C. kimlik numarası, protokol numarası veya serbest metinde kimlik belirleyici bilgi girmeyin.</p>
+ <div class="panel neutral"><b>Doğrulama ilkesi</b><br>Bu kayıt, algoritmayı otomatik olarak değiştirmez. Yalnızca hataları, eksikleri ve uyumsuzlukları sistematik biçimde ölçmek için kullanılır.</div>
+ <div class="grid2">
+  <label>Vaka grubu<select id="validationGroup"><option>Göğüs ağrısı</option><option>Dispne</option><option>Karın ağrısı</option><option>Baş ağrısı</option><option>Ateş / sepsis</option><option>Nörolojik acil</option><option>Travma</option><option>Çocuk hasta</option><option>Kadın doğum acili</option><option>Diğer</option></select></label>
+  <label>Referans son karar<select id="validationDisposition"><option>Belirsiz / değerlendirme sürüyor</option><option>Taburculuk</option><option>Gözlem</option><option>Servis yatışı</option><option>Yoğun bakım</option><option>Acil sevk</option></select></label>
+  <label>Referans ön tanı<input id="validationDiagnosis" placeholder="Kimlik bilgisi olmadan kısa tanı"></label>
+  <label>Değerlendiren<select id="validationReviewer"><option>Vaka hekimi</option><option>İkinci hekim</option><option>Uzman görüşü</option><option>Kurul / uzlaşı</option></select></label>
+ </div>
+ <div class="grid2">
+  <label>Kırmızı bayrak başarısı<select id="validationRedFlag"><option value="uygun">Uygun</option><option value="eksik">Kritik eksik</option><option value="fazla">Gereksiz alarm</option><option value="degerlendirilemedi">Değerlendirilemedi</option></select></label>
+  <label>Tetkik önerisi<select id="validationTests"><option value="uygun">Uygun</option><option value="eksik">Eksik</option><option value="fazla">Gereksiz/fazla</option><option value="degerlendirilemedi">Değerlendirilemedi</option></select></label>
+  <label>Görüntüleme önerisi<select id="validationImaging"><option value="uygun">Uygun</option><option value="eksik">Eksik</option><option value="fazla">Gereksiz/fazla</option><option value="degerlendirilemedi">Değerlendirilemedi</option></select></label>
+  <label>Tedavi güvenliği<select id="validationTreatment"><option value="uygun">Uygun</option><option value="kritik">Kritik güvenlik sorunu</option><option value="eksik">Eksik uyarı</option><option value="degerlendirilemedi">Değerlendirilemedi</option></select></label>
+  <label>Konsültasyon/yatış<select id="validationConsult"><option value="uygun">Uygun</option><option value="eksik">Eksik/yanlış branş</option><option value="fazla">Gereksiz</option><option value="degerlendirilemedi">Değerlendirilemedi</option></select></label>
+  <label>Sonlandırma kararı<select id="validationDischarge"><option value="uygun">Uygun</option><option value="kritik">Güvensiz taburculuk riski</option><option value="fazla">Gereksiz yatış/sevk</option><option value="degerlendirilemedi">Değerlendirilemedi</option></select></label>
+ </div>
+ <label>Anonim kalite notu<textarea id="validationNote" rows="3" placeholder="Örn: İlk EKG normal olmasına rağmen seri EKG önerisi eksikti. Kimlik bilgisi yazmayın."></textarea></label>
+ <div class="compact-actions"><button class="primary" onclick="saveClinicalValidation()">Bu vakayı doğrulama kaydına ekle</button><button onclick="exportClinicalValidationCSV()">CSV dışa aktar</button><button onclick="clearClinicalValidationRecords()">Kayıtları temizle</button></div>
+ <div id="clinicalValidationSummary" class="panel neutral">Henüz anonim doğrulama kaydı yok.</div>
+ <div id="clinicalValidationResults" class="safety-grid"></div>
 </details>
 </section>
 <aside>
@@ -1596,6 +1619,44 @@ function printProfessionalDoc(){
 </style></head><body>${esc(text)}</body></html>`);w.document.close();w.focus();w.print();
 }
 
+const CLINICAL_VALIDATION_KEY='acil_klinik_validation_v4_1';
+function clinicalValidationRecords(){try{return JSON.parse(localStorage.getItem(CLINICAL_VALIDATION_KEY)||'[]')}catch(e){return []}}
+function validationValue(id){return el(id)?.value||''}
+function validationCurrentSnapshot(){
+ collect();const core=clinicalCoreAnalysis();
+ return {
+  recordedAt:new Date().toISOString(),version:'v4.1.0',group:validationValue('validationGroup'),reviewer:validationValue('validationReviewer'),referenceDiagnosis:validationValue('validationDiagnosis').trim(),referenceDisposition:validationValue('validationDisposition'),
+  patientProfile:{ageBand:S.age?(Number(S.age)<18?'0-17':Number(S.age)<40?'18-39':Number(S.age)<65?'40-64':'65+'): 'Bilinmiyor',sex:S.sex||'Bilinmiyor',complaint:S.complaint||'Bilinmiyor'},
+  appOutput:{priority:core.priority,level:core.level,topHypothesis:core.topDx[0]?.name||'Veri yetersiz',care:core.consult?.care||'',dischargeReady:!!core.discharge?.ready},
+  ratings:{redFlag:validationValue('validationRedFlag'),tests:validationValue('validationTests'),imaging:validationValue('validationImaging'),treatment:validationValue('validationTreatment'),consult:validationValue('validationConsult'),discharge:validationValue('validationDischarge')},
+  note:validationValue('validationNote').trim().slice(0,1000)
+ }
+}
+function validationHasCritical(r){return r.ratings.redFlag==='eksik'||r.ratings.treatment==='kritik'||r.ratings.discharge==='kritik'}
+function saveClinicalValidation(){
+ const rec=validationCurrentSnapshot();
+ if(!rec.referenceDiagnosis){alert('Referans ön tanıyı kısa ve anonim biçimde yazın.');return}
+ const rows=clinicalValidationRecords();rows.push(rec);localStorage.setItem(CLINICAL_VALIDATION_KEY,JSON.stringify(rows));
+ const n=el('validationNote');if(n)n.value='';renderClinicalValidationSummary();alert('Anonim klinik doğrulama kaydı eklendi.');
+}
+function renderClinicalValidationSummary(){
+ const rows=clinicalValidationRecords(),sum=el('clinicalValidationSummary'),box=el('clinicalValidationResults');if(!sum||!box)return;
+ if(!rows.length){sum.className='panel neutral';sum.innerHTML='Henüz anonim doğrulama kaydı yok.';box.innerHTML='';return}
+ const critical=rows.filter(validationHasCritical).length;
+ const dimensions=['redFlag','tests','imaging','treatment','consult','discharge'];
+ const evaluable=rows.flatMap(r=>dimensions.map(k=>r.ratings[k])).filter(x=>x&&x!=='degerlendirilemedi');
+ const appropriate=evaluable.filter(x=>x==='uygun').length;const rate=evaluable.length?Math.round(appropriate/evaluable.length*100):0;
+ sum.className=`panel ${critical?'warn':'ok'}`;sum.innerHTML=`<b>${rows.length} anonim vaka kaydı</b><br>Uygunluk: %${rate} (${appropriate}/${evaluable.length} değerlendirilebilir ölçüt) · Kritik uyumsuzluk içeren vaka: ${critical}`;
+ box.innerHTML=rows.slice(-5).reverse().map((r,i)=>`<div class="safety-alert ${validationHasCritical(r)?'safety-critical':'safety-ok'}"><strong>${validationHasCritical(r)?'🔴':'🟢'} ${esc(r.group)} · ${esc(r.referenceDiagnosis)}</strong><div>${new Date(r.recordedAt).toLocaleString('tr-TR')} · ${esc(r.patientProfile.ageBand)} · ${esc(r.patientProfile.sex)}<br>Uygulama: ${esc(r.appOutput.priority)} · Referans: ${esc(r.referenceDisposition)}${r.note?`<br>Not: ${esc(r.note)}`:''}</div></div>`).join('');
+}
+function csvCell(v){const x=String(v??'').replace(/"/g,'""');return `"${x}"`}
+function exportClinicalValidationCSV(){
+ const rows=clinicalValidationRecords();if(!rows.length){alert('Dışa aktarılacak doğrulama kaydı yok.');return}
+ const head=['tarih','surum','vaka_grubu','degerlendiren','yas_grubu','cinsiyet','sikayet','referans_tani','referans_son_karar','uygulama_onceligi','uygulama_duzeyi','uygulama_hipotezi','uygulama_bakim_alani','taburculuk_hazir','kirmizi_bayrak','tetkik','goruntuleme','tedavi','konsultasyon','sonlandirma','anonim_not'];
+ const lines=[head.map(csvCell).join(';'),...rows.map(r=>[r.recordedAt,r.version,r.group,r.reviewer,r.patientProfile.ageBand,r.patientProfile.sex,r.patientProfile.complaint,r.referenceDiagnosis,r.referenceDisposition,r.appOutput.priority,r.appOutput.level,r.appOutput.topHypothesis,r.appOutput.care,r.appOutput.dischargeReady,r.ratings.redFlag,r.ratings.tests,r.ratings.imaging,r.ratings.treatment,r.ratings.consult,r.ratings.discharge,r.note].map(csvCell).join(';'))];
+ const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`acil-klinik-dogrulama-${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function clearClinicalValidationRecords(){if(!confirm('Bu cihazdaki tüm anonim doğrulama kayıtları silinsin mi?'))return;localStorage.removeItem(CLINICAL_VALIDATION_KEY);renderClinicalValidationSummary()}
 const qaComplaints=['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'];
 const qaQuickTests=['EKG','Troponin','Hemogram','Biyokimya','Glukoz','Kan gazı','Laktat','D-dimer','Akciğer grafisi','Kontrastsız beyin BT','BT anjiyografi','Abdominal görüntüleme','Gebelik testi','İdrar tahlili'];
 let lastQAReport='';
@@ -1778,7 +1839,7 @@ function prevStep(){collect();if(currentStep>0)currentStep--;render();window.scr
 function renderTimeline(){el('timeline').innerHTML=order().map((page,i)=>`<span class="pill ${i===currentStep?'active':''}">${i+1}. ${fullSteps[page]}</span>`).join('')}
 function saveCase(){collect();localStorage.setItem('acilCase',JSON.stringify(S));localStorage.setItem('acilStep',currentStep);updateAll();alert('Vaka bu cihazın tarayıcısına kaydedildi.')}
 function newCase(){if(!confirm('Mevcut vaka temizlensin mi?'))return;localStorage.removeItem('acilCase');localStorage.removeItem('acilStep');location.reload()}
-function load(){try{const x=localStorage.getItem('acilCase');if(x)S={...S,...JSON.parse(x)};currentStep=Math.min(order().length-1,parseInt(localStorage.getItem('acilStep')||'0'))}catch(e){}render();document.addEventListener('input',()=>{collect();updateAll()});document.addEventListener('change',()=>{collect();updateAll()})}
+function load(){try{const x=localStorage.getItem('acilCase');if(x)S={...S,...JSON.parse(x)};currentStep=Math.min(order().length-1,parseInt(localStorage.getItem('acilStep')||'0'))}catch(e){}render();renderClinicalValidationSummary();document.addEventListener('input',()=>{collect();updateAll()});document.addEventListener('change',()=>{collect();updateAll()})}
 load();
 
 
