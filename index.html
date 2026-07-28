@@ -47,10 +47,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 /* v6.0 Entegre Acil Yönetim Çekirdeği */
 .em-core-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}.em-abcd{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.em-abcd label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff;font-size:12px}.em-abcd input{width:18px;height:18px;min-height:0}.em-alarmbar{border-radius:14px;padding:12px;margin:10px 0;font-weight:900}.em-critical{background:#7f1d1d;color:#fff}.em-high{background:#c2410c;color:#fff}.em-watch{background:#a16207;color:#fff}.em-clear{background:#166534;color:#fff}.em-timer{font-variant-numeric:tabular-nums;font-size:22px;font-weight:900}.em-matrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.em-tile{border:1px solid var(--line);border-radius:11px;padding:10px;background:#f8fafc}.em-tile b{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}.em-next{border-left:5px solid var(--teal);background:#f0fdfa;border-radius:11px;padding:11px;font-weight:800}.em-block{border-left:5px solid #dc2626;background:#fff1f2;border-radius:11px;padding:11px}.em-testline{font-size:12px;padding:7px 9px;border-radius:9px;margin:5px 0}@media(max-width:700px){.em-core-grid{grid-template-columns:1fr}.em-abcd{grid-template-columns:1fr}.em-matrix{grid-template-columns:1fr}}
 
+/* v6.1 Akıllı Tetkik İstem Motoru */
+.test-order-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.test-order-list{display:grid;gap:7px}.test-order-item{border:1px solid var(--line);border-left:5px solid #94a3b8;border-radius:11px;padding:10px;background:#fff}.test-order-item.strong{border-left-color:#dc2626;background:#fff7f7}.test-order-item.consider{border-left-color:#f59e0b;background:#fffbeb}.test-order-item.avoid{border-left-color:#64748b;background:#f8fafc}.test-order-item b{display:block;margin-bottom:3px}.test-order-meta{font-size:11px;color:var(--muted);margin-top:4px}.test-order-summary{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.test-priority{display:inline-block;padding:3px 7px;border-radius:99px;font-size:10px;font-weight:900;margin-left:5px;background:#e2e8f0}.test-priority.p1{background:#fee2e2;color:#991b1b}.test-priority.p2{background:#fef3c7;color:#92400e}.test-priority.p3{background:#e0f2fe;color:#075985}@media(max-width:700px){.test-order-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.0.0 Alpha • Entegre Acil Yönetim Çekirdeği</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.1.0 Beta • Akıllı Tetkik İstem Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -213,6 +216,30 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions no-print"><button class="primary" onclick="renderEmergencyCore()">Çekirdeği yenile</button><button onclick="copyEmergencyCoreSummary()">Özeti kopyala</button><button onclick="clearEmergencyCore()">Temizle</button></div>
 </div>
 
+<div class="card" id="smartTestOrderCard">
+ <div class="section-title"><h3>Akıllı tetkik istem motoru</h3><span class="phase-badge">v6.1</span></div>
+ <p class="muted">Klinik senaryo, vital bulgular ve seçili risk özelliklerine göre tetkikleri önceliklendirir; gereksiz istem uyarılarını da gösterir. Nihai istem kararı klinik değerlendirme ve yerel protokole aittir.</p>
+ <div class="grid3">
+  <label>Klinik senaryo<select id="toScenario" onchange="renderTestOrderEngine()"><option value="chestPain">Göğüs ağrısı</option><option value="dyspnea">Dispne</option><option value="abdominalPain">Karın ağrısı</option><option value="stroke">Akut inme</option><option value="sepsis">Sepsis / ateş</option><option value="syncope">Senkop</option><option value="trauma">Travma</option><option value="anaphylaxis">Anafilaksi</option><option value="dka">DKA / HHS</option><option value="lowRiskViral">Düşük riskli viral ÜSYE</option></select></label>
+  <label>Yaş<input id="toAge" type="number" min="0" placeholder="Örn. 58" oninput="renderTestOrderEngine()"></label>
+  <label>Cinsiyet<select id="toSex" onchange="renderTestOrderEngine()"><option value="unknown">Belirtilmedi</option><option value="female">Kadın</option><option value="male">Erkek</option></select></label>
+ </div>
+ <div class="question"><div class="question-title">Klinik özellikler</div><div class="choices">
+  <label class="choice"><input type="checkbox" id="toUnstable" onchange="renderTestOrderEngine()">Hemodinamik instabilite / şok</label>
+  <label class="choice"><input type="checkbox" id="toHypoxia" onchange="renderTestOrderEngine()">Hipoksemi / ciddi solunum sıkıntısı</label>
+  <label class="choice"><input type="checkbox" id="toPregnancy" onchange="renderTestOrderEngine()">Gebelik / olası gebelik</label>
+  <label class="choice"><input type="checkbox" id="toRenal" onchange="renderTestOrderEngine()">Böbrek işlev bozukluğu</label>
+  <label class="choice"><input type="checkbox" id="toAnticoag" onchange="renderTestOrderEngine()">Antikoagülan kullanımı</label>
+  <label class="choice"><input type="checkbox" id="toFocalNeuro" onchange="renderTestOrderEngine()">Fokal nörolojik defisit</label>
+  <label class="choice"><input type="checkbox" id="toPercNegative" onchange="renderTestOrderEngine()">PE düşük risk + PERC negatif</label>
+  <label class="choice"><input type="checkbox" id="toInfection" onchange="renderTestOrderEngine()">Bakteriyel enfeksiyon / sepsis şüphesi</label>
+ </div></div>
+ <div class="compact-actions no-print"><button class="primary" onclick="renderTestOrderEngine()">İstemleri oluştur</button><button onclick="copyTestOrderSummary()">Özeti kopyala</button><button onclick="clearTestOrderInputs()">Temizle</button></div>
+ <div id="testOrderWarnings"></div>
+ <div class="test-order-grid" style="margin-top:10px"><div><h3>Önerilen tetkikler</h3><div id="testOrderRecommended" class="test-order-list"><div class="muted">Senaryo seçildiğinde öneriler burada görünür.</div></div></div><div><h3>Gereksiz / ertelenebilir istemler</h3><div id="testOrderAvoid" class="test-order-list"><div class="muted">Gereksiz tetkik uyarıları burada görünür.</div></div></div></div>
+ <div class="panel neutral test-order-summary" id="testOrderSummary" style="margin-top:10px">İstem özeti henüz oluşturulmadı.</div>
+</div>
+
 <div class="card" id="professionalDocCard">
  <div class="section-title"><h3>Akıllı klinik dokümantasyon</h3><span class="phase-badge">v3.7</span></div>
  <div class="doc-kind"><label>Belge türü<select id="docType" onchange="renderProfessionalDocs()"><option value="consult">Konsültasyon notu</option><option value="referral">Sevk notu</option><option value="discharge">Taburculuk notu</option><option value="epicrisis">Acil epikriz</option><option value="handover">Devir / yatış notu</option><option value="patientInfo">Hasta bilgilendirme metni</option></select></label><button class="primary" onclick="renderProfessionalDocs()">Belgeyi oluştur</button></div>
@@ -303,6 +330,14 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="medicationSafetyScenarioResults" class="safety-grid"></div>
 </details>
 
+
+<details class="card collapse-card no-print" id="testOrderScenarioCard">
+ <summary>Akıllı tetkik istem motoru doğrulama paneli <span class="phase-badge">v6.1</span></summary>
+ <p class="muted">Kritik tetkik önerileri, görüntüleme öncelikleri ve gereksiz istem uyarılarını 60 otomatik senaryoda sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runTestOrderEngineTests()">60 tetkik senaryosunu çalıştır</button><button onclick="downloadTestOrderEngineReport()">Raporu TXT indir</button></div>
+ <div id="testOrderScenarioSummary" class="panel neutral">Henüz tetkik istem motoru testi çalıştırılmadı.</div>
+ <div id="testOrderScenarioResults" class="safety-grid"></div>
+</details>
 
 <details class="card collapse-card no-print" id="emergencyCoreScenarioCard">
  <summary>Entegre acil yönetim doğrulama paneli <span class="phase-badge">v6.0</span></summary>
@@ -3397,6 +3432,105 @@ function runEmergencyCoreTests(){
  const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,sum=document.getElementById('emergencyCoreScenarioSummary'),box=document.getElementById('emergencyCoreScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Entegre çekirdek kontrolü başarısız':'Entegre acil yönetim çekirdeği doğrulandı'}</b><br>🚑 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastEmergencyCoreReport=['ACİL KLİNİK ASİSTANI ENTEGRE ACİL YÖNETİM RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v6.0.0 Alpha',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('emergencyCoreScenarioCard')?.setAttribute('open','');return runs}
 function downloadEmergencyCoreReport(){if(!lastEmergencyCoreReport)runEmergencyCoreTests();const blob=new Blob([lastEmergencyCoreReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-entegre-yonetim-v6.0.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 document.addEventListener('DOMContentLoaded',()=>{try{renderEmergencyCore()}catch(e){console.error('Emergency core init',e)}});
+
+
+// v6.1 Akıllı Tetkik İstem Motoru
+let lastTestOrderReport='';
+function testOrderEvaluate(d={}){
+ const scenario=d.scenario||'chestPain',age=Number(d.age||0),female=d.sex==='female';
+ const rec=[],avoid=[],warnings=[]; const add=(name,group,priority,reason)=>rec.push({name,group,priority,reason}); const no=(name,reason)=>avoid.push({name,reason});
+ const baseLabs=()=>{add('Hemogram','Laboratuvar',2,'Anemi, enfeksiyon ve trombosit değerlendirmesi.');add('Temel biyokimya + kreatinin','Laboratuvar',2,'Elektrolit ve böbrek işlevinin değerlendirilmesi.');};
+ if(scenario==='chestPain'){
+  add('12 derivasyon EKG','Kardiyak',1,'İlk 10 dakika içinde iskemi/aritmi değerlendirmesi.');
+  add('Yüksek duyarlıklı troponin','Kardiyak',1,'AKS dışlama/doğrulama algoritması için.');
+  add('Seri troponin','Kardiyak',2,'Başlangıç sonucu ve semptom zamanına göre seri ölçüm.');
+  if(d.unstable)add('Yatak başı EKO','Görüntüleme',1,'Şok, mekanik komplikasyon veya alternatif ölümcül neden araştırması.'); else add('Akciğer grafisi','Görüntüleme',3,'Alternatif torasik neden şüphesi varsa.');
+  if(d.percNegative){no('D-dimer','Düşük ön olasılık ve PERC negatif durumda rutin istem önerilmez.');no('BT pulmoner anjiyografi','PERC negatif düşük riskte radyasyon ve kontrast yükü gereksiz olabilir.');}
+  else add('D-dimer','Laboratuvar',3,'PE ön olasılığı düşük/orta ise yaşa uyarlanmış eşikle düşünülebilir.');
+ }
+ if(scenario==='dyspnea'){
+  add('12 derivasyon EKG','Kardiyak',1,'Kardiyak neden ve ritim değerlendirmesi.');add('Akciğer grafisi','Görüntüleme',1,'Pnömoni, ödem, pnömotoraks ve diğer torasik nedenler.');
+  add('Kan gazı','Laboratuvar',d.hypoxia?1:2,d.hypoxia?'Hipoksemi/ventilasyon bozukluğunu hızla değerlendirmek için.':'Orta-ağır dispne veya ventilasyon şüphesinde.');
+  add('Troponin','Kardiyak',2,'AKS veya miyokard hasarı şüphesinde.');add('BNP/NT-proBNP','Laboratuvar',3,'Kalp yetersizliği olasılığı belirsizse.');
+  if(d.percNegative){no('D-dimer','PERC negatif düşük riskli hastada önerilmez.');no('BT pulmoner anjiyografi','Düşük risk ve PERC negatifse rutin önerilmez.');} else add('D-dimer','Laboratuvar',2,'PE klinik olasılığı düşük/orta ise.');
+ }
+ if(scenario==='abdominalPain'){
+  baseLabs();add('Lipaz','Laboratuvar',2,'Epigastrik ağrı/pankreatit olasılığında.');add('İdrar analizi','Laboratuvar',2,'Üriner ve taş hastalığı ayrımı için.');
+  if(female&&age>=10&&age<=55)add('β-hCG','Laboratuvar',1,'Üreme çağında gebelik dışlanmadan görüntüleme/ilaç kararı verilmemeli.');
+  if(d.unstable)add('Yatak başı USG / FAST','Görüntüleme',1,'İnstabil hastada serbest sıvı, AAA veya ektopik gebelik değerlendirmesi.'); else add('Hedefe yönelik USG veya kontrastlı BT','Görüntüleme',2,'Klinik lokalizasyon ve ön tanıya göre.');
+ }
+ if(scenario==='stroke'){
+  add('Kontrastsız kranial BT','Görüntüleme',1,'Kanamayı dışlamak için gecikmeden.');add('Kan şekeri','Laboratuvar',1,'İnme taklidini dışlamak için yatak başında.');add('12 derivasyon EKG','Kardiyak',2,'AF ve kardiyak kaynak değerlendirmesi.');
+  add('Hemogram + INR/aPTT','Laboratuvar',2,'Tromboliz güvenliği ve kanama riski için.');add('BT anjiyografi baş-boyun','Görüntüleme',1,'Büyük damar oklüzyonu şüphesinde trombektomi planı için.');
+  if(d.renal)warnings.push('Böbrek işlev bozukluğu kontrast kararını etkiler; ancak zaman kritik büyük damar oklüzyonunda gecikme riski ayrıca değerlendirilmelidir.');
+ }
+ if(scenario==='sepsis'){
+  add('Laktat','Laboratuvar',1,'Doku hipoperfüzyonu ve risk sınıflaması.');add('Kan kültürü (2 set)','Mikrobiyoloji',1,'Antibiyotik öncesi, tedaviyi geciktirmeden.');add('Hemogram + biyokimya','Laboratuvar',1,'Organ disfonksiyonu ve enfeksiyon değerlendirmesi.');add('İdrar analizi ve kültürü','Mikrobiyoloji',2,'Üriner odak olasılığında.');add('Akciğer grafisi','Görüntüleme',2,'Solunumsal odak şüphesinde.');
+  if(d.unstable)add('Kan gazı','Laboratuvar',1,'Şok ve asit-baz değerlendirmesi.');
+  no('Rutin prokalsitonin tekrarları','Tek başına antibiyotik başlama kararı vermemeli; klinik bağlama göre kullanılır.');
+ }
+ if(scenario==='syncope'){
+  add('12 derivasyon EKG','Kardiyak',1,'Aritmik senkop ve iletim bozukluğu taraması.');add('Yatak başı glukoz','Laboratuvar',1,'Hipoglisemi dışlanması.');
+  if(female&&age>=10&&age<=55)add('β-hCG','Laboratuvar',2,'Gebelikle ilişkili nedenleri dışlamak için.');
+  if(d.anticoag||d.focalNeuro)add('Kontrastsız kranial BT','Görüntüleme',2,'Antikoagülasyon, travma veya fokal nörolojik bulgu varsa.'); else no('Rutin kranial BT','Travma, fokal bulgu veya belirgin nörolojik şüphe yoksa düşük verimli olabilir.');
+  no('Rutin geniş laboratuvar paneli','Öykü, muayene ve EKG ile hedefe yönelik istem tercih edilir.');
+ }
+ if(scenario==='trauma'){
+  add('eFAST','Görüntüleme',1,'İnstabil travmada hızlı serbest sıvı/pnömotoraks değerlendirmesi.');add('Hemogram + grup/cross-match','Laboratuvar',1,'Kanama ve transfüzyon hazırlığı.');add('Kan gazı + laktat','Laboratuvar',1,'Perfüzyon ve resüsitasyon yanıtı.');
+  if(d.unstable)add('Portatif akciğer ve pelvis grafisi','Görüntüleme',1,'Resüsitasyon alanında hızlı değerlendirme.');else add('Travma protokollü kontrastlı BT','Görüntüleme',2,'Hemodinamik olarak stabil majör travmada.');
+  if(d.pregnancy)warnings.push('Gebelikte anne stabilizasyonu önceliklidir; radyasyon/kontrast kararı risk-yarar ile verilmelidir.');
+ }
+ if(scenario==='anaphylaxis'){
+  add('Pulse oksimetri + sürekli monitörizasyon','İzlem',1,'Solunum ve dolaşım bozulmasını erken yakalamak için.');
+  if(d.unstable)add('Kan gazı + laktat','Laboratuvar',2,'Şok/solunum yetmezliği şiddetini değerlendirmek için.');
+  no('Rutin geniş laboratuvar ve görüntüleme','Anafilaksi klinik tanıdır; tetkikler adrenalin ve resüsitasyonu geciktirmemelidir.');
+  add('Serum triptaz','Laboratuvar',3,'Tanı belirsizse uygun zaman penceresinde, akut tedaviyi geciktirmeden.');
+ }
+ if(scenario==='dka'){
+  add('Yatak başı glukoz','Laboratuvar',1,'Acil doğrulama ve tedavi izlemi.');add('Venöz kan gazı','Laboratuvar',1,'pH ve bikarbonat değerlendirmesi.');add('Elektrolitler + kreatinin','Laboratuvar',1,'Potasyum ve böbrek işlevi tedavi güvenliği için.');add('Serum/kapiller keton','Laboratuvar',1,'Ketozun doğrulanması ve izlemi.');add('Hesaplanan anyon açıklığı','Laboratuvar',2,'Metabolik asidozun takibi.');
+  if(d.infection)add('Kültürler ve odak görüntülemesi','Mikrobiyoloji',2,'Enfeksiyon tetikleyicisi şüphesinde hedefe yönelik.');
+  no('Rutin serum osmolalitesi','HHS, bilinç bozukluğu veya belirgin hiperosmolarite şüphesi yoksa her hastada zorunlu değildir.');
+ }
+ if(scenario==='lowRiskViral'){
+  no('Prokalsitonin','Tipik düşük riskli viral üst solunum yolu enfeksiyonunda rutin önerilmez.');no('CRP','Komplikasyon veya bakteriyel enfeksiyon şüphesi yoksa rutin gerekli değildir.');no('Akciğer grafisi','Hipoksemi, fokal akciğer bulgusu veya ciddi klinik yoksa rutin önerilmez.');no('Geniş viral PCR paneli','Sonucu yönetimi değiştirmeyecekse rutin kullanımı düşük değerlidir.');
+  add('Klinik değerlendirme ve vital bulgular','İzlem',1,'Düşük risk doğrulaması ve güvenlik ağı için.');
+ }
+ if(d.unstable&&!rec.some(x=>x.name.includes('Kan gazı')))add('Kan gazı + laktat','Laboratuvar',1,'Hemodinamik instabilitede perfüzyon ve asit-baz değerlendirmesi.');
+ if(d.pregnancy&&!warnings.length)warnings.push('Gebelik/olası gebelikte radyasyon, kontrast ve ilaç maruziyeti ayrıca değerlendirilmelidir.');
+ if(d.renal)warnings.push('Kontrastlı inceleme ve nefrotoksik işlemler için böbrek işlevi ve risk-yarar dengesi doğrulanmalıdır.');
+ rec.sort((a,b)=>a.priority-b.priority||a.group.localeCompare(b.group,'tr'));
+ return {recommended:rec,avoid,warnings,scenario};
+}
+function readTestOrderInputs(){const g=id=>document.getElementById(id);return{scenario:g('toScenario')?.value||'chestPain',age:g('toAge')?.value,sex:g('toSex')?.value||'unknown',unstable:!!g('toUnstable')?.checked,hypoxia:!!g('toHypoxia')?.checked,pregnancy:!!g('toPregnancy')?.checked,renal:!!g('toRenal')?.checked,anticoag:!!g('toAnticoag')?.checked,focalNeuro:!!g('toFocalNeuro')?.checked,percNegative:!!g('toPercNegative')?.checked,infection:!!g('toInfection')?.checked}}
+function testOrderItemHtml(x,avoid=false){return `<div class="test-order-item ${avoid?'avoid':x.priority===1?'strong':'consider'}"><b>${esc(x.name)}${avoid?'':` <span class="test-priority p${x.priority}">P${x.priority}</span>`}</b><div>${esc(x.reason)}</div>${avoid?'':`<div class="test-order-meta">${esc(x.group)}</div>`}</div>`}
+function renderTestOrderEngine(){const r=testOrderEvaluate(readTestOrderInputs()),rec=document.getElementById('testOrderRecommended'),avoid=document.getElementById('testOrderAvoid'),warn=document.getElementById('testOrderWarnings'),sum=document.getElementById('testOrderSummary');if(rec)rec.innerHTML=r.recommended.length?r.recommended.map(x=>testOrderItemHtml(x)).join(''):'<div class="muted">Öneri oluşmadı.</div>';if(avoid)avoid.innerHTML=r.avoid.length?r.avoid.map(x=>testOrderItemHtml(x,true)).join(''):'<div class="muted">Belirgin gereksiz istem uyarısı yok.</div>';if(warn)warn.innerHTML=r.warnings.map(x=>`<div class="panel warn">⚠️ ${esc(x)}</div>`).join('');const text=['AKILLI TETKİK İSTEM ÖZETİ',...r.recommended.map(x=>`P${x.priority} | ${x.group} | ${x.name} — ${x.reason}`),...(r.avoid.length?['','GEREKSİZ / ERTELENEBİLİR',...r.avoid.map(x=>`- ${x.name} — ${x.reason}`)]:[]),...(r.warnings.length?['','GÜVENLİK NOTLARI',...r.warnings.map(x=>`- ${x}`)]:[])].join('\n');if(sum)sum.textContent=text;return r}
+function copyTestOrderSummary(){const r=renderTestOrderEngine(),txt=document.getElementById('testOrderSummary')?.textContent||'';navigator.clipboard?.writeText(txt);return r}
+function clearTestOrderInputs(){['toAge'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['toUnstable','toHypoxia','toPregnancy','toRenal','toAnticoag','toFocalNeuro','toPercNegative','toInfection'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false});const s=document.getElementById('toScenario');if(s)s.value='chestPain';const sex=document.getElementById('toSex');if(sex)sex.value='unknown';renderTestOrderEngine()}
+function runTestOrderEngineTests(){
+ const T=[];const add=(name,data,check)=>T.push({name,data,check});const has=(r,n)=>r.recommended.some(x=>x.name.includes(n)),avoids=(r,n)=>r.avoid.some(x=>x.name.includes(n));
+ const scenarios=['chestPain','dyspnea','abdominalPain','stroke','sepsis','syncope','trauma','anaphylaxis','dka','lowRiskViral'];
+ scenarios.forEach(sc=>add(`${sc} öneri üretir`,{scenario:sc},r=>r.recommended.length>0));
+ add('Göğüs ağrısı EKG',{scenario:'chestPain'},r=>has(r,'12 derivasyon EKG'));add('Göğüs ağrısı troponin',{scenario:'chestPain'},r=>has(r,'troponin'));add('PERC negatif D-dimer yok',{scenario:'chestPain',percNegative:true},r=>avoids(r,'D-dimer'));add('PERC negatif CTPA yok',{scenario:'dyspnea',percNegative:true},r=>avoids(r,'BT pulmoner'));
+ add('Dispne akciğer grafisi',{scenario:'dyspnea'},r=>has(r,'Akciğer grafisi'));add('Hipoksik dispne kan gazı P1',{scenario:'dyspnea',hypoxia:true},r=>r.recommended.some(x=>x.name==='Kan gazı'&&x.priority===1));
+ add('Karın ağrısı hemogram',{scenario:'abdominalPain'},r=>has(r,'Hemogram'));add('Üreme çağı beta hCG',{scenario:'abdominalPain',sex:'female',age:30},r=>has(r,'β-hCG'));add('Erkekte beta hCG yok',{scenario:'abdominalPain',sex:'male',age:30},r=>!has(r,'β-hCG'));add('İnstabil batın USG',{scenario:'abdominalPain',unstable:true},r=>has(r,'Yatak başı USG'));
+ add('İnme kranial BT',{scenario:'stroke'},r=>has(r,'Kontrastsız kranial BT'));add('İnme glukoz',{scenario:'stroke'},r=>has(r,'Kan şekeri'));add('İnme BTA',{scenario:'stroke'},r=>has(r,'BT anjiyografi'));add('İnme renal uyarı',{scenario:'stroke',renal:true},r=>r.warnings.length>=1);
+ add('Sepsis laktat',{scenario:'sepsis'},r=>has(r,'Laktat'));add('Sepsis kültür',{scenario:'sepsis'},r=>has(r,'Kan kültürü'));add('Sepsis PCT uyarı',{scenario:'sepsis'},r=>avoids(r,'prokalsitonin'));add('Şok sepsis kan gazı',{scenario:'sepsis',unstable:true},r=>has(r,'Kan gazı'));
+ add('Senkop EKG',{scenario:'syncope'},r=>has(r,'12 derivasyon EKG'));add('Senkop glukoz',{scenario:'syncope'},r=>has(r,'glukoz'));add('Düşük risk senkop BT yok',{scenario:'syncope'},r=>avoids(r,'kranial BT'));add('Antikoag senkop BT',{scenario:'syncope',anticoag:true},r=>has(r,'kranial BT'));
+ add('Travma eFAST',{scenario:'trauma'},r=>has(r,'eFAST'));add('Travma crossmatch',{scenario:'trauma'},r=>has(r,'cross-match'));add('Stabil travma BT',{scenario:'trauma'},r=>has(r,'Travma protokollü'));add('Gebelik travma uyarı',{scenario:'trauma',pregnancy:true},r=>r.warnings.length>=1);
+ add('Anafilaksi monitör',{scenario:'anaphylaxis'},r=>has(r,'monitörizasyon'));add('Anafilaksi rutin test yok',{scenario:'anaphylaxis'},r=>avoids(r,'Rutin geniş'));add('Anafilaksi triptaz',{scenario:'anaphylaxis'},r=>has(r,'triptaz'));add('İnstabil anafilaksi gaz',{scenario:'anaphylaxis',unstable:true},r=>has(r,'Kan gazı'));
+ add('DKA glukoz',{scenario:'dka'},r=>has(r,'glukoz'));add('DKA VBG',{scenario:'dka'},r=>has(r,'Venöz kan gazı'));add('DKA keton',{scenario:'dka'},r=>has(r,'keton'));add('DKA enfeksiyon kültür',{scenario:'dka',infection:true},r=>has(r,'Kültürler'));add('DKA osmolalite uyarı',{scenario:'dka'},r=>avoids(r,'osmolalitesi'));
+ add('Viral PCT yok',{scenario:'lowRiskViral'},r=>avoids(r,'Prokalsitonin'));add('Viral CRP yok',{scenario:'lowRiskViral'},r=>avoids(r,'CRP'));add('Viral grafi yok',{scenario:'lowRiskViral'},r=>avoids(r,'Akciğer grafisi'));add('Viral PCR yok',{scenario:'lowRiskViral'},r=>avoids(r,'viral PCR'));
+ add('İnstabil genel kan gazı',{scenario:'chestPain',unstable:true},r=>has(r,'Kan gazı'));add('Gebelik güvenlik notu',{scenario:'chestPain',pregnancy:true},r=>r.warnings.some(x=>x.includes('Gebelik')));add('Renal güvenlik notu',{scenario:'chestPain',renal:true},r=>r.warnings.some(x=>x.includes('Kontrastlı')));
+ add('Öncelik sıralı',{scenario:'sepsis'},r=>r.recommended.every((x,i,a)=>i===0||a[i-1].priority<=x.priority));add('P1 mevcut',{scenario:'stroke'},r=>r.recommended.some(x=>x.priority===1));add('Gruplar mevcut',{scenario:'chestPain'},r=>r.recommended.every(x=>!!x.group));
+ add('Göğüs ağrısı seri troponin',{scenario:'chestPain'},r=>has(r,'Seri troponin'));add('Dispne BNP',{scenario:'dyspnea'},r=>has(r,'BNP'));
+ add('Karın ağrısı idrar',{scenario:'abdominalPain'},r=>has(r,'İdrar analizi'));add('Sepsis idrar kültürü',{scenario:'sepsis'},r=>has(r,'İdrar analizi ve kültürü'));
+ add('Senkop geniş panel uyarısı',{scenario:'syncope'},r=>avoids(r,'geniş laboratuvar'));
+ // total 60
+ if(T.length!==60)throw new Error(`Test sayısı ${T.length}, 60 olmalı`);
+ const runs=T.map(t=>{try{const r=testOrderEvaluate(t.data),pass=!!t.check(r);return{name:t.name,pass,detail:pass?'Beklenen davranış doğrulandı.':JSON.stringify({recommended:r.recommended.map(x=>x.name),avoid:r.avoid.map(x=>x.name),warnings:r.warnings})}}catch(e){return{name:t.name,pass:false,detail:String(e.message||e)}}});
+ const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,sum=document.getElementById('testOrderScenarioSummary'),box=document.getElementById('testOrderScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Tetkik istem motoru kontrolü başarısız':'Akıllı tetkik istem motoru doğrulandı'}</b><br>🧪 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastTestOrderReport=['ACİL KLİNİK ASİSTANI AKILLI TETKİK İSTEM MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v6.1.0 Beta',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('testOrderScenarioCard')?.setAttribute('open','');return runs}
+function downloadTestOrderEngineReport(){if(!lastTestOrderReport)runTestOrderEngineTests();const blob=new Blob([lastTestOrderReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-tetkik-motoru-v6.1.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+document.addEventListener('DOMContentLoaded',()=>{try{renderTestOrderEngine()}catch(e){console.error('Test order init',e)}});
 
 </script>
 </body></html>
