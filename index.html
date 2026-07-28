@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.3.1 • Radyoloji Negatif İfade Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.4.0 Beta • Akıllı İlaç Güvenliği Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -129,6 +129,33 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="radiologyEnginePanel" class="safety-grid"><div class="muted">Rapor metni girildiğinde kritik bulgular ve sade özet burada görünür.</div></div>
 </div>
 
+
+<div class="card" id="medicationSafetyCard">
+ <div class="section-title"><h3>Akıllı ilaç güvenliği ve etkileşim motoru</h3><span class="phase-badge">v5.4</span></div>
+ <p class="muted">Seçilen ilaçları hasta özellikleriyle birlikte tarar; önemli ilaç–ilaç, ilaç–hastalık, QT, kanama, böbrek, karaciğer, gebelik ve yaş uyarılarını görünür kılar. Reçete veya otomatik tedavi emri oluşturmaz.</p>
+ <div class="grid">
+  <label>İlaçlar (virgül veya satırla ayırın)<textarea id="medSafetyDrugs" rows="5" placeholder="Örn. warfarin, ibuprofen, sertralin" oninput="renderMedicationSafetyEngine()"></textarea></label>
+  <div class="grid">
+   <label>Yaş<input id="medSafetyAge" type="number" min="0" step="1" placeholder="Örn. 72" oninput="renderMedicationSafetyEngine()"></label>
+   <label>eGFR (mL/dk/1,73 m²)<input id="medSafetyEgfr" type="number" min="0" step="1" placeholder="Örn. 45" oninput="renderMedicationSafetyEngine()"></label>
+   <label>Potasyum (mmol/L)<input id="medSafetyK" type="number" step="0.1" placeholder="Örn. 3.1" oninput="renderMedicationSafetyEngine()"></label>
+   <label>QTc (ms)<input id="medSafetyQtc" type="number" step="1" placeholder="Örn. 480" oninput="renderMedicationSafetyEngine()"></label>
+  </div>
+ </div>
+ <div class="question"><div class="question-title">Hasta güvenlik bağlamı</div><div class="choices">
+  <label class="choice"><input type="checkbox" id="medSafetyPregnancy" onchange="renderMedicationSafetyEngine()">Gebelik / olası gebelik</label>
+  <label class="choice"><input type="checkbox" id="medSafetyBreastfeeding" onchange="renderMedicationSafetyEngine()">Emzirme</label>
+  <label class="choice"><input type="checkbox" id="medSafetyHepatic" onchange="renderMedicationSafetyEngine()">Belirgin karaciğer hastalığı</label>
+  <label class="choice"><input type="checkbox" id="medSafetyBleeding" onchange="renderMedicationSafetyEngine()">Aktif kanama / yüksek kanama riski</label>
+  <label class="choice"><input type="checkbox" id="medSafetyAsthma" onchange="renderMedicationSafetyEngine()">Astım / NSAİİ duyarlılığı</label>
+  <label class="choice"><input type="checkbox" id="medSafetySeizure" onchange="renderMedicationSafetyEngine()">Epilepsi / nöbet eşiği düşüklüğü</label>
+ </div></div>
+ <label>Bilinen ilaç alerjileri<input id="medSafetyAllergies" type="text" placeholder="Örn. penisilin, sefalosporin, NSAİİ" oninput="renderMedicationSafetyEngine()"></label>
+ <div class="compact-actions no-print"><button class="primary" onclick="renderMedicationSafetyEngine()">Güvenlik taramasını çalıştır</button><button onclick="copyMedicationSafetySummary()">Özeti kopyala</button><button onclick="clearMedicationSafetyInputs()">Temizle</button></div>
+ <div id="medicationSafetyPanel" class="safety-grid"><div class="muted">İlaçlar ve hasta özellikleri girildiğinde güvenlik uyarıları burada görünür.</div></div>
+ <p class="muted">Uyarılar sınırlı bir çevrimdışı kural kütüphanesine dayanır. Güncel KÜB, kurum protokolü, etkileşim veri tabanı, doz, endikasyon ve hastanın tamamı ayrıca doğrulanmalıdır.</p>
+</div>
+
 <div class="card" id="professionalDocCard">
  <div class="section-title"><h3>Akıllı klinik dokümantasyon</h3><span class="phase-badge">v3.7</span></div>
  <div class="doc-kind"><label>Belge türü<select id="docType" onchange="renderProfessionalDocs()"><option value="consult">Konsültasyon notu</option><option value="referral">Sevk notu</option><option value="discharge">Taburculuk notu</option><option value="epicrisis">Acil epikriz</option><option value="handover">Devir / yatış notu</option><option value="patientInfo">Hasta bilgilendirme metni</option></select></label><button class="primary" onclick="renderProfessionalDocs()">Belgeyi oluştur</button></div>
@@ -200,6 +227,15 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <p class="muted">Kaynak yaklaşımı: pediatrik ETAT triyajı, ateşli çocuk trafik ışığı ve standart kilo-temelli matematik. Referans aralıkları yaşa, ateşe, ağlamaya ve yerel protokole göre değişebilir; ilaç ve sıvı uygulamasından önce güncel kurum protokolü ile preparat konsantrasyonu doğrulanmalıdır.</p>
 </div>
 
+
+
+<details class="card collapse-card no-print" id="medicationSafetyScenarioCard">
+ <summary>İlaç güvenliği motoru doğrulama paneli <span class="phase-badge">v5.4</span></summary>
+ <p class="muted">Kanama, QT, serotonerjik toksisite, böbrek, gebelik, alerji, yaş ve hastalık etkileşimlerini 30 senaryoda sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runMedicationSafetyTests()">30 ilaç güvenliği senaryosunu çalıştır</button><button onclick="downloadMedicationSafetyReport()">Raporu TXT indir</button></div>
+ <div id="medicationSafetyScenarioSummary" class="panel neutral">Henüz ilaç güvenliği testi çalıştırılmadı.</div>
+ <div id="medicationSafetyScenarioResults" class="safety-grid"></div>
+</details>
 
 <details class="card collapse-card no-print" id="laboratoryScenarioCard">
  <summary>Laboratuvar motoru doğrulama paneli <span class="phase-badge">v5.2</span></summary>
@@ -1728,7 +1764,7 @@ function loadTestCase(type){
  S={...S,...base,...(cases[type]||{})};S.qIndex=0;S.chatLog=[];currentStep=0;render();
 }
 
-function updateAll(){renderTestStewardship();collect();const cr=criticals(),p=el('criticalPanel');if(el('instantAction'))el('instantAction').innerHTML=`<h3>Şimdi ne yapmalıyım?</h3><strong>${esc(immediateActionText())}</strong>`;if(el('treatmentCard'))el('treatmentCard').open=!quickMode||cr.length>0;if(el('diagnosisCard'))el('diagnosisCard').open=!quickMode;if(el('expertCard'))el('expertCard').open=!quickMode;if(el('livePhase'))el('livePhase').innerHTML=livePhaseHTML();if(cr.length){p.className='panel urgent';el('criticalText').innerHTML=`<b>${cr.length} kritik bulgu:</b><ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`}else{p.className='panel ok';el('criticalText').textContent='Girilen verilere göre kritik eşik saptanmadı; klinik değerlendirme sürdürülmeli.'}const ap=actionPlan();el('doNow').innerHTML=ap.now.map(x=>`<li>${esc(x)}</li>`).join('');const tp=treatmentPlan();el('treatmentPlan').innerHTML=tp.tx.map(x=>`<li>${esc(x)}</li>`).join('')+(tp.contraind.length?`<li><b>Dikkat:</b> ${esc(tp.contraind.join(' | '))}</li>`:'');el('whileWaiting').innerHTML=ap.wait.map(x=>`<li>${esc(x)}</li>`).join('');el('avoidList').innerHTML=ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('');const ds=diagnoses().slice(0,6);el('dxList').innerHTML=ds.map((x,i)=>`<div class="dx-row"><div class="dx-top"><span>${i+1}. ${esc(x.name)}</span><span>${x.score}/100</span></div><div class="bar"><span style="width:${x.score}%"></span></div><div class="evidence">${x.plus.slice(0,3).map(y=>`<span class="pill">+ ${esc(y)}</span>`).join('')||'Henüz destekleyici veri yok'} ${x.minus.slice(0,2).map(y=>`<span class="pill">− ${esc(y)}</span>`).join('')}</div></div>`).join('');el('clinicalNote').value=noteText(ds,cr,ap);if(el('reassessmentBox'))el('reassessmentBox').innerHTML=reassessmentHTML();renderEcgInterpretation();renderLabInterpretation();renderDrugRecommendation();renderDrugCard();renderIcdSuggestions();renderExpertPanel();renderSepsis();renderNeuro();renderConsultant();renderRiskScores();renderScoreSafety();renderReasoning();renderDispositionSafety();renderRedFlagEngine();renderImagingDecisionSupport();renderConsultDispositionSupport();renderClinicalCore();renderProfessionalDocs();renderAIClinicalAssistant()}
+function updateAll(){renderTestStewardship();collect();const cr=criticals(),p=el('criticalPanel');if(el('instantAction'))el('instantAction').innerHTML=`<h3>Şimdi ne yapmalıyım?</h3><strong>${esc(immediateActionText())}</strong>`;if(el('treatmentCard'))el('treatmentCard').open=!quickMode||cr.length>0;if(el('diagnosisCard'))el('diagnosisCard').open=!quickMode;if(el('expertCard'))el('expertCard').open=!quickMode;if(el('livePhase'))el('livePhase').innerHTML=livePhaseHTML();if(cr.length){p.className='panel urgent';el('criticalText').innerHTML=`<b>${cr.length} kritik bulgu:</b><ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`}else{p.className='panel ok';el('criticalText').textContent='Girilen verilere göre kritik eşik saptanmadı; klinik değerlendirme sürdürülmeli.'}const ap=actionPlan();el('doNow').innerHTML=ap.now.map(x=>`<li>${esc(x)}</li>`).join('');const tp=treatmentPlan();el('treatmentPlan').innerHTML=tp.tx.map(x=>`<li>${esc(x)}</li>`).join('')+(tp.contraind.length?`<li><b>Dikkat:</b> ${esc(tp.contraind.join(' | '))}</li>`:'');el('whileWaiting').innerHTML=ap.wait.map(x=>`<li>${esc(x)}</li>`).join('');el('avoidList').innerHTML=ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('');const ds=diagnoses().slice(0,6);el('dxList').innerHTML=ds.map((x,i)=>`<div class="dx-row"><div class="dx-top"><span>${i+1}. ${esc(x.name)}</span><span>${x.score}/100</span></div><div class="bar"><span style="width:${x.score}%"></span></div><div class="evidence">${x.plus.slice(0,3).map(y=>`<span class="pill">+ ${esc(y)}</span>`).join('')||'Henüz destekleyici veri yok'} ${x.minus.slice(0,2).map(y=>`<span class="pill">− ${esc(y)}</span>`).join('')}</div></div>`).join('');el('clinicalNote').value=noteText(ds,cr,ap);if(el('reassessmentBox'))el('reassessmentBox').innerHTML=reassessmentHTML();renderEcgInterpretation();renderLabInterpretation();renderDrugRecommendation();renderDrugCard();renderIcdSuggestions();renderExpertPanel();renderSepsis();renderNeuro();renderConsultant();renderRiskScores();renderScoreSafety();renderReasoning();renderDispositionSafety();renderRedFlagEngine();renderImagingDecisionSupport();renderConsultDispositionSupport();renderClinicalCore();renderProfessionalDocs();renderAIClinicalAssistant();renderMedicationSafetyEngine()}
 function noteText(ds,cr,ap){return `ACİL KLİNİK DEĞERLENDİRME TASLAĞI\nVaka aşaması: ${casePhaseAnalysis().phase}\nİstenen tetkikler: ${(S.orderedTests||[]).join(', ')||'henüz seçilmedi'}\nHasta: ${S.age||'?'} yaş, ${S.sex||'cinsiyet belirtilmedi'}\nBaşvuru: ${S.complaint}; şiddet ${S.severity||'?'} /10; ${S.notes||'hasta ifadesi girilmedi'}\nVital: TA ${S.sbp||'?'} / ${S.dbp||'?'} mmHg, nabız ${S.pulse||'?'} /dk, SS ${S.rr||'?'} /dk, SpO₂ %${S.spo2||'?'}, ateş ${S.temp||'?'} °C, bilinç ${S.mental||'?'}\nÖykü: başlangıç ${S.onset||'?'}, süre ${S.duration||'?'}, karakter ${S.painType||'?'}, efor ${S.exertional||'?'}, plevritik ${S.pleuritic||'?'}, pozisyon ${S.positional||'?'}, palpasyon ${S.palpation||'?'}\nYayılım: ${S.radiation.join(', ')||'yok/belirtilmedi'}\nEşlik eden: ${S.symptoms.join(', ')||'yok/belirtilmedi'}\nÖzgeçmiş/risk: ${S.history.join(', ')||'yok/belirtilmedi'}; sigara ${S.smoking||'?'}; madde ${S.substance||'?'}\nİlaçlar: ${S.meds||'belirtilmedi'} | Alerji: ${S.allergy||'belirtilmedi'} | Ameliyat: ${S.surgery||'belirtilmedi'}\nMuayene: ${S.exam.join(', ')||'henüz girilmedi'}\nTetkik: EKG ${S.ecg}; yapılandırılmış EKG: ritim ${S.ecgRhythm}, hız ${S.ecgRate||'?'}/dk, aks ${S.ecgAxis}, PR ${S.ecgPR||'?'} ms, QRS ${S.ecgQRS||'?'} ms, QTc ${S.ecgQTc||'?'} ms, bulgular ${S.ecgFindings.join(', ')||'yok/belirtilmedi'}, bölge ${S.ecgTerritory.join(', ')||'belirtilmedi'}, doktor yorumu ${S.ecgDoctorNote||'yok'}; ilk troponin ${S.troponin}; seri troponin ${S.repeatTroponin}; D-dimer ${S.ddimer}; akciğer grafisi ${S.cxr}; Hb ${S.hb||'?'}; kreatinin ${S.creatinine||'?'}\nLaboratuvar: WBC ${S.wbc||'?'}, Plt ${S.platelet||'?'}, Na ${S.sodium||'?'}, K ${S.potassium||'?'}, Cl ${S.chloride||'?'}, glukoz ${S.glucose||'?'}, eGFR ${S.egfr||'?'}, Ca ${S.calcium||'?'}, albümin ${S.albumin||'?'}, Mg ${S.magnesium||'?'}, CRP ${S.crp||'?'}, PCT ${S.procalcitonin||'?'}, laktat ${S.lactate||'?'}, AST/ALT ${S.ast||'?'}/${S.alt||'?'}, bilirubin ${S.bilirubin||'?'}, lipaz ${S.lipase||'?'}, keton ${S.ketone}${pregnancyRelevant()?`, gebelik testi ${S.pregnancyTest}`:''}\nKan gazı: pH ${S.ph||'?'}, pCO₂ ${S.pco2||'?'}, HCO₃ ${S.hco3||'?'}, pO₂ ${S.po2||'?'}, BE ${S.baseExcess||'?'}\nAkıllı tetkik istemi: gerekli ${(testRecommendationEngine().required||[]).join(', ')||'yok'}; düşünülebilir ${(testRecommendationEngine().consider||[]).join(', ')||'yok'}; rutin önerilmeyen ${(testRecommendationEngine().avoid||[]).join(', ')||'yok'}
 Laboratuvar yorumu: ${[...labAnalysis().urgent,...labAnalysis().out,...labAnalysis().calc].join(' | ')}\nSepsis/şok: ${sepsisAnalysis().out.join(' | ')}; uyarılar ${sepsisAnalysis().urgent.join(' | ')||'yok'}; plan ${sepsisAnalysis().actions.join(' | ')||'yok'}
 Nöroloji: ${neuroAnalysis().out.join(' | ')}; uyarılar ${neuroAnalysis().urgent.join(' | ')||'yok'}; plan ${neuroAnalysis().actions.join(' | ')||'yok'}; BT ${S.brainCT}; BTA ${S.ctaResult}; son normal ${S.lastKnownWell||'?'}; antikoagülan ${S.anticoagulantType}.
@@ -3056,5 +3092,101 @@ function downloadGuidelineEngineReport(){if(!lastGuidelineEngineReport)runGuidel
 // Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
 load();
 setTimeout(()=>{syncDoseInputs();renderDoseCalculator();renderPediatricEmergency();renderAIClinicalAssistant();renderGuidelineEngine();renderLaboratoryEngine()},0);
+
+
+/* v5.4 Akıllı İlaç Güvenliği ve Etkileşim Motoru */
+let lastMedicationSafetyReport='';
+function medNorm(v){return String(v||'').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i').replace(/[^a-z0-9çğıöşü+\- ]/g,' ').replace(/\s+/g,' ').trim()}
+function medParseDrugs(v){return [...new Set(String(v||'').split(/[\n,;]+/).map(medNorm).filter(Boolean))]}
+function medHas(drugs,names){return drugs.some(d=>names.some(n=>d.includes(medNorm(n))))}
+function medicationSafetyEngine(data={}){
+ const drugs=medParseDrugs(data.drugs), age=Number(data.age)||0, egfr=data.egfr===''||data.egfr==null?null:Number(data.egfr), k=data.k===''||data.k==null?null:Number(data.k), qtc=data.qtc===''||data.qtc==null?null:Number(data.qtc), allergies=medNorm(data.allergies);
+ const alerts=[]; const add=(level,title,detail,action)=>alerts.push({level,title,detail,action});
+ const nsaid=['ibuprofen','diklofenak','naproksen','ketoprofen','indometazin','etodolak','meloksikam'];
+ const anticoag=['warfarin','apiksaban','rivaroksaban','dabigatran','edoksaban','enoksaparin','heparin'];
+ const antiplatelet=['aspirin','asetilsalisilik asit','klopidogrel','prasugrel','tikagrelor'];
+ const ssri=['sertralin','fluoksetin','paroksetin','sitalopram','essitalopram','venlafaksin','duloksetin'];
+ const qt=['amiodaron','sotalol','klaritromisin','eritromisin','azitromisin','moksifloksasin','levofloksasin','ondansetron','haloperidol','sitalopram','essitalopram','metadon'];
+ const statins=['simvastatin','lovastatin','atorvastatin'];
+ const acearb=['ramipril','enalapril','lisinopril','perindopril','losartan','valsartan','kandesartan'];
+ const potassium=['spironolakton','eplerenon','potasyum'];
+ const sedatives=['diazepam','midazolam','alprazolam','lorazepam','klonazepam','zolpidem','morfin','fentanil','oksikodon','tramadol'];
+ const hasNsaid=medHas(drugs,nsaid), hasAnticoag=medHas(drugs,anticoag), hasAntiplatelet=medHas(drugs,antiplatelet);
+ if(hasAnticoag&&hasNsaid)add('critical','Antikoagülan + NSAİİ','Majör gastrointestinal ve diğer kanama riski belirgin artabilir.','Kombinasyonu zorunluluk ve alternatifler açısından yeniden değerlendir; kanama bulgularını izle.');
+ if(hasAnticoag&&hasAntiplatelet)add('high','Antikoagülan + antiagregan','Kanama riski artar; yalnız net endikasyon ve uygun süreyle kullanılmalıdır.','Endikasyon, süre ve gastroproteksiyon gereksinimini doğrula.');
+ if(hasNsaid&&hasAntiplatelet)add('high','NSAİİ + antiagregan','Gastrointestinal kanama riski artabilir.','Daha güvenli analjezi seçeneğini ve gastroproteksiyonu değerlendir.');
+ if(data.bleeding&&(hasAnticoag||hasAntiplatelet||hasNsaid))add('critical','Aktif/yüksek kanama riskiyle uyumsuzluk','Seçilen ilaçlardan biri hemostazı bozabilir veya kanamayı artırabilir.','İlaçları uygulamadan önce kanama odağı ve acil risk–yarar değerlendirmesi yap.');
+ if(medHas(drugs,['tramadol'])&&medHas(drugs,ssri))add('critical','Tramadol + serotonerjik antidepresan','Serotonin sendromu ve nöbet riski artabilir.','Alternatif analjeziyi değerlendir; ajitasyon, klonus, hiperrefleksi ve ateşi izle.');
+ if(medHas(drugs,['linezolid','moklobemid','fenelzin','tranilsipromin'])&&medHas(drugs,ssri.concat(['tramadol'])))add('critical','MAOI etkili ilaç + serotonerjik ajan','Ciddi serotonin toksisitesi riski vardır.','Birlikte kullanımdan kaçın; gerekli yıkama süresini doğrula.');
+ const qtCount=drugs.filter(d=>qt.some(x=>d.includes(medNorm(x)))).length;
+ if(qtCount>=2)add('high','Birden fazla QT uzatan ilaç',`${qtCount} QT riski taşıyan ilaç birlikte seçildi.`,'EKG/QTc, elektrolitler ve alternatifleri değerlendir.');
+ if(qtCount>=1&&k!==null&&k<3.5)add('critical','QT riski + hipokalemi','Hipokalemi torsades de pointes riskini artırır.','Elektroliti düzelt ve QT uzatan ilaç gereksinimini yeniden değerlendir.');
+ if(qtCount>=1&&qtc!==null&&qtc>=500)add('critical','QT uzatan ilaç + QTc ≥500 ms','Ciddi ventriküler aritmi riski artmıştır.','İlacı/ilaçları durdurma veya değiştirme gereğini acilen değerlendir; monitörizasyon sağla.');
+ if(medHas(drugs,['klaritromisin','eritromisin'])&&medHas(drugs,statins))add('high','Makrolid + CYP3A4 statini','Statin maruziyeti ve miyopati/rabdomiyoliz riski artabilir.','Alternatif antibiyotik/statin veya geçici ara verme seçeneğini doğrula.');
+ if(medHas(drugs,['digoksin'])&&medHas(drugs,['verapamil','amiodaron','klaritromisin']))add('high','Digoksin düzeyini artırabilen kombinasyon','Bradikardi ve digoksin toksisitesi riski artabilir.','Doz, böbrek fonksiyonu, nabız ve gerekirse düzey takibini değerlendir.');
+ if(medHas(drugs,['klopidogrel'])&&medHas(drugs,['omeprazol','esomeprazol']))add('warning','Klopidogrel + omeprazol/esomeprazol','CYP2C19 inhibisyonu klopidogrel aktivasyonunu azaltabilir.','Gerekliyse pantoprazol gibi daha düşük etkileşimli seçeneği değerlendir.');
+ if(medHas(drugs,['metformin'])&&egfr!==null&&egfr<30)add('critical','Metformin ve eGFR <30','Laktik asidoz riski nedeniyle kullanım genellikle uygun değildir.','Metformini yeniden değerlendir; güncel renal doz kılavuzunu doğrula.');
+ if(medHas(drugs,['dabigatran'])&&egfr!==null&&egfr<30)add('critical','Dabigatran ve ileri böbrek yetmezliği','İlaç birikimi ve kanama riski artabilir.','Endikasyona özgü renal kontrendikasyon/doz bilgisini doğrula.');
+ if(medHas(drugs,['nitrofurantoin'])&&egfr!==null&&egfr<30)add('high','Nitrofurantoin ve eGFR <30','Etkinlik azalabilir ve toksisite riski artabilir.','Alternatif antibiyotik seçeneğini değerlendir.');
+ if(medHas(drugs,['gabapentin','pregabalin'])&&egfr!==null&&egfr<60)add('warning','Gabapentinoid için renal doz gereksinimi','Böbrek fonksiyonunda azalma ilaç birikimine yol açabilir.','eGFR’ye göre doz/aralık ayarını doğrula.');
+ if(medHas(drugs,['spironolakton','eplerenon'])&&medHas(drugs,acearb))add('high','RAAS blokeri + potasyum tutucu diüretik','Hiperkalemi ve böbrek fonksiyon bozulması riski artabilir.','Potasyum ve kreatinini yakın izle.');
+ if(medHas(drugs,acearb)&&medHas(drugs,potassium)&&k!==null&&k>=5.0)add('critical','Hiperkalemiyle uyumsuz kombinasyon','RAAS blokajı/potasyum artırıcı ajanlar hiperkalemiyi ağırlaştırabilir.','İlaçları ve potasyum alımını acilen yeniden değerlendir.');
+ if(data.pregnancy&&medHas(drugs,['warfarin','ramipril','enalapril','lisinopril','losartan','valsartan','kandesartan','izotretinoin','valproat','metotreksat']))add('critical','Gebelikte yüksek riskli ilaç','Seçilen ilaç fetal zarar veya gebelik komplikasyonu riski taşıyabilir.','Uygulamadan önce gebelik haftası, endikasyon ve güvenli alternatifi uzman/kılavuzla doğrula.');
+ if(data.pregnancy&&hasNsaid)add('high','Gebelikte NSAİİ uyarısı','Risk gebelik haftasına göre değişir; özellikle ileri gebelikte fetal ve obstetrik riskler vardır.','Gebelik haftasını doğrula ve alternatif analjeziyi değerlendir.');
+ if(data.breastfeeding&&medHas(drugs,['kodein','tramadol']))add('high','Emzirmede opioid uyarısı','Bebekte aşırı sedasyon ve solunum depresyonu riski olabilir.','Daha güvenli alternatifi ve bebeğin izlenmesini değerlendir.');
+ if(allergies.includes('penisilin')&&medHas(drugs,['amoksisilin','ampisilin','penisilin','piperasilin']))add('critical','Penisilin alerjisiyle doğrudan eşleşme','Seçilen beta-laktam bilinen alerjen sınıfındadır.','Alerji tipini doğrula; ciddi reaksiyonda uygulamadan kaçın ve alternatif seç.');
+ if((allergies.includes('nsai')||allergies.includes('aspirin'))&&(hasNsaid||medHas(drugs,['aspirin'])))add('critical','NSAİİ/aspirin alerjisiyle eşleşme','Bronkospazm veya ciddi aşırı duyarlılık gelişebilir.','Uygulamadan kaçın ve uygun alternatifi seç.');
+ if(data.asthma&&hasNsaid)add('warning','Astımda NSAİİ duyarlılığı olasılığı','NSAİİ ile tetiklenen solunum hastalığı öyküsü sorgulanmalıdır.','Daha önce aspirin/NSAİİ sonrası reaksiyon olup olmadığını doğrula.');
+ if(data.seizure&&medHas(drugs,['tramadol','bupropion','klozapin']))add('high','Nöbet eşiğini düşüren ilaç','Epilepsi veya nöbet yatkınlığında risk artabilir.','Alternatifi ve nöbet kontrol durumunu değerlendir.');
+ if(data.hepatic&&medHas(drugs,['parasetamol','valproat','metotreksat','izoniazid']))add('high','Karaciğer hastalığında hepatotoksisite/doz uyarısı','Karaciğer rezervi azalmış hastada toksisite riski artabilir.','Doz, toplam günlük maruziyet ve karaciğer testlerini doğrula.');
+ if(age>=65&&medHas(drugs,['diazepam','alprazolam','klonazepam','zolpidem']))add('high','İleri yaşta sedatif–hipnotik','Düşme, deliryum ve bilişsel bozulma riski artabilir.','En düşük doz/kısa süre ve ilaç dışı alternatifleri değerlendir.');
+ if(age>=65&&medHas(drugs,['amitriptilin','imipramin','klomipramin']))add('high','İleri yaşta güçlü antikolinerjik ilaç','Ortostaz, üriner retansiyon, kabızlık ve deliryum riski artabilir.','Daha düşük antikolinerjik yükü olan alternatifi değerlendir.');
+ const sedCount=drugs.filter(d=>sedatives.some(x=>d.includes(medNorm(x)))).length;
+ if(sedCount>=2)add('high','Birden fazla santral sinir sistemi depresanı',`${sedCount} sedatif/opioid ajan birlikte seçildi.`,'Solunum depresyonu, sedasyon ve düşme açısından dozları ve monitörizasyonu değerlendir.');
+ if(drugs.length===0)return {drugs,alerts:[],risk:'none',summary:'İlaç girilmedi.'};
+ const rank={critical:4,high:3,warning:2,info:1}; const max=Math.max(0,...alerts.map(a=>rank[a.level]||0));
+ return {drugs,alerts,risk:max===4?'critical':max===3?'high':max===2?'warning':'low',summary:alerts.length?`${alerts.length} güvenlik uyarısı üretildi.`:'Kural kütüphanesinde belirgin yüksek riskli etkileşim saptanmadı.'};
+}
+function readMedicationSafetyForm(){const g=id=>document.getElementById(id);return {drugs:g('medSafetyDrugs')?.value||'',age:g('medSafetyAge')?.value||'',egfr:g('medSafetyEgfr')?.value||'',k:g('medSafetyK')?.value||'',qtc:g('medSafetyQtc')?.value||'',pregnancy:!!g('medSafetyPregnancy')?.checked,breastfeeding:!!g('medSafetyBreastfeeding')?.checked,hepatic:!!g('medSafetyHepatic')?.checked,bleeding:!!g('medSafetyBleeding')?.checked,asthma:!!g('medSafetyAsthma')?.checked,seizure:!!g('medSafetySeizure')?.checked,allergies:g('medSafetyAllergies')?.value||''}}
+function renderMedicationSafetyEngine(){const panel=document.getElementById('medicationSafetyPanel');if(!panel)return;const r=medicationSafetyEngine(readMedicationSafetyForm());if(!r.drugs.length){panel.innerHTML='<div class="muted">En az bir ilaç girin.</div>';return r}const cls={critical:'safety-critical',high:'safety-warning',warning:'safety-info',low:'safety-ok'}[r.risk]||'safety-info';const title={critical:'Kritik ilaç güvenliği uyarısı',high:'Yüksek riskli kombinasyon',warning:'Dikkat gerektiren durum',low:'Belirgin yüksek risk saptanmadı'}[r.risk];panel.innerHTML=`<div class="safety-alert ${cls}"><strong>${title}</strong>${r.summary}<div class="safety-tags">${r.drugs.map(x=>`<span class="safety-tag">${esc(x)}</span>`).join('')}</div></div>`+(r.alerts.length?r.alerts.map(a=>`<div class="safety-alert ${{critical:'safety-critical',high:'safety-warning',warning:'safety-info'}[a.level]||'safety-info'}"><strong>${esc(a.title)}</strong><div>${esc(a.detail)}</div><div class="safety-action">Kontrol: ${esc(a.action)}</div></div>`).join(''):'<div class="safety-alert safety-ok"><strong>Kural taraması temiz</strong>Bu sonuç tüm olası etkileşimlerin dışlandığı anlamına gelmez; güncel profesyonel veri tabanıyla doğrulayın.</div>');return r}
+function copyMedicationSafetySummary(){const r=renderMedicationSafetyEngine();if(!r)return;const txt=['İLAÇ GÜVENLİĞİ ÖZETİ',`İlaçlar: ${r.drugs.join(', ')}`,`Risk: ${r.risk}`,r.summary,...r.alerts.map(a=>`- ${a.title}: ${a.detail} Kontrol: ${a.action}`)].join('\n');navigator.clipboard?.writeText(txt)}
+function clearMedicationSafetyInputs(){['medSafetyDrugs','medSafetyAge','medSafetyEgfr','medSafetyK','medSafetyQtc','medSafetyAllergies'].forEach(id=>{const x=document.getElementById(id);if(x)x.value=''});['medSafetyPregnancy','medSafetyBreastfeeding','medSafetyHepatic','medSafetyBleeding','medSafetyAsthma','medSafetySeizure'].forEach(id=>{const x=document.getElementById(id);if(x)x.checked=false});renderMedicationSafetyEngine()}
+function runMedicationSafetyTests(){
+ const T=[
+ ['Warfarin + ibuprofen', {drugs:'warfarin, ibuprofen'},'critical','Antikoagülan + NSAİİ'],
+ ['Apiksaban + diklofenak',{drugs:'apiksaban, diklofenak'},'critical','Antikoagülan + NSAİİ'],
+ ['Warfarin + aspirin',{drugs:'warfarin, aspirin'},'high','Antikoagülan + antiagregan'],
+ ['Aspirin + naproksen',{drugs:'aspirin, naproksen'},'high','NSAİİ + antiagregan'],
+ ['Aktif kanama + rivaroksaban',{drugs:'rivaroksaban',bleeding:true},'critical','Aktif/yüksek kanama'],
+ ['Sertralin + tramadol',{drugs:'sertralin, tramadol'},'critical','Tramadol + serotonerjik'],
+ ['Linezolid + sertralin',{drugs:'linezolid, sertralin'},'critical','MAOI etkili'],
+ ['Amiodaron + klaritromisin',{drugs:'amiodaron, klaritromisin'},'high','Birden fazla QT'],
+ ['QT ilaç + hipokalemi',{drugs:'ondansetron',k:3.0},'critical','QT riski + hipokalemi'],
+ ['QTc 520 + sotalol',{drugs:'sotalol',qtc:520},'critical','QT uzatan ilaç + QTc'],
+ ['Klaritromisin + simvastatin',{drugs:'klaritromisin, simvastatin'},'high','Makrolid + CYP3A4'],
+ ['Digoksin + verapamil',{drugs:'digoksin, verapamil'},'high','Digoksin düzeyini'],
+ ['Klopidogrel + omeprazol',{drugs:'klopidogrel, omeprazol'},'warning','Klopidogrel + omeprazol'],
+ ['Metformin eGFR 25',{drugs:'metformin',egfr:25},'critical','Metformin ve eGFR'],
+ ['Dabigatran eGFR 20',{drugs:'dabigatran',egfr:20},'critical','Dabigatran ve ileri'],
+ ['Nitrofurantoin eGFR 25',{drugs:'nitrofurantoin',egfr:25},'high','Nitrofurantoin ve eGFR'],
+ ['Pregabalin eGFR 40',{drugs:'pregabalin',egfr:40},'warning','Gabapentinoid'],
+ ['Ramipril + spironolakton',{drugs:'ramipril, spironolakton'},'high','RAAS blokeri'],
+ ['Losartan + K 5.8',{drugs:'losartan, potasyum',k:5.8},'critical','Hiperkalemiyle'],
+ ['Gebelik + ramipril',{drugs:'ramipril',pregnancy:true},'critical','Gebelikte yüksek'],
+ ['Gebelik + ibuprofen',{drugs:'ibuprofen',pregnancy:true},'high','Gebelikte NSAİİ'],
+ ['Emzirme + kodein',{drugs:'kodein',breastfeeding:true},'high','Emzirmede opioid'],
+ ['Penisilin alerjisi + amoksisilin',{drugs:'amoksisilin',allergies:'penisilin'},'critical','Penisilin alerjisi'],
+ ['NSAİİ alerjisi + diklofenak',{drugs:'diklofenak',allergies:'NSAİİ'},'critical','NSAİİ/aspirin alerjisi'],
+ ['Astım + ibuprofen',{drugs:'ibuprofen',asthma:true},'warning','Astımda NSAİİ'],
+ ['Epilepsi + tramadol',{drugs:'tramadol',seizure:true},'high','Nöbet eşiğini'],
+ ['Karaciğer hastalığı + parasetamol',{drugs:'parasetamol',hepatic:true},'high','Karaciğer hastalığında'],
+ ['Yaşlı + diazepam',{drugs:'diazepam',age:78},'high','İleri yaşta sedatif'],
+ ['Yaşlı + amitriptilin',{drugs:'amitriptilin',age:75},'high','İleri yaşta güçlü'],
+ ['Morfin + midazolam',{drugs:'morfin, midazolam'},'high','Birden fazla santral']
+ ];
+ const runs=T.map(([name,data,risk,term])=>{try{const r=medicationSafetyEngine(data);const pass=r.risk===risk&&r.alerts.some(a=>medNorm(a.title).includes(medNorm(term)));return {name,pass,detail:pass?'Beklenen güvenlik uyarısı üretildi.':`Beklenen ${risk}/${term}; oluşan ${r.risk}.`}}catch(e){return {name,pass:false,detail:String(e.message||e)}}});
+ const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,sum=document.getElementById('medicationSafetyScenarioSummary'),box=document.getElementById('medicationSafetyScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'İlaç güvenliği kontrolü başarısız':'İlaç güvenliği motoru doğrulandı'}</b><br>💊 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastMedicationSafetyReport=['ACİL KLİNİK ASİSTANI İLAÇ GÜVENLİĞİ MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v5.4.0 Beta',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('medicationSafetyScenarioCard')?.setAttribute('open','');return runs}
+function downloadMedicationSafetyReport(){if(!lastMedicationSafetyReport)runMedicationSafetyTests();const blob=new Blob([lastMedicationSafetyReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-ilac-guvenligi-v5.4.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
 </script>
 </body></html>
