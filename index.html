@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.2.0 Beta • Laboratuvar Yorumlama Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.3.0 Beta • Akıllı Radyoloji Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -108,6 +108,25 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  </div>
  <div class="compact-actions no-print"><button class="primary" onclick="renderLaboratoryEngine()">Sonuçları yorumla</button><button onclick="copyLaboratorySummary()">Özeti kopyala</button><button onclick="clearLaboratoryInputs()">Temizle</button></div>
  <div id="laboratoryEnginePanel" class="safety-grid"><div class="muted">Laboratuvar değerleri girildikçe yorumlar burada görünür.</div></div>
+</div>
+
+<div class="card" id="radiologyEngineCard">
+ <div class="section-title"><h3>Akıllı radyoloji yorum destek motoru</h3><span class="phase-badge">v5.3</span></div>
+ <p class="muted">Radyoloji rapor metnini yapılandırır; akut ve zaman kritik ifadeleri öne çıkarır, sade bir özet ve klinik doğrulama adımları üretir. Görüntüyü incelemez, rapor yazmaz ve radyoloji uzmanı değerlendirmesinin yerini tutmaz.</p>
+ <div class="grid3">
+  <label>Görüntüleme türü<select id="radModality" onchange="renderRadiologyEngine()"><option value="auto">Otomatik algıla</option><option value="xray">Direkt grafi</option><option value="ct">BT</option><option value="mri">MR</option><option value="us">Ultrasonografi</option><option value="angiography">Anjiyografi</option></select></label>
+  <label>Vücut bölgesi<select id="radRegion" onchange="renderRadiologyEngine()"><option value="auto">Otomatik algıla</option><option value="chest">Toraks</option><option value="brain">Beyin / baş</option><option value="abdomen">Batın / pelvis</option><option value="spine">Omurga</option><option value="extremity">Ekstremite</option><option value="vascular">Vasküler</option></select></label>
+  <label>Klinik bağlam<input id="radClinicalContext" type="text" placeholder="Örn. ani dispne, travma, sağ hemiparezi" oninput="renderRadiologyEngine()"></label>
+ </div>
+ <label style="margin-top:10px">Radyoloji raporu<textarea id="radReport" rows="8" placeholder="Rapor metnini buraya yapıştırın..." oninput="renderRadiologyEngine()"></textarea></label>
+ <div class="question"><div class="question-title">Güvenlik bağlamı</div><div class="choices">
+  <label class="choice"><input type="checkbox" id="radPregnancy" onchange="renderRadiologyEngine()">Gebelik / olası gebelik</label>
+  <label class="choice"><input type="checkbox" id="radRenal" onchange="renderRadiologyEngine()">Böbrek işlev bozukluğu</label>
+  <label class="choice"><input type="checkbox" id="radContrast" onchange="renderRadiologyEngine()">Kontrastlı inceleme</label>
+  <label class="choice"><input type="checkbox" id="radTrauma" onchange="renderRadiologyEngine()">Travma bağlamı</label>
+ </div></div>
+ <div class="compact-actions no-print"><button class="primary" onclick="renderRadiologyEngine()">Raporu yorumla</button><button onclick="copyRadiologySummary()">Özeti kopyala</button><button onclick="clearRadiologyInputs()">Temizle</button></div>
+ <div id="radiologyEnginePanel" class="safety-grid"><div class="muted">Rapor metni girildiğinde kritik bulgular ve sade özet burada görünür.</div></div>
 </div>
 
 <div class="card" id="professionalDocCard">
@@ -196,6 +215,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions"><button class="primary" onclick="runGuidelineEngineTests()">40 kılavuz senaryosunu çalıştır</button><button onclick="downloadGuidelineEngineReport()">Raporu TXT indir</button></div>
  <div id="guidelineScenarioSummary" class="panel neutral">Henüz kılavuz motoru testi çalıştırılmadı.</div>
  <div id="guidelineScenarioResults" class="safety-grid"></div>
+</details>
+<details class="card collapse-card no-print" id="radiologyScenarioCard">
+ <summary>Radyoloji motoru doğrulama paneli <span class="phase-badge">v5.3</span></summary>
+ <p class="muted">Akut kanama, pnömotoraks, pulmoner emboli, aort diseksiyonu, obstrüksiyon, perforasyon, apandisit ve negatif ifade ayrımını 24 senaryoda sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runRadiologyEngineTests()">24 radyoloji senaryosunu çalıştır</button><button onclick="downloadRadiologyEngineReport()">Raporu TXT indir</button></div>
+ <div id="radiologyScenarioSummary" class="panel neutral">Henüz radyoloji motoru testi çalıştırılmadı.</div>
+ <div id="radiologyScenarioResults" class="safety-grid"></div>
 </details>
 <details class="card collapse-card no-print" id="aiClinicalScenarioCard">
  <summary>Yapay zekâ klinik asistanı doğrulama paneli <span class="phase-badge">v5.0.1</span></summary>
@@ -2792,6 +2818,83 @@ function runLaboratoryEngineTests(){const C=[
 ['Kritik anemi',{hb:6.5},r=>r.alerts.some(x=>/Kritik anemi/.test(x.title))],['Mikrositik anemi',{hb:9,mcv:72},r=>r.patterns.some(x=>/Mikrositik/.test(x))],['Makrositik anemi',{hb:9,mcv:108},r=>r.patterns.some(x=>/Makrositik/.test(x))],['Lökopeni',{wbc:1.8},r=>r.alerts.some(x=>/lökopeni/i.test(x.title))],['Lökositoz',{wbc:35},r=>r.alerts.some(x=>/lökositoz/i.test(x.title))],['Nötrofil baskınlığı',{neut:85},r=>r.patterns.some(x=>/Nötrofil/.test(x))],['Kritik trombositopeni',{plt:15},r=>r.alerts.some(x=>/Kritik trombositopeni/.test(x.title))],['Hipoglisemi',{glucose:55},r=>r.alerts.some(x=>/Hipoglisemi/.test(x.title))],['Kritik hipoglisemi',{glucose:35},r=>r.alerts.some(x=>/Kritik hipoglisemi/.test(x.title))],['Ağır hiponatremi',{na:116},r=>r.alerts.some(x=>/Ağır hiponatremi/.test(x.title))],['Ağır hipernatremi',{na:165},r=>r.alerts.some(x=>/Ağır hipernatremi/.test(x.title))],['Kritik hipokalemi',{k:2.2},r=>r.alerts.some(x=>/Kritik hipokalemi/.test(x.title))],['Kritik hiperkalemi',{k:6.8},r=>r.alerts.some(x=>/Kritik hiperkalemi/.test(x.title))],['Kreatinin yüksek',{cr:2.4},r=>r.patterns.some(x=>/Kreatinin/.test(x))],['AST ALT çok yüksek',{ast:1400,alt:900},r=>r.alerts.some(x=>/aminotransferaz/.test(x.title))],['CRP yüksek',{crp:150},r=>r.patterns.some(x=>/CRP belirgin/.test(x))],['Troponin yüksek',{troponin:.05,troponinUrl:.014},r=>r.alerts.some(x=>/Troponin/.test(x.title))],['Troponin normal tek ölçüm',{troponin:.01,troponinUrl:.014},r=>r.notes.some(x=>/tek ölçüm/.test(x))],['Laktat kritik',{lactate:4.5},r=>r.alerts.some(x=>/Laktat/.test(x.title))],['Ağır asidemi',{ph:7.05},r=>r.alerts.some(x=>/Ağır asidemi/.test(x.title))],['Metabolik asidoz',{ph:7.2,pco2:30,hco3:12},r=>r.patterns.some(x=>/Metabolik asidoz/.test(x))],['Respiratuvar asidoz',{ph:7.25,pco2:60,hco3:25},r=>r.patterns.some(x=>/Respiratuvar asidoz/.test(x))],['Yüksek anyon açıklığı',{na:140,cl:100,hco3:15},r=>r.patterns.some(x=>/Anyon açıklığı yüksek/.test(x))],['Boş veri',{},r=>r.entered===0]
 ];const base={hb:null,mcv:null,wbc:null,neut:null,lymph:null,plt:null,glucose:null,na:null,k:null,cr:null,ast:null,alt:null,crp:null,troponin:null,troponinUrl:null,lactate:null,ph:null,pco2:null,hco3:null,cl:null};const runs=C.map(([name,d,test])=>{let pass=false,detail='';try{const r=laboratoryEngine({...base,...d});pass=!!test(r);detail=pass?'Beklenen laboratuvar davranışı doğrulandı.':'Beklenen sonuç oluşmadı.'}catch(e){detail=String(e.message||e)}return {name,pass,detail}});const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass;const sum=document.getElementById('laboratoryScenarioSummary'),box=document.getElementById('laboratoryScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Laboratuvar motoru kontrolü başarısız':'Laboratuvar motoru doğrulandı'}</b><br>🧪 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastLaboratoryEngineReport=['ACİL KLİNİK ASİSTANI LABORATUVAR MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v5.2.0 Beta',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('laboratoryScenarioCard')?.setAttribute('open','');return runs}
 function downloadLaboratoryEngineReport(){if(!lastLaboratoryEngineReport)runLaboratoryEngineTests();const blob=new Blob([lastLaboratoryEngineReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-laboratuvar-v5.2.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
+
+const RADIOLOGY_CRITICAL_RULES=[
+ {id:'ich',title:'Akut intrakraniyal kanama',level:'critical',terms:['akut intrakraniyal kanama','subaraknoid kanama','subdural hematom','epidural hematom','intraparenkimal hemoraji','hemorajik infarkt'],action:'Acil nöroloji/nöroşirürji değerlendirmesi, antikoagülan sorgusu ve yakın nörolojik izlem planla.'},
+ {id:'stroke',title:'Akut iskemik inme / büyük damar oklüzyonu',level:'critical',terms:['akut iskemik enfarkt','erken iskemi bulguları','büyük damar oklüzyonu','m1 oklüzyonu','baziler arter oklüzyonu'],action:'İnme zamanını doğrula; reperfüzyon uygunluğu için inme ekibini acilen devreye al.'},
+ {id:'mass',title:'Kitle etkisi / herniasyon riski',level:'critical',terms:['orta hat şifti','herniasyon','bazal sisternler silinmiş','kitle etkisi','obstrüktif hidrosefali'],action:'ABC, baş elevasyonu ve acil nöroşirürji değerlendirmesi; klinik kötüleşmeyi seri izle.'},
+ {id:'pe',title:'Pulmoner emboli',level:'critical',terms:['pulmoner emboli','pulmoner arterde dolum defekti','santral emboli','saddle emboli','eyer tarzı emboli'],action:'Hemodinami, sağ kalp yükü ve kanama riskini değerlendir; acil tedavi/konsültasyon planla.'},
+ {id:'ptx',title:'Pnömotoraks',level:'critical',terms:['tansiyon pnömotoraks','pnömotoraks','plevral hava'],action:'Solunum ve dolaşımı derhal değerlendir; tansiyon fizyolojisinde görüntüleme beklemeden acil dekompresyon gerekliliğini klinik olarak değerlendir.'},
+ {id:'aorta',title:'Akut aort sendromu',level:'critical',terms:['aort diseksiyonu','intimal flep','intramural hematom','penetran aort ülseri','aort rüptürü'],action:'Kan basıncı/nabız kontrolü, acil kalp-damar cerrahisi ve uygun üst düzey bakım planla.'},
+ {id:'freeair',title:'Gastrointestinal perforasyon / serbest hava',level:'critical',terms:['serbest intraperitoneal hava','pnömoperitoneum','perforasyon lehine','ekstraluminal hava'],action:'Oral alımı kes, sepsis değerlendirmesi yap ve acil genel cerrahi konsültasyonu planla.'},
+ {id:'obstruction',title:'Barsak obstrüksiyonu',level:'warning',terms:['mekanik ileus','barsak obstrüksiyonu','ince barsak dilatasyonu','geçiş noktası','volvulus'],action:'İskemi/perforasyon işaretlerini ve sıvı-elektrolit durumunu değerlendir; cerrahi görüş planla.'},
+ {id:'appendicitis',title:'Akut apandisit',level:'warning',terms:['akut apandisit','apendiks çapı artmış','periappendiküler yağlı doku kirlenmesi'],action:'Klinik uyumu ve komplikasyon bulgularını değerlendir; genel cerrahi görüşü planla.'},
+ {id:'cholecystitis',title:'Akut kolesistit',level:'warning',terms:['akut kolesistit','safra kesesi duvar kalınlaşması','perikolesistik sıvı','sonografik murphy'],action:'Sepsis ve koledok obstrüksiyonu açısından değerlendir; cerrahi/gastroenteroloji planını klinikle birleştir.'},
+ {id:'ectopic',title:'Ektopik gebelik olasılığı',level:'critical',terms:['ektopik gebelik','adneksiyel gebelik','rüptüre ektopik','hemoperitoneum ile uyumlu'],action:'Hemodinami ve gebelik testini değerlendir; acil kadın doğum konsültasyonu planla.'},
+ {id:'aaa',title:'Abdominal aort anevrizması / rüptür',level:'critical',terms:['rüptüre abdominal aort anevrizması','abdominal aort anevrizması','retroperitoneal hematom'],action:'Hemodinamik stabilizasyon ve acil kalp-damar cerrahisi değerlendirmesi planla.'},
+ {id:'cord',title:'Spinal kord / kauda ekuina basısı',level:'critical',terms:['kord basısı','kauda ekuina','spinal epidural apse','epidural hematom'],action:'Motor-duyu, sfinkter ve saddle anestezi muayenesini belgeleyip acil spinal cerrahi görüşü planla.'},
+ {id:'fracture',title:'Akut kırık / çıkık',level:'warning',terms:['akut fraktür','deplase kırık','çıkık izlenmiştir','dislokasyon'],action:'Nörovasküler muayene, immobilizasyon ve uygun ortopedi değerlendirmesini planla.'},
+ {id:'pneumonia',title:'Pnömoni / konsolidasyon',level:'warning',terms:['konsolidasyon','pnömonik infiltrasyon','pnömoni ile uyumlu','hava bronkogramı'],action:'Oksijenasyon, sepsis bulguları ve ayaktan/yatış ölçütlerini klinikle değerlendir.'}
+];
+function radiologyNorm(v){return String(v||'').toLocaleLowerCase('tr-TR').replace(/[İIı]/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/\s+/g,' ').trim()}
+function radiologySentenceNegated(text,term){const i=text.indexOf(term);if(i<0)return false;const pre=text.slice(Math.max(0,i-70),i);return /(?:izlenmedi|saptanmadi|gorulmedi|yoktur|mevcut degil|lehine bulgu yok|dusundurecek bulgu yok|rastlanmadi|ekarte edildi)[^.!?;]{0,55}$/.test(pre)||/(?:izlenmemistir|saptanmamistir|gorulmemistir)[^.!?;]{0,25}$/.test(pre)}
+function radiologyEngine(data){
+ const raw=String(data.report||'').trim(),text=radiologyNorm(raw),context=radiologyNorm(data.context||'');
+ if(!raw)return {entered:false,findings:[],critical:[],warnings:[],summary:[],safety:[],modality:data.modality||'auto',region:data.region||'auto'};
+ const findings=[];
+ RADIOLOGY_CRITICAL_RULES.forEach(rule=>{for(const t0 of rule.terms){const t=radiologyNorm(t0);if(text.includes(t)&&!radiologySentenceNegated(text,t)){findings.push({...rule,matched:t0});break}}});
+ const uniq=[...new Map(findings.map(x=>[x.id,x])).values()];
+ const critical=uniq.filter(x=>x.level==='critical'),warnings=uniq.filter(x=>x.level!=='critical');
+ const summary=[];
+ if(/normal sinirlar|dogal gorunum|patoloji saptanmadi|akut patoloji izlenmedi|normal olarak degerlendirildi/.test(text)&&!uniq.length)summary.push('Rapor metninde akut patoloji bildirilmediği yönünde ifade var; klinik-radyolojik uyumsuzluk varsa doğrudan görüntü ve uzman görüşü yeniden değerlendirilmelidir.');
+ if(/plevral efüzyon|plevral sivi/.test(text))summary.push('Plevral sıvı bildirilmiş; miktar, tek/çift taraflılık ve klinik etkisi değerlendirilmelidir.');
+ if(/atelektazi/.test(text))summary.push('Atelektatik değişiklik bildirilmiş; sekresyon, hipoventilasyon veya obstrüksiyon bağlamında değerlendir.');
+ if(/nodul|kitle lezyonu|malignite supheli/.test(text))summary.push('Nodül/kitle ifadesi var; acil durumdan bağımsız takip önerisi ve önceki görüntülerle karşılaştırma gözden geçirilmelidir.');
+ if(/hidronefroz/.test(text))summary.push('Hidronefroz bildirilmiş; obstrüksiyon, enfeksiyon ve böbrek işlevi birlikte değerlendirilmelidir.');
+ if(/tas|kalkul/.test(text)&&/ureter|bobrek/.test(text))summary.push('Üriner sistem taşı olasılığı bildirilmiş; obstrüksiyon ve enfeksiyon bulgularını klinikle birleştir.');
+ if(/kolelitiazis|safra tasi/.test(text)&&!uniq.some(x=>x.id==='cholecystitis'))summary.push('Safra taşı bildirilmiş ancak akut kolesistit ifadesi yakalanmadı; klinik ve ultrason bulgularını birlikte değerlendir.');
+ const safety=[];
+ if(data.pregnancy)safety.push('Gebelik olasılığında radyasyon maruziyeti, alternatif yöntemler ve fetal doz gerekliliğini radyolojiyle değerlendir. Acil ve gerekli görüntülemeyi yalnız gebelik nedeniyle geciktirme.');
+ if(data.contrast&&data.renal)safety.push('Kontrastlı inceleme ve böbrek işlev bozukluğu birlikte işaretli: güncel kreatinin/eGFR, hidrasyon ve kontrast gerekliliğini değerlendir.');
+ if(data.trauma&&!uniq.length)safety.push('Travma bağlamında rapor negatif olsa da klinik instabilite, seri muayene ve görüntü kapsamının yeterliliğini ayrıca doğrula.');
+ if(context.includes('hemiparezi')&&!uniq.some(x=>['ich','stroke'].includes(x.id)))safety.push('Fokal nörolojik defisit klinik bağlamda mevcut; negatif/kararsız rapor akut inmeyi tek başına dışlamaz. İnme protokolü ve uygun vasküler görüntülemeyi klinik olarak değerlendir.');
+ if(context.includes('ani dispne')&&!uniq.some(x=>['pe','ptx'].includes(x.id)))safety.push('Ani dispne klinik bağlamında negatif rapor, kullanılan modalite ve teknik yeterlilikle birlikte yorumlanmalıdır.');
+ if(!uniq.length&&!summary.length)summary.push('Rapor metninde tanımlı akut kritik anahtar örüntü yakalanmadı. Bu, görüntülemenin normal olduğu veya acil durumun dışlandığı anlamına gelmez.');
+ return {entered:true,findings:uniq,critical,warnings,summary:[...new Set(summary)],safety:[...new Set(safety)],modality:data.modality||'auto',region:data.region||'auto'};
+}
+function radiologyDataFromUi(){const g=id=>document.getElementById(id);return {report:g('radReport')?.value||'',context:g('radClinicalContext')?.value||'',modality:g('radModality')?.value||'auto',region:g('radRegion')?.value||'auto',pregnancy:!!g('radPregnancy')?.checked,renal:!!g('radRenal')?.checked,contrast:!!g('radContrast')?.checked,trauma:!!g('radTrauma')?.checked}}
+function renderRadiologyEngine(){const box=document.getElementById('radiologyEnginePanel');if(!box)return;const r=radiologyEngine(radiologyDataFromUi());if(!r.entered){box.innerHTML='<div class="panel neutral">Radyoloji rapor metnini gir.</div>';return;}const findingHtml=r.findings.map(x=>`<div class="safety-alert ${x.level==='critical'?'safety-critical':'safety-warning'}"><strong>${esc(x.title)}</strong><div>${esc(x.action)}</div><div class="evidence">Rapor ifadesi: ${esc(x.matched)}</div></div>`).join('');const sumHtml=r.summary.length?`<div class="panel info"><h3>Sade klinik özet</h3><ul class="compact">${r.summary.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'';const safeHtml=r.safety.length?`<div class="panel warn"><h3>Bağlam ve güvenlik</h3><ul class="compact">${r.safety.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'';box.innerHTML=(findingHtml||'<div class="panel ok"><b>Tanımlı kritik rapor ifadesi yakalanmadı.</b></div>')+sumHtml+safeHtml+'<div class="panel neutral"><b>Sınır:</b> Bu motor yalnız yazılı raporu tarar; görüntüyü, teknik kaliteyi, önceki incelemeleri veya hastanın gerçek klinik durumunu görmez. Negatif sonuç acil hastalığı dışlamaz.</div>';window.__lastRadiologySummary=['RADYOLOJİ YORUM DESTEĞİ',...r.findings.map(x=>`${x.title}: ${x.action}`),...r.summary,...r.safety].join('\n')}
+function copyRadiologySummary(){renderRadiologyEngine();const txt=window.__lastRadiologySummary||'';if(navigator.clipboard)navigator.clipboard.writeText(txt)}
+function clearRadiologyInputs(){['radReport','radClinicalContext'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['radPregnancy','radRenal','radContrast','radTrauma'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false});const m=document.getElementById('radModality'),r=document.getElementById('radRegion');if(m)m.value='auto';if(r)r.value='auto';renderRadiologyEngine()}
+let lastRadiologyEngineReport='';
+function runRadiologyEngineTests(){const C=[
+ ['Subaraknoid kanama','Akut subaraknoid kanama izlenmiştir.',r=>r.critical.some(x=>x.id==='ich')],
+ ['Subdural hematom','Akut subdural hematom mevcuttur.',r=>r.critical.some(x=>x.id==='ich')],
+ ['Kanama negatifliği','İntrakraniyal kanama saptanmadı.',r=>!r.findings.some(x=>x.id==='ich')],
+ ['Büyük damar oklüzyonu','Sol M1 segmentinde büyük damar oklüzyonu.',r=>r.critical.some(x=>x.id==='stroke')],
+ ['Orta hat şifti','Lezyona bağlı 8 mm orta hat şifti mevcuttur.',r=>r.critical.some(x=>x.id==='mass')],
+ ['Pulmoner emboli','Sağ ana pulmoner arterde dolum defekti pulmoner emboli ile uyumlu.',r=>r.critical.some(x=>x.id==='pe')],
+ ['PE negatifliği','Pulmoner emboli saptanmadı.',r=>!r.findings.some(x=>x.id==='pe')],
+ ['Pnömotoraks','Sağ hemitoraksta pnömotoraks izlenmiştir.',r=>r.critical.some(x=>x.id==='ptx')],
+ ['Pnömotoraks negatifliği','Pnömotoraks izlenmedi.',r=>!r.findings.some(x=>x.id==='ptx')],
+ ['Aort diseksiyonu','Çıkan aortada intimal flep ve aort diseksiyonu.',r=>r.critical.some(x=>x.id==='aorta')],
+ ['Serbest hava','Diyafram altında serbest intraperitoneal hava.',r=>r.critical.some(x=>x.id==='freeair')],
+ ['Barsak obstrüksiyonu','İnce barsaklarda dilatasyon ve geçiş noktası; mekanik ileus.',r=>r.warnings.some(x=>x.id==='obstruction')],
+ ['Apandisit','Apendiks çapı artmış, periappendiküler yağlı doku kirlenmesi.',r=>r.warnings.some(x=>x.id==='appendicitis')],
+ ['Kolesistit','Duvar kalınlaşması ve perikolesistik sıvı; akut kolesistit.',r=>r.warnings.some(x=>x.id==='cholecystitis')],
+ ['Ektopik gebelik','Sağ adneksiyel gebelik ve hemoperitoneum ile uyumlu.',r=>r.critical.some(x=>x.id==='ectopic')],
+ ['AAA rüptürü','Rüptüre abdominal aort anevrizması ve retroperitoneal hematom.',r=>r.critical.some(x=>x.id==='aaa')],
+ ['Kord basısı','L4 düzeyinde ciddi spinal kanal darlığı ve kauda ekuina basısı.',r=>r.critical.some(x=>x.id==='cord')],
+ ['Akut kırık','Distal radiusta deplase kırık izlenmiştir.',r=>r.warnings.some(x=>x.id==='fracture')],
+ ['Pnömoni','Sağ alt lobda hava bronkogramı içeren konsolidasyon.',r=>r.warnings.some(x=>x.id==='pneumonia')],
+ ['Normal rapor','Akut patoloji izlenmedi. Bulgular normal sınırlar içindedir.',r=>r.summary.some(x=>/akut patoloji bildirilmedi/.test(x))],
+ ['Gebelik güvenliği','Akut patoloji izlenmedi.',r=>r.safety.some(x=>/Gebelik/.test(x)),{pregnancy:true}],
+ ['Kontrast ve böbrek','Akut patoloji izlenmedi.',r=>r.safety.some(x=>/kreatinin\/eGFR/.test(x)),{contrast:true,renal:true}],
+ ['Travma negatif rapor','Akut patoloji izlenmedi.',r=>r.safety.some(x=>/Travma/.test(x)),{trauma:true}],
+ ['Fokal defisit güvenliği','Akut patoloji izlenmedi.',r=>r.safety.some(x=>/Fokal nörolojik/.test(x)),{context:'sağ hemiparezi'}]
+ ];const runs=C.map(([name,report,test,extra])=>{let pass=false,detail='';try{const r=radiologyEngine({report,context:'',modality:'auto',region:'auto',pregnancy:false,renal:false,contrast:false,trauma:false,...(extra||{})});pass=!!test(r);detail=pass?'Beklenen radyoloji davranışı doğrulandı.':'Beklenen sonuç oluşmadı.'}catch(e){detail=String(e.message||e)}return {name,pass,detail}});const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass;const sum=document.getElementById('radiologyScenarioSummary'),box=document.getElementById('radiologyScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Radyoloji motoru kontrolü başarısız':'Radyoloji motoru doğrulandı'}</b><br>🩻 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastRadiologyEngineReport=['ACİL KLİNİK ASİSTANI RADYOLOJİ MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v5.3.0 Beta',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('radiologyScenarioCard')?.setAttribute('open','');return runs}
+function downloadRadiologyEngineReport(){if(!lastRadiologyEngineReport)runRadiologyEngineTests();const blob=new Blob([lastRadiologyEngineReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-radyoloji-v5.3.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 function aiNormText(v){return String(v||'').toLocaleLowerCase('tr-TR').replace(/[İI]/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c')}
 function aiUnique(a){return [...new Set((a||[]).filter(Boolean))]}
