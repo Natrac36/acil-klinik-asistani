@@ -2187,6 +2187,7 @@ let lastQAReport='';
 function qaResult(level,title,detail){return {level,title,detail}}
 function runQATests(){
  const original=JSON.parse(JSON.stringify(S));
+ const originalStep=currentStep;
  const results=[];
  try{
   qaComplaints.forEach(c=>{
