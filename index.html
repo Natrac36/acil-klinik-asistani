@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.5.0 Beta • EKG Karar Destek Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.6.0 Beta • Pediatrik Acil Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -94,6 +94,47 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="doseCalculatorResult" class="panel neutral" style="margin-top:12px">Kilo ve doz parametrelerini gir.</div>
  <p class="muted">Uygulama öncesi endikasyon, yol, preparat konsantrasyonu, maksimum doz, böbrek/karaciğer fonksiyonu, gebelik, alerji ve yerel protokol ayrıca doğrulanmalıdır.</p>
 </div>
+
+<div class="card" id="pediatricEmergencyCard">
+ <div class="section-title"><h3>Pediatrik acil karar destek motoru</h3><span class="phase-badge">v4.6</span></div>
+ <p class="muted">Yaş, kilo, vital bulgular ve seçilen klinik işaretleri birlikte değerlendirir; triyaj, sıvı ve doz matematiğini yapılandırır. Otomatik tanı veya tedavi emri oluşturmaz.</p>
+ <div class="grid3">
+  <label>Yaş değeri<input id="pedAgeValue" type="number" min="0" step="0.1" value="2" oninput="renderPediatricEmergency()"></label>
+  <label>Yaş birimi<select id="pedAgeUnit" onchange="renderPediatricEmergency()"><option value="year">Yıl</option><option value="month">Ay</option><option value="day">Gün</option></select></label>
+  <label>Gerçek kilo (kg)<input id="pedWeight" type="number" min="0.5" step="0.1" placeholder="Boşsa yaşa göre tahmin" oninput="renderPediatricEmergency()"></label>
+  <label>Nabız (/dk)<input id="pedHr" type="number" min="0" step="1" placeholder="Örn. 120" oninput="renderPediatricEmergency()"></label>
+  <label>Solunum (/dk)<input id="pedRr" type="number" min="0" step="1" placeholder="Örn. 28" oninput="renderPediatricEmergency()"></label>
+  <label>SpO₂ (%)<input id="pedSpo2" type="number" min="0" max="100" step="1" placeholder="Örn. 97" oninput="renderPediatricEmergency()"></label>
+  <label>Sistolik TA (mmHg)<input id="pedSbp" type="number" min="0" step="1" placeholder="Örn. 90" oninput="renderPediatricEmergency()"></label>
+  <label>Ateş (°C)<input id="pedTemp" type="number" min="30" max="45" step="0.1" placeholder="Örn. 38.5" oninput="renderPediatricEmergency()"></label>
+  <label>Kapiller dolum (sn)<input id="pedCrt" type="number" min="0" step="0.5" placeholder="Örn. 2" oninput="renderPediatricEmergency()"></label>
+ </div>
+ <div class="question"><div class="question-title">Pediatrik kırmızı bayraklar</div>
+  <div class="choices">
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Apne veya ciddi solunum eforu" onchange="renderPediatricEmergency()">Apne / ciddi solunum eforu</label>
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Siyanoz veya benekli-soluk görünüm" onchange="renderPediatricEmergency()">Siyanoz / benekli-soluk görünüm</label>
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Bilinç azalması veya zor uyandırılma" onchange="renderPediatricEmergency()">Bilinç azalması / zor uyandırılma</label>
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Aktif veya uzamış nöbet" onchange="renderPediatricEmergency()">Aktif / uzamış nöbet</label>
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Peteşi veya purpura" onchange="renderPediatricEmergency()">Peteşi / purpura</label>
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Bombelik gösteren fontanel" onchange="renderPediatricEmergency()">Bombelik gösteren fontanel</label>
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Beslenememe veya belirgin dehidratasyon" onchange="renderPediatricEmergency()">Beslenememe / belirgin dehidratasyon</label>
+   <label class="choice"><input type="checkbox" name="pedFlags" value="Ebeveyn veya hekim ciddi endişesi" onchange="renderPediatricEmergency()">Ebeveyn / hekim ciddi endişesi</label>
+  </div>
+ </div>
+ <div class="grid">
+  <label>Klinik şablon<select id="pedSyndrome" onchange="renderPediatricEmergency()"><option value="none">Genel değerlendirme</option><option value="fever">Ateşli çocuk</option><option value="croup">Krup</option><option value="bronchiolitis">Bronşiolit</option><option value="asthma">Astım atağı</option><option value="seizure">Febril/akut nöbet</option><option value="anaphylaxis">Anafilaksi</option><option value="sepsis">Sepsis/menenjit şüphesi</option><option value="dehydration">Dehidratasyon</option><option value="hypoglycemia">Hipoglisemi</option></select></label>
+  <label>Dehidratasyon tahmini (%)<input id="pedDehydration" type="number" min="0" max="15" step="1" value="0" oninput="renderPediatricEmergency()"></label>
+ </div>
+ <div id="pediatricEmergencyResult" class="safety-grid" style="margin-top:12px"><div class="panel neutral">Yaş ve klinik verileri gir.</div></div>
+ <p class="muted">Kaynak yaklaşımı: pediatrik ETAT triyajı, ateşli çocuk trafik ışığı ve standart kilo-temelli matematik. Referans aralıkları yaşa, ateşe, ağlamaya ve yerel protokole göre değişebilir; ilaç ve sıvı uygulamasından önce güncel kurum protokolü ile preparat konsantrasyonu doğrulanmalıdır.</p>
+</div>
+<details class="card collapse-card no-print" id="pediatricScenarioCard">
+ <summary>Pediatrik acil doğrulama paneli <span class="phase-badge">v4.6</span></summary>
+ <p class="muted">Yaş bandı, vital eşikleri, kırmızı bayrak, kilo tahmini, bakım sıvısı, dehidratasyon açığı ve doz matematiğini 20 senaryoda sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runPediatricEmergencyTests()">20 pediatrik senaryoyu çalıştır</button><button onclick="downloadPediatricEmergencyReport()">Raporu TXT indir</button></div>
+ <div id="pediatricScenarioSummary" class="panel neutral">Henüz pediatrik doğrulama testi çalıştırılmadı.</div>
+ <div id="pediatricScenarioResults" class="safety-grid"></div>
+</details>
 <details class="card collapse-card no-print" id="ecgScenarioCard">
  <summary>EKG karar destek doğrulama paneli <span class="phase-badge">v4.5</span></summary>
  <p class="muted">Ritim, STEMI/oklüzyon MI, geniş kompleks taşikardi, QT uzaması, iletim bozukluğu ve elektrolit ipuçlarının doğru önceliklendirilmesini sınar.</p>
@@ -2561,8 +2602,71 @@ ${unexpected}`:[`ACİL KLİNİK ASİSTANI EKG KARAR DESTEK RAPORU`,`Tarih: ${new
 }
 function downloadEcgDecisionReport(){if(!lastEcgDecisionReport)runEcgDecisionTests();const blob=new Blob([lastEcgDecisionReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-ekg-v4.5.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
+
+
+const PED_DRUGS={
+ paracetamol:{label:'Parasetamol tek doz',mgkg:15,max:1000,minMonths:0},
+ ibuprofen:{label:'İbuprofen tek doz',mgkg:10,max:400,minMonths:3},
+ epinephrine:{label:'Adrenalin IM (anafilaksi)',mgkg:0.01,max:0.5,minMonths:0},
+ dexamethasone:{label:'Deksametazon (krup)',mgkg:0.15,max:10,minMonths:0},
+ midazolam:{label:'Midazolam bukkal/intranazal (nöbet)',mgkg:0.3,max:10,minMonths:0},
+ ondansetron:{label:'Ondansetron tek doz',mgkg:0.15,max:8,minMonths:6}
+};
+function pedNum(id){const x=parseFloat((document.getElementById(id)||{}).value);return Number.isFinite(x)?x:null}
+function pedAgeMonths(value,unit){value=Number(value)||0;return unit==='day'?value/30.4375:unit==='month'?value:value*12}
+function pedAgeBand(months){if(months<1)return {key:'newborn',label:'Yenidoğan (<1 ay)',hr:[100,180],rr:[30,60],sbpMin:60};if(months<12)return {key:'infant',label:'Süt çocuğu (1–11 ay)',hr:[100,160],rr:[30,50],sbpMin:70};if(months<36)return {key:'toddler',label:'1–2 yaş',hr:[90,150],rr:[24,40],sbpMin:70+2*Math.floor(months/12)};if(months<72)return {key:'preschool',label:'3–5 yaş',hr:[80,140],rr:[22,34],sbpMin:70+2*Math.floor(months/12)};if(months<156)return {key:'school',label:'6–12 yaş',hr:[70,120],rr:[18,30],sbpMin:70+2*Math.floor(months/12)};return {key:'adolescent',label:'≥13 yaş',hr:[60,100],rr:[12,20],sbpMin:90}}
+function pedEstimatedWeight(months){const y=months/12;if(months<12)return Math.max(3.5,4+0.5*y*12);if(y<=5)return 2*y+8;if(y<=12)return 3*y+7;return Math.min(70,4*y)}
+function pedMaintenance(weight){if(!(weight>0))return null;let mlDay=weight<=10?100*weight:weight<=20?1000+50*(weight-10):1500+20*(weight-20);return {mlDay,mlHour:mlDay/24}}
+function pedDose(weight,key,months){const d=PED_DRUGS[key];if(!d||!(weight>0))return null;const raw=weight*d.mgkg;return {label:d.label,mg:Math.min(raw,d.max),raw,max:d.max,eligible:months>=d.minMonths}}
+function pediatricEmergencyEngine(d){
+ const months=pedAgeMonths(d.ageValue,d.ageUnit),band=pedAgeBand(months),weight=d.weight>0?d.weight:pedEstimatedWeight(months),estimated=!(d.weight>0),urgent=[],warn=[],info=[],actions=[];
+ const hr=d.hr,rr=d.rr,spo2=d.spo2,sbp=d.sbp,temp=d.temp,crt=d.crt,flags=d.flags||[];
+ if(flags.length)urgent.push(...flags);
+ if(spo2!=null&&spo2<90)urgent.push('Ciddi hipoksemi: SpO₂ <%90');else if(spo2!=null&&spo2<=95)warn.push('SpO₂ ≤%95: solunum hastalığında en az orta risk işareti');
+ if(sbp!=null&&sbp<band.sbpMin)urgent.push(`Yaşa göre hipotansiyon eşiğinin altında (SBP <${band.sbpMin})`);
+ if(hr!=null&&(hr<band.hr[0]||hr>band.hr[1]))warn.push(`Nabız yaş referansının dışında (${band.hr[0]}–${band.hr[1]}/dk)`);
+ if(rr!=null&&rr>60)urgent.push('Solunum sayısı >60/dk');else if(rr!=null&&(rr<band.rr[0]||rr>band.rr[1]))warn.push(`Solunum sayısı yaş referansının dışında (${band.rr[0]}–${band.rr[1]}/dk)`);
+ if(crt!=null&&crt>=3)warn.push('Kapiller dolum ≥3 sn');
+ if(temp!=null&&temp>=38&&months<3)urgent.push('3 aydan küçük bebekte ≥38 °C ateş');
+ if(temp!=null&&temp>=39&&months>=3&&months<6)warn.push('3–6 aylık bebekte ≥39 °C ateş');
+ if(d.syndrome==='sepsis')urgent.push('Sepsis/menenjit klinik şüphesi');
+ if(d.syndrome==='anaphylaxis')urgent.push('Anafilaksi şüphesi: ABC ve IM adrenalin gecikmemeli');
+ if(d.syndrome==='seizure')actions.push('Aktif nöbette süreyi kaydet; ABC, glukoz ve uygun kurtarma tedavisini değerlendir.');
+ if(d.syndrome==='croup')actions.push('Stridor istirahatte mi, göğüs çekilmesi ve yorgunluk var mı değerlendir; çocuğu ajite etme.');
+ if(d.syndrome==='bronchiolitis')actions.push('Beslenme, apne, solunum eforu ve oksijenasyonu birlikte değerlendir.');
+ if(d.syndrome==='asthma')actions.push('Konuşma, yardımcı kas kullanımı, hava girişi ve tedavi yanıtını seri değerlendir.');
+ if(d.syndrome==='hypoglycemia')actions.push('Yatak başı glukozu doğrula; bilinç/nöbet varsa acil düzeltme ve neden araştırması yap.');
+ const maint=pedMaintenance(weight),dehydration=Math.max(0,Number(d.dehydration)||0),deficit=weight*dehydration*10,bolus10=weight*10,bolus20=weight*20;
+ const drugs=Object.keys(PED_DRUGS).map(k=>({key:k,...pedDose(weight,k,months)}));
+ if(urgent.length)actions.unshift('Acil triyaj: ABCDE, monitörizasyon, glukoz ve kıdemli/pediatri desteğini eş zamanlı başlat.');
+ else if(warn.length)actions.unshift('Yakın gözlem, seri vital ve hedefli muayene ile orta risk nedenlerini dışla.');
+ else actions.unshift('Düşük risk yalnız tüm klinik değerlendirme uyumluysa kabul edilir; güvenlik ağı ver.');
+ info.push(`${band.label}; yaklaşık vital referansı nabız ${band.hr[0]}–${band.hr[1]}, solunum ${band.rr[0]}–${band.rr[1]}/dk, hipotansiyon eşiği SBP <${band.sbpMin} mmHg.`);
+ return {months,band,weight,estimated,urgent:[...new Set(urgent)],warn:[...new Set(warn)],info,actions:[...new Set(actions)],maint,deficit,bolus10,bolus20,drugs};
+}
+function pediatricFormData(){return {ageValue:pedNum('pedAgeValue')||0,ageUnit:(document.getElementById('pedAgeUnit')||{}).value||'year',weight:pedNum('pedWeight'),hr:pedNum('pedHr'),rr:pedNum('pedRr'),spo2:pedNum('pedSpo2'),sbp:pedNum('pedSbp'),temp:pedNum('pedTemp'),crt:pedNum('pedCrt'),flags:[...document.querySelectorAll('input[name="pedFlags"]:checked')].map(x=>x.value),syndrome:(document.getElementById('pedSyndrome')||{}).value||'none',dehydration:pedNum('pedDehydration')||0}}
+function renderPediatricEmergency(){const box=document.getElementById('pediatricEmergencyResult');if(!box)return;const r=pediatricEmergencyEngine(pediatricFormData()),fmt=x=>Number(x).toLocaleString('tr-TR',{maximumFractionDigits:1});let html='';
+ html+=`<div class="panel ${r.urgent.length?'urgent':r.warn.length?'warn':'ok'}"><h3>${r.urgent.length?'🔴 Yüksek risk':r.warn.length?'🟠 Yakın değerlendirme':'🟢 Kritik eşik saptanmadı'}</h3>${r.urgent.length?`<ul class="compact">${r.urgent.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${r.warn.length?`<ul class="compact">${r.warn.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`;
+ html+=`<div class="panel info"><h3>Yaş ve kilo</h3><b>${esc(r.band.label)}</b> · ${fmt(r.months)} ay · ${r.estimated?'Tahmini':'Gerçek'} kilo: <b>${fmt(r.weight)} kg</b><br>${esc(r.info[0])}</div>`;
+ html+=`<div class="panel neutral"><h3>Sıvı matematiği</h3>Bakım: <b>${fmt(r.maint.mlDay)} mL/gün (${fmt(r.maint.mlHour)} mL/saat)</b><br>10 mL/kg: ${fmt(r.bolus10)} mL · 20 mL/kg: ${fmt(r.bolus20)} mL${r.deficit?`<br>${fmt(pediatricFormData().dehydration)}% tahmini açık: <b>${fmt(r.deficit)} mL</b>`:''}<div class="muted">Bolus hacmi ve hızı şok tipi, malnütrisyon, kalp/böbrek hastalığı ve güncel protokole göre seçilir.</div></div>`;
+ html+=`<div class="panel neutral"><h3>Kilo-temelli doz kontrol tablosu</h3><div class="flow-list">${r.drugs.map(d=>`<div class="flow-item"><strong>${esc(d.label)}</strong><span class="flow-status ${d.eligible?'done':'missing'}">${d.eligible?fmt(d.mg)+' mg':'Yaş uygunluğu kontrol et'}</span></div>`).join('')}</div><div class="muted">Bunlar tek doz matematik örnekleridir; endikasyon, uygulama yolu, tekrar aralığı ve preparat ayrıca doğrulanır.</div></div>`;
+ html+=`<div class="panel neutral"><h3>Önerilen sonraki adım</h3><ul class="compact">${r.actions.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;box.innerHTML=html;}
+let lastPediatricEmergencyReport='';
+function runPediatricEmergencyTests(){
+ const cases=[
+ ['Yenidoğan yaş bandı',{ageValue:10,ageUnit:'day'},r=>r.band.key==='newborn'],['8 aylık süt çocuğu',{ageValue:8,ageUnit:'month'},r=>r.band.key==='infant'],['2 yaş çocuk',{ageValue:2,ageUnit:'year'},r=>r.band.key==='toddler'],['4 yaş çocuk',{ageValue:4,ageUnit:'year'},r=>r.band.key==='preschool'],['9 yaş çocuk',{ageValue:9,ageUnit:'year'},r=>r.band.key==='school'],['15 yaş ergen',{ageValue:15,ageUnit:'year'},r=>r.band.key==='adolescent'],
+ ['Yenidoğanda ateş',{ageValue:20,ageUnit:'day',temp:38},r=>r.urgent.some(x=>/3 aydan küçük/.test(x))],['Hipoksemi',{ageValue:2,ageUnit:'year',spo2:88},r=>r.urgent.some(x=>/hipoksemi/i.test(x))],['Sınır SpO2',{ageValue:2,ageUnit:'year',spo2:94},r=>r.warn.some(x=>/SpO₂/.test(x))],['Hipotansiyon',{ageValue:4,ageUnit:'year',sbp:60},r=>r.urgent.some(x=>/hipotansiyon/.test(x))],['CRT uzaması',{ageValue:3,ageUnit:'year',crt:3},r=>r.warn.some(x=>/Kapiller/.test(x))],['Taşipne kritik',{ageValue:1,ageUnit:'year',rr:65},r=>r.urgent.some(x=>/>60/.test(x))],
+ ['Kırmızı bayrak',{ageValue:5,ageUnit:'year',flags:['Peteşi veya purpura']},r=>r.urgent.includes('Peteşi veya purpura')],['Sepsis şablonu',{ageValue:3,ageUnit:'year',syndrome:'sepsis'},r=>r.urgent.some(x=>/Sepsis/.test(x))],['Anafilaksi şablonu',{ageValue:7,ageUnit:'year',syndrome:'anaphylaxis'},r=>r.urgent.some(x=>/Anafilaksi/.test(x))],
+ ['Bakım sıvısı 10 kg',{ageValue:1,ageUnit:'year',weight:10},r=>Math.abs(r.maint.mlDay-1000)<0.01],['Bakım sıvısı 20 kg',{ageValue:6,ageUnit:'year',weight:20},r=>Math.abs(r.maint.mlDay-1500)<0.01],['Bakım sıvısı 30 kg',{ageValue:10,ageUnit:'year',weight:30},r=>Math.abs(r.maint.mlDay-1700)<0.01],['Dehidratasyon açığı',{ageValue:4,ageUnit:'year',weight:20,dehydration:5},r=>Math.abs(r.deficit-1000)<0.01],['Adrenalin üst sınırı',{ageValue:15,ageUnit:'year',weight:70},r=>Math.abs(r.drugs.find(x=>x.key==='epinephrine').mg-0.5)<0.001]
+ ];
+ const runs=cases.map(([name,data,test])=>{let pass=false,detail='';try{const r=pediatricEmergencyEngine({ageValue:0,ageUnit:'year',weight:null,hr:null,rr:null,spo2:null,sbp:null,temp:null,crt:null,flags:[],syndrome:'none',dehydration:0,...data});pass=!!test(r);detail=pass?'Beklenen pediatrik davranış doğrulandı.':'Beklenen sonuç oluşmadı.'}catch(e){detail=String(e.message||e)}return {name,pass,detail}}),pass=runs.filter(x=>x.pass).length,fail=runs.length-pass;
+ const sum=document.getElementById('pediatricScenarioSummary'),box=document.getElementById('pediatricScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Pediatrik kontrol başarısız':'Pediatrik acil doğrulaması tamamlandı'}</b><br>👶 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');
+ lastPediatricEmergencyReport=[`ACİL KLİNİK ASİSTANI PEDİATRİK ACİL RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.6.0 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');const card=document.getElementById('pediatricScenarioCard');if(card)card.open=true;return runs;
+}
+function downloadPediatricEmergencyReport(){if(!lastPediatricEmergencyReport)runPediatricEmergencyTests();const blob=new Blob([lastPediatricEmergencyReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-pediatrik-v4.6.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
 // Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
 load();
-setTimeout(()=>{syncDoseInputs();renderDoseCalculator()},0);
+setTimeout(()=>{syncDoseInputs();renderDoseCalculator();renderPediatricEmergency()},0);
 </script>
 </body></html>
