@@ -58,12 +58,12 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 .rx-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rx-list{display:grid;gap:8px}.rx-item{border:1px solid var(--line);border-left:5px solid #0d9488;border-radius:12px;padding:10px;background:#fff}.rx-item.caution{border-left-color:#f59e0b;background:#fffbeb}.rx-item.blocked{border-left-color:#dc2626;background:#fff1f2}.rx-item b{display:block;margin-bottom:4px}.rx-meta{font-size:11px;color:var(--muted);margin-top:5px}.rx-script{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.rx-badge{display:inline-block;padding:3px 7px;border-radius:99px;font-size:10px;font-weight:900;margin-left:5px;background:#ccfbf1;color:#115e59}.rx-badge.warn{background:#fef3c7;color:#92400e}.rx-badge.stop{background:#fee2e2;color:#991b1b}@media(max-width:700px){.rx-grid{grid-template-columns:1fr}}
 
 /* v6.5 Modüler Ana Menü */
-.dashboard-shell{margin-bottom:18px}.dashboard-hero{background:linear-gradient(135deg,#07111f,#12345a 58%,#0f766e);color:#fff;border:0}.dashboard-hero h2{font-size:24px;margin-bottom:6px}.dashboard-search{display:flex;gap:8px;margin-top:14px}.dashboard-search input{background:#ffffffee}.dashboard-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:12px}.dashboard-tile{min-height:118px;text-align:left;padding:14px;border:1px solid rgba(148,163,184,.3);background:#fff;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between}.dashboard-tile span{font-size:25px}.dashboard-tile b{font-size:14px}.dashboard-tile small{color:var(--muted);font-weight:600}.dashboard-tile:hover{border-color:#2dd4bf;background:#f0fdfa}.dashboard-quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.dashboard-quick button{font-size:12px;padding:8px 10px}.module-hidden{display:none!important}.dashboard-back{position:fixed;right:18px;bottom:74px;z-index:40;background:#0f766e;color:#fff;border:0;box-shadow:0 8px 22px rgba(15,23,42,.25)}body.dashboard-home .layout{display:none}body.dashboard-home .dashboard-back{display:none}body.dashboard-home #moduleHeading{display:none}.module-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.module-heading h2{margin:0}.search-no-result{display:none;margin-top:10px}.search-no-result.show{display:block}@media(max-width:900px){.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-back{bottom:82px}}@media(max-width:560px){.dashboard-grid{grid-template-columns:1fr 1fr;gap:8px}.dashboard-tile{min-height:102px;padding:11px}.dashboard-tile span{font-size:22px}.dashboard-tile b{font-size:12px}.dashboard-tile small{font-size:10px}.dashboard-search{display:grid}}
+.dashboard-shell{margin-bottom:18px}.dashboard-hero{background:linear-gradient(135deg,#07111f,#12345a 58%,#0f766e);color:#fff;border:0}.dashboard-hero h2{font-size:24px;margin-bottom:6px}.dashboard-search{display:flex;gap:8px;margin-top:14px}.dashboard-search input{background:#ffffffee}.dashboard-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:12px}.dashboard-tile{min-height:118px;text-align:left;padding:14px;border:1px solid rgba(148,163,184,.3);background:#fff;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between}.dashboard-tile span{font-size:25px}.dashboard-tile b{font-size:14px}.dashboard-tile small{color:var(--muted);font-weight:600}.dashboard-tile:hover{border-color:#2dd4bf;background:#f0fdfa}.dashboard-quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.dashboard-quick button{font-size:12px;padding:8px 10px}.module-hidden{display:none!important}.dashboard-back{position:fixed;right:18px;bottom:74px;z-index:40;background:#0f766e;color:#fff;border:0;box-shadow:0 8px 22px rgba(15,23,42,.25)}body.dashboard-home .layout{display:none}body.dashboard-home .dashboard-back{display:none}body.dashboard-home #moduleHeading{display:none}body:not(.dashboard-home) #dashboardShell{display:none}body:not(.dashboard-home) .layout{display:grid}.module-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.module-heading h2{margin:0}.search-no-result{display:none;margin-top:10px}.search-no-result.show{display:block}@media(max-width:900px){.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-back{bottom:82px}}@media(max-width:560px){.dashboard-grid{grid-template-columns:1fr 1fr;gap:8px}.dashboard-tile{min-height:102px;padding:11px}.dashboard-tile span{font-size:22px}.dashboard-tile b{font-size:12px}.dashboard-tile small{font-size:10px}.dashboard-search{display:grid}}
 
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.0 Beta • Modüler Ana Menü ve Hızlı Erişim</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.1 Beta • Modüler Ana Menü ve Hızlı Erişim</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -3293,7 +3293,7 @@ function runGuidelineEngineTests(){
 function downloadGuidelineEngineReport(){if(!lastGuidelineEngineReport)runGuidelineEngineTests();const blob=new Blob([lastGuidelineEngineReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-kilavuz-v5.1.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 // Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
-load();
+// Başlangıç yüklemesi v6.5.1 sonunda güvenli biçimde yapılır.
 setTimeout(()=>{syncDoseInputs();renderDoseCalculator();renderPediatricEmergency();renderAIClinicalAssistant();renderGuidelineEngine();renderLaboratoryEngine()},0);
 
 
@@ -3824,12 +3824,39 @@ const MODULE_GROUPS={
 const MODULE_TITLES={case:'Yeni vaka',emergency:'Acil değerlendirme',diagnosis:'Tanı desteği',tests:'Tetkik ve sonuç yorumlama',treatment:'Tedavi ve order',prescription:'Akıllı reçete',documents:'Belge ve sonlandırma',system:'Sistem kontrolü'};
 function allModuleIds(){return [...new Set(Object.values(MODULE_GROUPS).flat())]}
 function hideAllModules(){document.querySelectorAll('.layout section > .card,.layout section > details').forEach(el=>el.classList.add('module-hidden'))}
-function openModuleGroup(group){document.body.classList.remove('dashboard-home');hideAllModules();(MODULE_GROUPS[group]||[]).forEach(id=>document.getElementById(id)?.classList.remove('module-hidden'));const h=document.getElementById('moduleHeadingText');if(h)h.textContent=MODULE_TITLES[group]||'Araçlar';document.getElementById('moduleHeading')?.scrollIntoView({behavior:'smooth',block:'start'})}
-function openSingleModule(id){document.body.classList.remove('dashboard-home');hideAllModules();document.getElementById(id)?.classList.remove('module-hidden');const card=document.getElementById(id);const h=document.getElementById('moduleHeadingText');if(h)h.textContent=card?.querySelector('h2,h3')?.textContent||'Araç';document.getElementById('moduleHeading')?.scrollIntoView({behavior:'smooth',block:'start'})}
+function openModuleGroup(group){
+ try{
+  document.body.classList.remove('dashboard-home');
+  hideAllModules();
+  const ids=MODULE_GROUPS[group]||[];
+  ids.forEach(id=>document.getElementById(id)?.classList.remove('module-hidden'));
+  if(group==='case'){
+   currentStep=0;
+   render();
+   document.getElementById('caseEntryCard')?.classList.remove('module-hidden');
+   document.getElementById('clinicalNoteCard')?.classList.remove('module-hidden');
+  }
+  const h=document.getElementById('moduleHeadingText');if(h)h.textContent=MODULE_TITLES[group]||'Araçlar';
+  requestAnimationFrame(()=>document.getElementById(group==='case'?'caseEntryCard':'moduleHeading')?.scrollIntoView({behavior:'smooth',block:'start'}));
+ }catch(err){console.error('Kategori açılamadı',err);alert('Bölüm açılırken hata oluştu: '+(err.message||err));}
+}
+function openSingleModule(id){
+ try{
+  document.body.classList.remove('dashboard-home');hideAllModules();
+  const card=document.getElementById(id);if(!card)throw new Error('Araç bulunamadı: '+id);
+  card.classList.remove('module-hidden');
+  const h=document.getElementById('moduleHeadingText');if(h)h.textContent=card.querySelector('h2,h3')?.textContent||'Araç';
+  requestAnimationFrame(()=>card.scrollIntoView({behavior:'smooth',block:'start'}));
+ }catch(err){console.error('Araç açılamadı',err);alert('Araç açılırken hata oluştu: '+(err.message||err));}
+}
 function showDashboardHome(){document.body.classList.add('dashboard-home');hideAllModules();window.scrollTo({top:0,behavior:'smooth'})}
 function filterDashboard(q){q=(q||'').toLocaleLowerCase('tr-TR').trim();let visible=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(b=>{const ok=!q||(b.dataset.search+' '+b.textContent).toLocaleLowerCase('tr-TR').includes(q);b.style.display=ok?'flex':'none';if(ok)visible++});document.getElementById('searchNoResult')?.classList.toggle('show',visible===0)}
 function runModuleSearch(){const q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;const map=[['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']];const hit=map.find(x=>q.includes(x[0]));if(hit)openSingleModule(hit[1]);else{const btn=[...document.querySelectorAll('#dashboardGrid .dashboard-tile')].find(b=>b.style.display!=='none');btn?.click()}}
-document.addEventListener('DOMContentLoaded',()=>{document.body.classList.add('dashboard-home');hideAllModules()});
+document.addEventListener('DOMContentLoaded',()=>{
+ try{load()}catch(err){console.error('Uygulama başlangıç hatası',err);try{render()}catch(e){console.error(e)}}
+ document.body.classList.add('dashboard-home');
+ hideAllModules();
+});
 
 </script>
 </body></html>
