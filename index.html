@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.3.2 Beta • ICD-10 Başlatma Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.4.0 Beta • İlaç Doz Hesaplama Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -72,6 +72,30 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="grid"><label>Kod veya tanı ara<input id="icdSearch" type="text" value="" placeholder="Örn. I21.4, göğüs ağrısı, pnömoni" oninput="S.icdSearch=this.value;renderIcdSuggestions()"></label><label>Seçilen ICD-10 kodu<select id="selectedIcd" onchange="S.selectedIcd=this.value;renderIcdSuggestions()"><option value="">Henüz seçilmedi</option></select></label></div>
  <div id="icdSuggestionPanel" style="margin-top:12px"></div>
 </div>
+<div class="card" id="doseCalculatorCard">
+ <div class="section-title"><h3>İlaç doz hesaplama motoru</h3><span class="phase-badge">v4.4</span></div>
+ <p class="muted">Bu araç reçete veya ilaç emri oluşturmaz. Hekimin seçtiği mg/kg ya da sabit dozu; kilo, maksimum doz ve preparat konsantrasyonuna göre matematiksel olarak hesaplar.</p>
+ <div class="grid3">
+  <label>Hesaplama şablonu<select id="doseCalcDrug" onchange="dosePresetChanged()"><option>Adrenalin (anafilaksi)</option><option>Midazolam (aktif nöbet/status)</option><option>Özel mg/kg hesabı</option><option>Sabit doz hesabı</option></select></label>
+  <label>Kilo (kg)<input id="doseCalcWeight" type="number" inputmode="decimal" class="mobile-number" placeholder="Örn. 20" oninput="renderDoseCalculator()"></label>
+  <label>Tekrar sayısı<input id="doseRepeatCount" type="number" min="1" step="1" value="1" oninput="S.doseRepeatCount=this.value;renderDoseCalculator()"></label>
+  <label>Doz (mg/kg)<input id="doseMgKg" type="number" step="0.001" value="0.01" oninput="S.doseMgKg=this.value;renderDoseCalculator()"></label>
+  <label>Sabit doz (mg)<input id="doseFixedMg" type="number" step="0.01" placeholder="Sabit doz seçilirse" oninput="S.doseFixedMg=this.value;renderDoseCalculator()"></label>
+  <label>Tek doz üst sınırı (mg)<input id="doseMaxMg" type="number" step="0.01" value="0.5" oninput="S.doseMaxMg=this.value;renderDoseCalculator()"></label>
+  <label>Konsantrasyon (mg/mL)<input id="doseConcentrationMgMl" type="number" step="0.001" value="1" oninput="S.doseConcentrationMgMl=this.value;renderDoseCalculator()"></label>
+  <label>İnfüzyon toplam hacmi (mL)<input id="doseInfusionVolumeMl" type="number" step="0.1" placeholder="İsteğe bağlı" oninput="S.doseInfusionVolumeMl=this.value;renderDoseCalculator()"></label>
+  <label>İnfüzyon süresi (dk)<input id="doseInfusionMinutes" type="number" step="1" placeholder="İsteğe bağlı" oninput="S.doseInfusionMinutes=this.value;renderDoseCalculator()"></label>
+ </div>
+ <div id="doseCalculatorResult" class="panel neutral" style="margin-top:12px">Kilo ve doz parametrelerini gir.</div>
+ <p class="muted">Uygulama öncesi endikasyon, yol, preparat konsantrasyonu, maksimum doz, böbrek/karaciğer fonksiyonu, gebelik, alerji ve yerel protokol ayrıca doğrulanmalıdır.</p>
+</div>
+<details class="card collapse-card no-print" id="doseScenarioCard">
+ <summary>İlaç doz hesaplama doğrulama paneli <span class="phase-badge">v4.4</span></summary>
+ <p class="muted">Kilo temelli doz, maksimum doz sınırı, konsantrasyondan hacim ve infüzyon hızının matematiksel doğruluğunu sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runDoseCalculatorTests()">6 doz hesaplama senaryosunu çalıştır</button><button onclick="downloadDoseCalculatorReport()">Raporu TXT indir</button></div>
+ <div id="doseScenarioSummary" class="panel neutral">Henüz doz hesaplama testi çalıştırılmadı.</div>
+ <div id="doseScenarioResults" class="safety-grid"></div>
+</details>
 <details class="card collapse-card no-print" id="qaCard">
  <summary>Klinik QA denetim paneli <span class="phase-badge">v2.9</span></summary>
  <p class="muted">Soru ağaçları, yaş-cinsiyet filtreleri ve tetkik eşleşmeleri otomatik kontrol edilir. Bu test klinik doğrulamanın yerine geçmez.</p>
@@ -217,7 +241,7 @@ let currentStep=0;
 function order(){return quickMode?quickOrder:detailedOrder}
 function stepTitle(){return fullSteps[order()[currentStep]]}
 function toggleMode(){collect();const oldPage=order()[currentStep];quickMode=!quickMode;localStorage.setItem('acilQuickMode',String(quickMode));const nextOrder=order();currentStep=Math.max(0,nextOrder.indexOf(oldPage));if(currentStep<0)currentStep=0;render()}
-let S={qIndex:0,chatLog:[],age:'',sex:'',complaint:'Göğüs ağrısı',onset:'',duration:'',painType:'',radiation:[],severity:'',exertional:'',pleuritic:'',positional:'',palpation:'',symptoms:[],history:[],meds:'',allergy:'',surgery:'',smoking:'',substance:'',sbp:'',dbp:'',pulse:'',rr:'',spo2:'',temp:'',mental:'Normal',redFlags:[],exam:[],ecg:'Bekleniyor',troponin:'Bekleniyor',repeatTroponin:'Bekleniyor',hb:'',creatinine:'',ddimer:'Bekleniyor',cxr:'Bekleniyor',consult:[],treatmentSafety:[],notes:'',reSbp:'',reDbp:'',rePulse:'',reRr:'',reSpo2:'',reTemp:'',reMental:'Normal',response:'Değerlendirilmedi',clinicalCourse:'',disposition:'Gözlem sürüyor',dispositionReason:'',followup:'',returnPrecautions:[],prescriptionStatus:'Değerlendirilmedi',transportStatus:'Değerlendirilmedi',homeSupport:'Değerlendirilmedi',rePain:'Değerlendirilmedi',reBreathing:'Değerlendirilmedi',reNeuro:'Değerlendirilmedi',reGeneral:'Değerlendirilmedi',serialChecks:[],dischargeChecklist:[],consultStatus:'Değerlendirilmedi',ecgRate:'',ecgRhythm:'Seçilmedi',ecgAxis:'Seçilmedi',ecgPR:'',ecgQRS:'',ecgQTc:'',ecgFindings:[],ecgTerritory:[],ecgQuality:[],ecgDoctorNote:'',ecgImageName:'',ecgImageData:'',wbc:'',platelet:'',sodium:'',potassium:'',chloride:'',glucose:'',urea:'',egfr:'',calcium:'',albumin:'',magnesium:'',crp:'',procalcitonin:'',lactate:'',ast:'',alt:'',bilirubin:'',lipase:'',ph:'',pco2:'',hco3:'',po2:'',baseExcess:'',ketone:'Bekleniyor',pregnancyTest:'Bekleniyor',weight:'',drugScenario:'Seçilmedi',drugRoute:'Seçilmedi',selectedDrug:'Adrenalin (anafilaksi)',drugNotes:'',administeredMeds:[],renalDoseChecked:false,allergyChecked:false,pregnancyChecked:false,interactionChecked:false,sepsisSuspected:'Hayır',infectionSource:'Belirsiz',cultureStatus:'Bekleniyor',antibioticStatus:'Başlanmadı',antibioticTime:'',fluidGiven:'',capRefill:'',urineOutput:'',mapTarget:'65',vasopressor:'Başlanmadı',sourceControl:'Değerlendirilmedi',sepsisNotes:'',strokeAlert:'Hayır',lastKnownWell:'',symptomDiscovery:'',strokeDeficit:[],anticoagulantType:'Yok/bilinmiyor',lastAnticoagulantDose:'',baselineMRS:'0',gcsEye:'4',gcsVerbal:'5',gcsMotor:'6',nihssLOC:'0',nihssQuestions:'0',nihssCommands:'0',nihssGaze:'0',nihssVisual:'0',nihssFacial:'0',nihssArmL:'0',nihssArmR:'0',nihssLegL:'0',nihssLegR:'0',nihssAtaxia:'0',nihssSensory:'0',nihssLanguage:'0',nihssDysarthria:'0',nihssExtinction:'0',strokeGlucose:'',brainCT:'Bekleniyor',ctaResult:'Bekleniyor',perfusionImaging:'Yapılmadı',thrombolysisChecklist:[],thrombectomyChecklist:[],strokeBPPlan:'',dysphagiaScreen:'Yapılmadı',seizureOngoing:'Hayır',seizureDuration:'',seizureRescueGiven:'Hayır',neuroNotes:'',clinicianHypothesis:'',clinicalQuestion:'',heartHistory:'',heartRiskCount:'',selectedIcd:'',icdSearch:'',newsOxygen:'Hayır',peRisk:[],orderedTests:[]};
+let S={qIndex:0,chatLog:[],age:'',sex:'',complaint:'Göğüs ağrısı',onset:'',duration:'',painType:'',radiation:[],severity:'',exertional:'',pleuritic:'',positional:'',palpation:'',symptoms:[],history:[],meds:'',allergy:'',surgery:'',smoking:'',substance:'',sbp:'',dbp:'',pulse:'',rr:'',spo2:'',temp:'',mental:'Normal',redFlags:[],exam:[],ecg:'Bekleniyor',troponin:'Bekleniyor',repeatTroponin:'Bekleniyor',hb:'',creatinine:'',ddimer:'Bekleniyor',cxr:'Bekleniyor',consult:[],treatmentSafety:[],notes:'',reSbp:'',reDbp:'',rePulse:'',reRr:'',reSpo2:'',reTemp:'',reMental:'Normal',response:'Değerlendirilmedi',clinicalCourse:'',disposition:'Gözlem sürüyor',dispositionReason:'',followup:'',returnPrecautions:[],prescriptionStatus:'Değerlendirilmedi',transportStatus:'Değerlendirilmedi',homeSupport:'Değerlendirilmedi',rePain:'Değerlendirilmedi',reBreathing:'Değerlendirilmedi',reNeuro:'Değerlendirilmedi',reGeneral:'Değerlendirilmedi',serialChecks:[],dischargeChecklist:[],consultStatus:'Değerlendirilmedi',ecgRate:'',ecgRhythm:'Seçilmedi',ecgAxis:'Seçilmedi',ecgPR:'',ecgQRS:'',ecgQTc:'',ecgFindings:[],ecgTerritory:[],ecgQuality:[],ecgDoctorNote:'',ecgImageName:'',ecgImageData:'',wbc:'',platelet:'',sodium:'',potassium:'',chloride:'',glucose:'',urea:'',egfr:'',calcium:'',albumin:'',magnesium:'',crp:'',procalcitonin:'',lactate:'',ast:'',alt:'',bilirubin:'',lipase:'',ph:'',pco2:'',hco3:'',po2:'',baseExcess:'',ketone:'Bekleniyor',pregnancyTest:'Bekleniyor',weight:'',drugScenario:'Seçilmedi',drugRoute:'Seçilmedi',selectedDrug:'Adrenalin (anafilaksi)',drugNotes:'',administeredMeds:[],renalDoseChecked:false,allergyChecked:false,pregnancyChecked:false,interactionChecked:false,sepsisSuspected:'Hayır',infectionSource:'Belirsiz',cultureStatus:'Bekleniyor',antibioticStatus:'Başlanmadı',antibioticTime:'',fluidGiven:'',capRefill:'',urineOutput:'',mapTarget:'65',vasopressor:'Başlanmadı',sourceControl:'Değerlendirilmedi',sepsisNotes:'',strokeAlert:'Hayır',lastKnownWell:'',symptomDiscovery:'',strokeDeficit:[],anticoagulantType:'Yok/bilinmiyor',lastAnticoagulantDose:'',baselineMRS:'0',gcsEye:'4',gcsVerbal:'5',gcsMotor:'6',nihssLOC:'0',nihssQuestions:'0',nihssCommands:'0',nihssGaze:'0',nihssVisual:'0',nihssFacial:'0',nihssArmL:'0',nihssArmR:'0',nihssLegL:'0',nihssLegR:'0',nihssAtaxia:'0',nihssSensory:'0',nihssLanguage:'0',nihssDysarthria:'0',nihssExtinction:'0',strokeGlucose:'',brainCT:'Bekleniyor',ctaResult:'Bekleniyor',perfusionImaging:'Yapılmadı',thrombolysisChecklist:[],thrombectomyChecklist:[],strokeBPPlan:'',dysphagiaScreen:'Yapılmadı',seizureOngoing:'Hayır',seizureDuration:'',seizureRescueGiven:'Hayır',neuroNotes:'',clinicianHypothesis:'',clinicalQuestion:'',heartHistory:'',heartRiskCount:'',selectedIcd:'',icdSearch:'',doseCalcDrug:'Adrenalin (anafilaksi)',doseMgKg:'0.01',doseFixedMg:'',doseMaxMg:'0.5',doseConcentrationMgMl:'1',doseRepeatCount:'1',doseInfusionVolumeMl:'',doseInfusionMinutes:'',newsOxygen:'Hayır',peRisk:[],orderedTests:[]};
 const el=id=>document.getElementById(id);
 function pregnancyRelevant(){const a=parseInt(S.age,10);return S.sex==='Kadın'&&(!Number.isFinite(a)||(a>=10&&a<=55));}
 function pregnancyFieldHTML(){return pregnancyRelevant()?select('Gebelik testi','pregnancyTest',['Bekleniyor','İstenmedi','Negatif','Pozitif']):'';}
@@ -658,7 +682,7 @@ function skipSmart(){answerSmart('Bilinmiyor')}
 function restartSmart(){S.qIndex=0;S.chatLog=[];['onset','duration','painType','exertional','pleuritic','positional','palpation'].forEach(k=>S[k]='');S.radiation=[];S.symptoms=[];render();updateAll()}
 
 function collect(){
- const ids=['age','sex','complaint','severity','notes','sbp','dbp','pulse','rr','spo2','temp','mental','onset','duration','painType','exertional','pleuritic','positional','palpation','smoking','substance','meds','allergy','surgery','ecg','troponin','repeatTroponin','ddimer','cxr','hb','creatinine','reSbp','reDbp','rePulse','reRr','reSpo2','reTemp','reMental','response','rePain','reBreathing','reNeuro','reGeneral','consultStatus','clinicalCourse','disposition','dispositionReason','followup','prescriptionStatus','transportStatus','homeSupport','ecgRate','ecgRhythm','ecgAxis','ecgPR','ecgQRS','ecgQTc','ecgDoctorNote','wbc','platelet','sodium','potassium','chloride','glucose','urea','egfr','calcium','albumin','magnesium','crp','procalcitonin','lactate','ast','alt','bilirubin','lipase','ph','pco2','hco3','po2','baseExcess','ketone','pregnancyTest','weight','drugScenario','drugRoute','selectedDrug','drugNotes','sepsisSuspected','infectionSource','cultureStatus','antibioticStatus','antibioticTime','fluidGiven','capRefill','urineOutput','mapTarget','vasopressor','sourceControl','sepsisNotes','strokeAlert','lastKnownWell','symptomDiscovery','anticoagulantType','lastAnticoagulantDose','baselineMRS','gcsEye','gcsVerbal','gcsMotor','nihssLOC','nihssQuestions','nihssCommands','nihssGaze','nihssVisual','nihssFacial','nihssArmL','nihssArmR','nihssLegL','nihssLegR','nihssAtaxia','nihssSensory','nihssLanguage','nihssDysarthria','nihssExtinction','strokeGlucose','brainCT','ctaResult','perfusionImaging','strokeBPPlan','dysphagiaScreen','seizureOngoing','seizureDuration','seizureRescueGiven','neuroNotes','clinicianHypothesis','clinicalQuestion','heartHistory','heartRiskCount','newsOxygen'];ids.forEach(id=>{if(el(id))S[id]=val(id)});if(!pregnancyRelevant()){S.pregnancyTest='İstenmedi';S.symptoms=S.symptoms.filter(x=>x!=='Gebelik olasılığı');S.treatmentSafety=S.treatmentSafety.filter(x=>x!=='Gebelik olasılığı');}
+ const ids=['age','sex','complaint','severity','notes','sbp','dbp','pulse','rr','spo2','temp','mental','onset','duration','painType','exertional','pleuritic','positional','palpation','smoking','substance','meds','allergy','surgery','ecg','troponin','repeatTroponin','ddimer','cxr','hb','creatinine','reSbp','reDbp','rePulse','reRr','reSpo2','reTemp','reMental','response','rePain','reBreathing','reNeuro','reGeneral','consultStatus','clinicalCourse','disposition','dispositionReason','followup','prescriptionStatus','transportStatus','homeSupport','ecgRate','ecgRhythm','ecgAxis','ecgPR','ecgQRS','ecgQTc','ecgDoctorNote','wbc','platelet','sodium','potassium','chloride','glucose','urea','egfr','calcium','albumin','magnesium','crp','procalcitonin','lactate','ast','alt','bilirubin','lipase','ph','pco2','hco3','po2','baseExcess','ketone','pregnancyTest','weight','drugScenario','drugRoute','selectedDrug','drugNotes','doseCalcDrug','doseMgKg','doseFixedMg','doseMaxMg','doseConcentrationMgMl','doseRepeatCount','doseInfusionVolumeMl','doseInfusionMinutes','sepsisSuspected','infectionSource','cultureStatus','antibioticStatus','antibioticTime','fluidGiven','capRefill','urineOutput','mapTarget','vasopressor','sourceControl','sepsisNotes','strokeAlert','lastKnownWell','symptomDiscovery','anticoagulantType','lastAnticoagulantDose','baselineMRS','gcsEye','gcsVerbal','gcsMotor','nihssLOC','nihssQuestions','nihssCommands','nihssGaze','nihssVisual','nihssFacial','nihssArmL','nihssArmR','nihssLegL','nihssLegR','nihssAtaxia','nihssSensory','nihssLanguage','nihssDysarthria','nihssExtinction','strokeGlucose','brainCT','ctaResult','perfusionImaging','strokeBPPlan','dysphagiaScreen','seizureOngoing','seizureDuration','seizureRescueGiven','neuroNotes','clinicianHypothesis','clinicalQuestion','heartHistory','heartRiskCount','newsOxygen'];ids.forEach(id=>{if(el(id))S[id]=val(id)});if(!pregnancyRelevant()){S.pregnancyTest='İstenmedi';S.symptoms=S.symptoms.filter(x=>x!=='Gebelik olasılığı');S.treatmentSafety=S.treatmentSafety.filter(x=>x!=='Gebelik olasılığı');}
  ['redFlags','radiation','symptoms','history','exam','consult','treatmentSafety','returnPrecautions','serialChecks','dischargeChecklist','administeredMeds','strokeDeficit','thrombolysisChecklist','thrombectomyChecklist','peRisk','orderedTests'].forEach(n=>{if(document.querySelector(`input[name="${n}"]`))S[n]=checked(n)});
 }
 function n(v){const x=parseFloat(v);return Number.isFinite(x)?x:null}
@@ -2277,6 +2301,60 @@ function runDocumentationScenarioTests(){
 function downloadDocumentationScenarioReport(){if(!lastDocumentationScenarioReport)runDocumentationScenarioTests();const blob=new Blob([lastDocumentationScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-dokumantasyon-v3.7.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 
+
+function doseNum(v){const x=parseFloat(String(v??'').replace(',','.'));return Number.isFinite(x)?x:null}
+function applyDosePreset(name){
+ S.doseCalcDrug=name||S.doseCalcDrug;
+ if(S.doseCalcDrug==='Adrenalin (anafilaksi)'){S.doseMgKg='0.01';S.doseFixedMg='';S.doseMaxMg='0.5';S.doseConcentrationMgMl='1'}
+ else if(S.doseCalcDrug==='Midazolam (aktif nöbet/status)'){S.doseMgKg='0.2';S.doseFixedMg='';S.doseMaxMg='10';S.doseConcentrationMgMl='5'}
+ else if(S.doseCalcDrug==='Sabit doz hesabı'){S.doseMgKg='';S.doseMaxMg='';}
+}
+function dosePresetChanged(){const x=el('doseCalcDrug');if(x)applyDosePreset(x.value);syncDoseInputs();renderDoseCalculator()}
+function syncDoseInputs(){
+ const map=['doseCalcDrug','doseMgKg','doseFixedMg','doseMaxMg','doseConcentrationMgMl','doseRepeatCount','doseInfusionVolumeMl','doseInfusionMinutes'];
+ map.forEach(id=>{const x=el(id);if(x)x.value=S[id]??''});
+ const w=el('doseCalcWeight');if(w&&!w.value)w.value=S.weight||'';
+}
+function doseCalculatorAnalysis(data={}){
+ const weight=doseNum(data.weight),mgkg=doseNum(data.mgkg),fixed=doseNum(data.fixed),max=doseNum(data.max),conc=doseNum(data.conc),repeats=Math.max(1,Math.floor(doseNum(data.repeats)||1)),vol=doseNum(data.infusionVolume),mins=doseNum(data.infusionMinutes);
+ const errors=[],warnings=[];
+ if((mgkg!==null&&mgkg<0)||(fixed!==null&&fixed<0)||(max!==null&&max<0)||(conc!==null&&conc<=0)||(weight!==null&&weight<=0))errors.push('Negatif veya sıfır olamayacak bir değer girildi.');
+ if(mgkg!==null&&weight===null)errors.push('mg/kg hesabı için kilo gerekli.');
+ if(mgkg===null&&fixed===null)errors.push('mg/kg veya sabit doz girilmeli.');
+ let raw=null;if(!errors.length)raw=fixed!==null?fixed:mgkg*weight;
+ let single=raw,capped=false;if(raw!==null&&max!==null&&raw>max){single=max;capped=true;warnings.push('Hesaplanan doz tek doz üst sınırına düşürüldü.');}
+ let ml=null;if(single!==null&&conc!==null&&conc>0)ml=single/conc;
+ let total=single!==null?single*repeats:null,totalMl=ml!==null?ml*repeats:null;
+ let rateMlHour=null;if(vol!==null&&mins!==null&&mins>0)rateMlHour=vol/(mins/60);
+ if((vol!==null&&mins===null)||(vol===null&&mins!==null))warnings.push('İnfüzyon hızı için hem toplam hacim hem süre girilmeli.');
+ return {errors,warnings,raw,single,capped,ml,total,totalMl,repeats,rateMlHour};
+}
+function renderDoseCalculator(){
+ const box=el('doseCalculatorResult');if(!box)return;
+ const ids=['doseCalcDrug','doseMgKg','doseFixedMg','doseMaxMg','doseConcentrationMgMl','doseRepeatCount','doseInfusionVolumeMl','doseInfusionMinutes'];ids.forEach(id=>{const x=el(id);if(x)S[id]=x.value});
+ const w=el('doseCalcWeight');const weight=w?w.value:(S.weight||'');
+ const r=doseCalculatorAnalysis({weight,mgkg:S.doseMgKg,fixed:S.doseFixedMg,max:S.doseMaxMg,conc:S.doseConcentrationMgMl,repeats:S.doseRepeatCount,infusionVolume:S.doseInfusionVolumeMl,infusionMinutes:S.doseInfusionMinutes});
+ if(r.errors.length){box.className='panel urgent';box.innerHTML='<b>Hesaplama yapılamadı</b><ul class="compact">'+r.errors.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';return}
+ const f=x=>Number.isFinite(x)?x.toLocaleString('tr-TR',{maximumFractionDigits:3}):'—';
+ box.className='panel info';box.innerHTML=`<b>Matematiksel hesaplama sonucu</b><div class="grid2" style="margin-top:8px"><div class="consultant-row"><b>Ham doz</b>${f(r.raw)} mg</div><div class="consultant-row"><b>Uygulanacak tek doz</b>${f(r.single)} mg${r.capped?' (üst sınır uygulandı)':''}</div><div class="consultant-row"><b>Preparat hacmi</b>${r.ml===null?'Konsantrasyon girilmedi':f(r.ml)+' mL'}</div><div class="consultant-row"><b>'+r.repeats+' uygulama toplamı</b>${f(r.total)} mg${r.totalMl===null?'':' · '+f(r.totalMl)+' mL'}</div>${r.rateMlHour===null?'':`<div class="consultant-row"><b>İnfüzyon pompa hızı</b>${f(r.rateMlHour)} mL/saat</div>`}</div>${r.warnings.length?'<div class="panel warn"><b>Dikkat</b><ul class="compact">'+r.warnings.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':''}<div class="muted" style="margin-top:8px">Sonuç yalnız aritmetik hesaplamadır; klinik doz önerisi değildir.</div>`;
+}
+let lastDoseCalculatorReport='';
+function runDoseCalculatorTests(){
+ const defs=[
+  {name:'20 kg çocuk, 0,01 mg/kg',d:{weight:20,mgkg:.01,max:.5,conc:1,repeats:1},ok:r=>Math.abs(r.single-.2)<1e-9&&Math.abs(r.ml-.2)<1e-9},
+  {name:'Maksimum doz sınırı',d:{weight:80,mgkg:.01,max:.5,conc:1,repeats:1},ok:r=>r.capped&&r.single===.5},
+  {name:'Midazolam 30 kg',d:{weight:30,mgkg:.2,max:10,conc:5,repeats:1},ok:r=>r.single===6&&Math.abs(r.ml-1.2)<1e-9},
+  {name:'Sabit doz hacim hesabı',d:{weight:70,fixed:300,conc:50,repeats:1},ok:r=>r.single===300&&r.ml===6},
+  {name:'Tekrarlı toplam doz',d:{weight:20,mgkg:.01,max:.5,conc:1,repeats:3},ok:r=>Math.abs(r.total-.6)<1e-9&&Math.abs(r.totalMl-.6)<1e-9},
+  {name:'İnfüzyon hızı',d:{fixed:1,conc:1,repeats:1,infusionVolume:100,infusionMinutes:30},ok:r=>r.rateMlHour===200}
+ ];
+ const runs=defs.map(x=>{const r=doseCalculatorAnalysis(x.d);let pass=false;try{pass=!r.errors.length&&!!x.ok(r)}catch(e){}return {name:x.name,pass,detail:pass?'Beklenen matematiksel sonuç doğrulandı.':'Beklenen sonuç oluşmadı.'}});
+ const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass;const summary=el('doseScenarioSummary');if(summary){summary.className='panel '+(fail?'urgent':'ok');summary.innerHTML=`<b>${fail?'Doz hesaplama kontrolü başarısız':'Doz hesaplama doğrulaması tamamlandı'}</b><br>🧮 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`}
+ const box=el('doseScenarioResults');if(box)box.innerHTML=runs.map(r=>`<div class="scenario-check ${r.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${r.pass?'✓':'✕'} ${esc(r.name)}</b><div>${esc(r.detail)}</div></div>`).join('');
+ lastDoseCalculatorReport=[`ACİL KLİNİK ASİSTANI DOZ HESAPLAMA RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.4.0 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');const card=el('doseScenarioCard');if(card)card.open=true;return runs;
+}
+function downloadDoseCalculatorReport(){if(!lastDoseCalculatorReport)runDoseCalculatorTests();const blob=new Blob([lastDoseCalculatorReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-doz-hesaplama-v4.4.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
 const ICD10_LIBRARY=[
  {code:'R07.4',name:'Göğüs ağrısı, tanımlanmamış',group:'Belirti',complaints:['Göğüs ağrısı'],keywords:['göğüs ağrısı','toraks ağrısı'],symptom:true},
  {code:'I20.0',name:'Kararsız anjina',group:'Dolaşım',complaints:['Göğüs ağrısı'],keywords:['kararsız anjina','unstable angina']},
@@ -2414,5 +2492,6 @@ function downloadDrugLibraryReport(){if(!lastDrugLibraryReport)runDrugLibraryTes
 
 // Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
 load();
+setTimeout(()=>{syncDoseInputs();renderDoseCalculator()},0);
 </script>
 </body></html>
