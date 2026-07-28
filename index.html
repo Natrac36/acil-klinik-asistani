@@ -44,7 +44,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v3.3.0 Beta • Klinik muhakeme motoru 2.0</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v3.4.0 Beta • Görüntüleme karar destek motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -91,6 +91,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="reasoningScenarioSummary" class="panel neutral">Henüz klinik muhakeme testi çalıştırılmadı.</div>
  <div id="reasoningScenarioResults" class="safety-grid"></div>
 </details>
+<details class="card collapse-card no-print" id="imagingScenarioCard">
+ <summary>Görüntüleme karar desteği doğrulama paneli <span class="phase-badge">v3.4</span></summary>
+ <p class="muted">Baş ağrısı, inme, pulmoner emboli, akut aort sendromu ve karın ağrısında doğru görüntülemeyi öne çıkarma; gereksiz radyasyonu ve yanlış ilk basamağı engelleme davranışları otomatik sınanır.</p>
+ <div class="compact-actions"><button class="primary" onclick="runImagingScenarioTests()">8 görüntüleme senaryosunu çalıştır</button><button onclick="downloadImagingScenarioReport()">Raporu TXT indir</button></div>
+ <div id="imagingScenarioSummary" class="panel neutral">Henüz görüntüleme senaryo testi çalıştırılmadı.</div>
+ <div id="imagingScenarioResults" class="safety-grid"></div>
+</details>
 </section>
 <aside>
 <div class="sticky">
@@ -104,6 +111,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="card"><h3>Şimdi yap</h3><ul id="doNow" class="compact"><li>Hasta bilgilerini tamamla.</li></ul></div>
  <details class="card collapse-card" id="treatmentCard"><summary>Tedavi desteği</summary><ul id="treatmentPlan" class="compact"><li>Tedavi güvenlik verileri tamamlandığında öneriler oluşacak.</li></ul><p class="muted">Her öneri hekim onayı, kontrendikasyon kontrolü ve yerel protokol gerektirir.</p></details>
  <div class="card"><div class="section-title"><h3>Akıllı tetkik istemi</h3><span class="phase-badge">v2.5</span></div><div id="testStewardshipPanel" class="muted">Yaş, şikâyet ve vital bulgular girildiğinde tetkik öncelikleri oluşur.</div></div>
+ <div class="card"><div class="section-title"><h3>Görüntüleme karar desteği</h3><span id="imagingBadge" class="consultant-badge badge-medium">Bağlam bekleniyor</span></div><div id="imagingPanel" class="safety-grid"><div class="muted">Şikâyet, kırmızı bayraklar, gebelik olasılığı ve ön test olasılığına göre uygun görüntüleme burada görünür.</div></div><p class="muted">Öneriler tetkik istemi değildir. Kontrast, böbrek fonksiyonu, gebelik, radyasyon ve yerel erişim hekim tarafından ayrıca değerlendirilmelidir.</p></div>
  <div class="card"><h3>Sonuç beklerken</h3><ul id="whileWaiting" class="compact"><li>Tetkik aşamasında öneriler oluşacak.</li></ul></div>
  <div class="card"><h3>Yapma / dikkat</h3><ul id="avoidList" class="compact"><li>Karar desteğini tek başına klinik karar yerine kullanma.</li></ul></div>
  <details class="card collapse-card" id="diagnosisCard"><summary>Olası tanılar</summary><div id="dxList" class="dx"></div><p class="muted">Sıralama, yalnız girilen verilere göre değişen bir önceliklendirmedir; olasılık yüzdesi değildir.</p></details>
@@ -1355,7 +1363,7 @@ function loadTestCase(type){
  S={...S,...base,...(cases[type]||{})};S.qIndex=0;S.chatLog=[];currentStep=0;render();
 }
 
-function updateAll(){renderTestStewardship();collect();const cr=criticals(),p=el('criticalPanel');if(el('instantAction'))el('instantAction').innerHTML=`<h3>Şimdi ne yapmalıyım?</h3><strong>${esc(immediateActionText())}</strong>`;if(el('treatmentCard'))el('treatmentCard').open=!quickMode||cr.length>0;if(el('diagnosisCard'))el('diagnosisCard').open=!quickMode;if(el('expertCard'))el('expertCard').open=!quickMode;if(el('livePhase'))el('livePhase').innerHTML=livePhaseHTML();if(cr.length){p.className='panel urgent';el('criticalText').innerHTML=`<b>${cr.length} kritik bulgu:</b><ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`}else{p.className='panel ok';el('criticalText').textContent='Girilen verilere göre kritik eşik saptanmadı; klinik değerlendirme sürdürülmeli.'}const ap=actionPlan();el('doNow').innerHTML=ap.now.map(x=>`<li>${esc(x)}</li>`).join('');const tp=treatmentPlan();el('treatmentPlan').innerHTML=tp.tx.map(x=>`<li>${esc(x)}</li>`).join('')+(tp.contraind.length?`<li><b>Dikkat:</b> ${esc(tp.contraind.join(' | '))}</li>`:'');el('whileWaiting').innerHTML=ap.wait.map(x=>`<li>${esc(x)}</li>`).join('');el('avoidList').innerHTML=ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('');const ds=diagnoses().slice(0,6);el('dxList').innerHTML=ds.map((x,i)=>`<div class="dx-row"><div class="dx-top"><span>${i+1}. ${esc(x.name)}</span><span>${x.score}/100</span></div><div class="bar"><span style="width:${x.score}%"></span></div><div class="evidence">${x.plus.slice(0,3).map(y=>`<span class="pill">+ ${esc(y)}</span>`).join('')||'Henüz destekleyici veri yok'} ${x.minus.slice(0,2).map(y=>`<span class="pill">− ${esc(y)}</span>`).join('')}</div></div>`).join('');el('clinicalNote').value=noteText(ds,cr,ap);if(el('reassessmentBox'))el('reassessmentBox').innerHTML=reassessmentHTML();renderEcgInterpretation();renderLabInterpretation();renderDrugRecommendation();renderExpertPanel();renderSepsis();renderNeuro();renderConsultant();renderRiskScores();renderScoreSafety();renderReasoning();renderDispositionSafety();renderRedFlagEngine();renderProfessionalDocs()}
+function updateAll(){renderTestStewardship();collect();const cr=criticals(),p=el('criticalPanel');if(el('instantAction'))el('instantAction').innerHTML=`<h3>Şimdi ne yapmalıyım?</h3><strong>${esc(immediateActionText())}</strong>`;if(el('treatmentCard'))el('treatmentCard').open=!quickMode||cr.length>0;if(el('diagnosisCard'))el('diagnosisCard').open=!quickMode;if(el('expertCard'))el('expertCard').open=!quickMode;if(el('livePhase'))el('livePhase').innerHTML=livePhaseHTML();if(cr.length){p.className='panel urgent';el('criticalText').innerHTML=`<b>${cr.length} kritik bulgu:</b><ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`}else{p.className='panel ok';el('criticalText').textContent='Girilen verilere göre kritik eşik saptanmadı; klinik değerlendirme sürdürülmeli.'}const ap=actionPlan();el('doNow').innerHTML=ap.now.map(x=>`<li>${esc(x)}</li>`).join('');const tp=treatmentPlan();el('treatmentPlan').innerHTML=tp.tx.map(x=>`<li>${esc(x)}</li>`).join('')+(tp.contraind.length?`<li><b>Dikkat:</b> ${esc(tp.contraind.join(' | '))}</li>`:'');el('whileWaiting').innerHTML=ap.wait.map(x=>`<li>${esc(x)}</li>`).join('');el('avoidList').innerHTML=ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('');const ds=diagnoses().slice(0,6);el('dxList').innerHTML=ds.map((x,i)=>`<div class="dx-row"><div class="dx-top"><span>${i+1}. ${esc(x.name)}</span><span>${x.score}/100</span></div><div class="bar"><span style="width:${x.score}%"></span></div><div class="evidence">${x.plus.slice(0,3).map(y=>`<span class="pill">+ ${esc(y)}</span>`).join('')||'Henüz destekleyici veri yok'} ${x.minus.slice(0,2).map(y=>`<span class="pill">− ${esc(y)}</span>`).join('')}</div></div>`).join('');el('clinicalNote').value=noteText(ds,cr,ap);if(el('reassessmentBox'))el('reassessmentBox').innerHTML=reassessmentHTML();renderEcgInterpretation();renderLabInterpretation();renderDrugRecommendation();renderExpertPanel();renderSepsis();renderNeuro();renderConsultant();renderRiskScores();renderScoreSafety();renderReasoning();renderDispositionSafety();renderRedFlagEngine();renderImagingDecisionSupport();renderProfessionalDocs()}
 function noteText(ds,cr,ap){return `ACİL KLİNİK DEĞERLENDİRME TASLAĞI\nVaka aşaması: ${casePhaseAnalysis().phase}\nİstenen tetkikler: ${(S.orderedTests||[]).join(', ')||'henüz seçilmedi'}\nHasta: ${S.age||'?'} yaş, ${S.sex||'cinsiyet belirtilmedi'}\nBaşvuru: ${S.complaint}; şiddet ${S.severity||'?'} /10; ${S.notes||'hasta ifadesi girilmedi'}\nVital: TA ${S.sbp||'?'} / ${S.dbp||'?'} mmHg, nabız ${S.pulse||'?'} /dk, SS ${S.rr||'?'} /dk, SpO₂ %${S.spo2||'?'}, ateş ${S.temp||'?'} °C, bilinç ${S.mental||'?'}\nÖykü: başlangıç ${S.onset||'?'}, süre ${S.duration||'?'}, karakter ${S.painType||'?'}, efor ${S.exertional||'?'}, plevritik ${S.pleuritic||'?'}, pozisyon ${S.positional||'?'}, palpasyon ${S.palpation||'?'}\nYayılım: ${S.radiation.join(', ')||'yok/belirtilmedi'}\nEşlik eden: ${S.symptoms.join(', ')||'yok/belirtilmedi'}\nÖzgeçmiş/risk: ${S.history.join(', ')||'yok/belirtilmedi'}; sigara ${S.smoking||'?'}; madde ${S.substance||'?'}\nİlaçlar: ${S.meds||'belirtilmedi'} | Alerji: ${S.allergy||'belirtilmedi'} | Ameliyat: ${S.surgery||'belirtilmedi'}\nMuayene: ${S.exam.join(', ')||'henüz girilmedi'}\nTetkik: EKG ${S.ecg}; yapılandırılmış EKG: ritim ${S.ecgRhythm}, hız ${S.ecgRate||'?'}/dk, aks ${S.ecgAxis}, PR ${S.ecgPR||'?'} ms, QRS ${S.ecgQRS||'?'} ms, QTc ${S.ecgQTc||'?'} ms, bulgular ${S.ecgFindings.join(', ')||'yok/belirtilmedi'}, bölge ${S.ecgTerritory.join(', ')||'belirtilmedi'}, doktor yorumu ${S.ecgDoctorNote||'yok'}; ilk troponin ${S.troponin}; seri troponin ${S.repeatTroponin}; D-dimer ${S.ddimer}; akciğer grafisi ${S.cxr}; Hb ${S.hb||'?'}; kreatinin ${S.creatinine||'?'}\nLaboratuvar: WBC ${S.wbc||'?'}, Plt ${S.platelet||'?'}, Na ${S.sodium||'?'}, K ${S.potassium||'?'}, Cl ${S.chloride||'?'}, glukoz ${S.glucose||'?'}, eGFR ${S.egfr||'?'}, Ca ${S.calcium||'?'}, albümin ${S.albumin||'?'}, Mg ${S.magnesium||'?'}, CRP ${S.crp||'?'}, PCT ${S.procalcitonin||'?'}, laktat ${S.lactate||'?'}, AST/ALT ${S.ast||'?'}/${S.alt||'?'}, bilirubin ${S.bilirubin||'?'}, lipaz ${S.lipase||'?'}, keton ${S.ketone}${pregnancyRelevant()?`, gebelik testi ${S.pregnancyTest}`:''}\nKan gazı: pH ${S.ph||'?'}, pCO₂ ${S.pco2||'?'}, HCO₃ ${S.hco3||'?'}, pO₂ ${S.po2||'?'}, BE ${S.baseExcess||'?'}\nAkıllı tetkik istemi: gerekli ${(testRecommendationEngine().required||[]).join(', ')||'yok'}; düşünülebilir ${(testRecommendationEngine().consider||[]).join(', ')||'yok'}; rutin önerilmeyen ${(testRecommendationEngine().avoid||[]).join(', ')||'yok'}
 Laboratuvar yorumu: ${[...labAnalysis().urgent,...labAnalysis().out,...labAnalysis().calc].join(' | ')}\nSepsis/şok: ${sepsisAnalysis().out.join(' | ')}; uyarılar ${sepsisAnalysis().urgent.join(' | ')||'yok'}; plan ${sepsisAnalysis().actions.join(' | ')||'yok'}
 Nöroloji: ${neuroAnalysis().out.join(' | ')}; uyarılar ${neuroAnalysis().urgent.join(' | ')||'yok'}; plan ${neuroAnalysis().actions.join(' | ')||'yok'}; BT ${S.brainCT}; BTA ${S.ctaResult}; son normal ${S.lastKnownWell||'?'}; antikoagülan ${S.anticoagulantType}.
@@ -1762,6 +1770,107 @@ function runReasoningScenarioTests(){
  const card=el('reasoningScenarioCard');if(card)card.open=true;return runs;
 }
 function downloadReasoningScenarioReport(){if(!lastReasoningScenarioReport)runReasoningScenarioTests();const blob=new Blob([lastReasoningScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-muhakeme-v3.3.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);}
+
+
+function imagingDecisionSupport(){
+ const c=S.complaint||'', f=S.redFlags||[], sx=S.symptoms||[], ex=S.exam||[], age=n(S.age), sbp=n(S.sbp), spo2=n(S.spo2);
+ const rec=[]; const add=(modality,status,priority,reasons,avoid='',radiation='')=>rec.push({modality,status,priority,reasons:[...new Set((reasons||[]).filter(Boolean))],avoid,radiation});
+ const criticalNeuro=f.includes('Yeni nörolojik defisit')||ex.includes('Yeni nörolojik defisit')||(S.strokeDeficit||[]).length||S.strokeAlert==='Evet';
+ const thunder=f.includes('Ani başlayan yaşamın en şiddetli baş ağrısı')||f.includes('Ani başlangıç / yaşamın en şiddetli baş ağrısı')||(c==='Baş ağrısı'&&S.onset==='Ani'&&n(S.severity)>=8);
+ const meningism=f.includes('Menenjizm')||sx.includes('Menenjizm');
+ const trauma=c==='Travma'||f.some(x=>/travma/i.test(x));
+ const anticoag=(S.anticoagulantType&&S.anticoagulantType!=='Yok/bilinmiyor')||/antikoag/i.test(S.meds||'')||S.history.includes('Antikoagülan kullanımı');
+ const unstable=(sbp!==null&&sbp<90)||(spo2!==null&&spo2<90)||S.mental!=='Normal';
+ const preg=pregnancyRelevant();
+ const highPE=(S.peRisk||[]).includes('PE en olası tanı')||sx.includes('VTE bulgusu')||ex.includes('DVT bulgusu')||((n(S.pulse)||0)>=110&&(spo2!==null&&spo2<92));
+ const aortic=f.includes('Ani yırtılır tarzda ağrı')||ex.includes('Nabız defisiti')||f.includes('İki kol arasında belirgin TA/nabız farkı')||S.painType==='Yırtılır';
+ const ruq=/sağ üst|sağ üst kadran|safra/i.test(S.notes||'')||sx.some(x=>/sağ üst|safra/i.test(x));
+ const rlq=/sağ alt|sağ alt kadran|append/i.test(S.notes||'')||sx.some(x=>/sağ alt|append/i.test(x));
+
+ if(c==='Baş ağrısı'){
+   if(thunder){add('Kontrastsız beyin BT','Önerilir','Acil',['Ani/çok şiddetli başlangıç','Subaraknoid kanama dışlanmalı'],'Negatif erken BT klinik şüpheyi tek başına sonlandırmayabilir.','İyonizan radyasyon');add('Baş-boyun BT anjiyografi','Düşünülebilir','Acil',['Anevrizma/arteriyel neden araştırması','BT veya klinik SAK şüphesi'],'Rutin primer baş ağrısında kullanılmaz.','İyotlu kontrast + radyasyon');}
+   else if(criticalNeuro||S.mental!=='Normal'||meningism||trauma||anticoag||(age!==null&&age>=50&&S.onset==='Yeni')) add('Kontrastsız beyin BT','Önerilir','Acil',['Nörolojik kırmızı bayrak veya sekonder baş ağrısı riski'],'Normal BT tüm sekonder nedenleri dışlamaz.','İyonizan radyasyon');
+   else add('Beyin BT/MR','Rutin önerilmez','Düşük',['Kırmızı bayrak girilmedi','Stabil primer baş ağrısı bağlamı'],'Yeni bulgu veya klinik değişimde yeniden değerlendir.','Gereksiz radyasyon/maliyet');
+ }
+ if(c==='Bilinç değişikliği'||criticalNeuro){
+   add('Kontrastsız beyin BT','Önerilir','Acil',['Akut inme veya intrakraniyal kanama ayrımı'],'Görüntüleme glukoz kontrolünü ve ABC stabilizasyonunu geciktirmemeli.','İyonizan radyasyon');
+   if(criticalNeuro||S.strokeAlert==='Evet')add('Baş-boyun BT anjiyografi','Önerilir','Acil',['Büyük damar tıkanıklığı ve trombektomi uygunluğu'],'Kontrast/böbrek değerlendirmesi yapılırken zaman kritik süreç gereksiz geciktirilmemeli.','İyotlu kontrast + radyasyon');
+ }
+ if(c==='Nefes darlığı'||c==='Göğüs ağrısı'){
+   if(aortic){add('Aort BT anjiyografi (toraks ± abdomen/pelvis)','Önerilir','Acil',['Akut aort sendromu bulguları'],'Hemodinamik olarak taşınamayan hastada yatak başı TEE alternatif olabilir.','İyotlu kontrast + radyasyon');}
+   if(highPE||S.ddimer==='Pozitif') add('Pulmoner BT anjiyografi','Önerilir',unstable?'Acil':'Yüksek',['Yüksek klinik olasılık veya pozitif D-dimer'],'Düşük/orta olasılık + negatif D-dimerde rutin çekilmez.','İyotlu kontrast + radyasyon');
+   else if(S.ddimer==='Negatif') add('Pulmoner BT anjiyografi','Rutin önerilmez','Düşük',['Düşük/orta klinik olasılıkta negatif D-dimer'],'Klinik olasılık yüksekse negatif test tek başına yeterli olmayabilir.','Gereksiz kontrast/radyasyon');
+   if(c==='Nefes darlığı'&&!highPE&&!aortic) add('Akciğer grafisi','Düşünülebilir','Orta',['Pnömoni, ödem veya pnömotoraks için başlangıç değerlendirmesi'],'Normal grafi PE’yi dışlamaz.','Düşük radyasyon');
+ }
+ if(c==='Karın ağrısı'){
+   if(preg&&rlq){add('Abdominal/pelvik ultrasonografi','Önerilir','Yüksek',['Gebelik olasılığı ve sağ alt kadran ağrısı'],'Negatif/kararsız US sonrası kontrastsız MR düşünülebilir.','Radyasyon yok');add('Abdomen-pelvis MR (kontrastsız)','Düşünülebilir','Orta',['US tanısal değilse appendisit araştırması'],'Gadolinyum rutin ilk seçenek değildir.','Radyasyon yok');add('Kontrastlı abdomen BT','İlk seçenek değil','Düşük',['Gebelikte radyasyonsuz yöntemler öncelikli'],'Yaşamı tehdit eden durumda gerekli görüntüleme yalnız gebelik nedeniyle geciktirilmez.','İyonizan radyasyon');}
+   else if(rlq){add('Kontrastlı abdomen-pelvis BT','Önerilir','Yüksek',['Erişkinde sağ alt kadran ağrısı/appendisit şüphesi'],'Kontrast riski ve böbrek fonksiyonunu değerlendir.','İyotlu kontrast + radyasyon');}
+   else if(ruq){add('Sağ üst kadran ultrasonografisi','Önerilir','Yüksek',['Safra kesesi/biliyer hastalık şüphesi'],'Negatif veya kararsız US sonrası MRCP/BT klinik bağlama göre seçilir.','Radyasyon yok');}
+   else if(f.includes('Peritonit bulguları')||ex.includes('Defans/rebound')||unstable) add('Kontrastlı abdomen-pelvis BT','Önerilir','Acil',['Cerrahi akut batın veya komplikasyon riski'],'Stabilizasyon ve cerrahi değerlendirmeyi geciktirme.','İyotlu kontrast + radyasyon');
+   else add('Abdominal görüntüleme','Klinik bağlama göre','Orta',['Ağrı lokalizasyonu ve muayene ile hedeflenmeli'],'Lokalizasyon olmadan rutin geniş BT isteminden kaçın.','Tetkike göre değişir');
+ }
+ if(c==='Bel-sırt ağrısı'){
+   if(f.includes('Kauda ekuina bulguları')||sx.some(x=>/idrar retansiyonu|eyer tarzı/i.test(x))) add('Lomber MR','Önerilir','Acil',['Kauda ekuina/spinal bası şüphesi'],'Direkt grafi veya BT sinir basısını yeterince dışlamaz.','Radyasyon yok');
+   else if(!trauma&&!criticalNeuro)add('Lomber görüntüleme','Rutin önerilmez','Düşük',['Kırmızı bayraksız akut bel ağrısı'],'Nörolojik defisit, enfeksiyon, malignite veya travma gelişirse yeniden değerlendir.','Gereksiz radyasyon/maliyet');
+ }
+ if(c==='Travma'){
+   if(S.mental!=='Normal'||criticalNeuro||anticoag)add('Kontrastsız beyin BT','Önerilir','Acil',['Kafa travması ve intrakraniyal kanama riski'],'Klinik karar kuralı ve travma mekanizmasıyla birlikte değerlendir.','İyonizan radyasyon');
+ }
+ if(!rec.length)add('Hedefli görüntüleme','Klinik bağlama göre','Orta',['Önce anatomik bölge ve klinik soru netleştirilmeli'],'Görüntüleme klinik muayenenin yerine geçmez.','Tetkike göre değişir');
+ return rec;
+}
+function imagingStatusClass(x){return /Önerilir/.test(x)?'safety-critical':/Rutin önerilmez|İlk seçenek değil/.test(x)?'safety-ok':/Düşünülebilir|Klinik bağlama/.test(x)?'safety-warning':'safety-info'}
+function renderImagingDecisionSupport(){
+ const box=el('imagingPanel'),badge=el('imagingBadge');if(!box||!badge)return;const r=imagingDecisionSupport();
+ const urgent=r.some(x=>x.priority==='Acil'&&x.status==='Önerilir'), recommended=r.some(x=>x.status==='Önerilir');
+ badge.className=`consultant-badge badge-${urgent?'critical':recommended?'high':'medium'}`;badge.textContent=urgent?'Acil görüntüleme':recommended?'Görüntüleme önerilir':'Seçici yaklaşım';
+ box.innerHTML=r.map(x=>`<div class="safety-alert ${imagingStatusClass(x.status)}"><strong>${esc(x.modality)} — ${esc(x.status)}</strong><div><b>Öncelik:</b> ${esc(x.priority)}</div><div>${x.reasons.map(y=>`• ${esc(y)}`).join('<br>')}</div>${x.avoid?`<div class="safety-action"><b>Dikkat:</b> ${esc(x.avoid)}</div>`:''}${x.radiation?`<div class="muted">${esc(x.radiation)}</div>`:''}</div>`).join('');
+}
+
+let lastImagingScenarioReport='';
+const imagingScenarioBlank={...JSON.parse(JSON.stringify(S)),age:'',sex:'Erkek',complaint:'Göğüs ağrısı',onset:'',severity:'',sbp:'120',dbp:'80',pulse:'80',rr:'16',spo2:'98',temp:'36.7',mental:'Normal',redFlags:[],symptoms:[],exam:[],history:[],peRisk:[],ddimer:'Bekleniyor',strokeAlert:'Hayır',strokeDeficit:[],notes:'',pregnancyTest:'Bekleniyor',anticoagulantType:'Yok/bilinmiyor'};
+function imagingScenarioDefinitions(){return [
+ {name:'Kırmızı bayraksız primer baş ağrısı',data:{age:'30',complaint:'Baş ağrısı',onset:'Kademeli',severity:'4'},checks:[
+  {title:'Rutin nörogörüntüleme önerilmiyor',critical:true,test:r=>r.some(x=>/Beyin BT\/MR/.test(x.modality)&&x.status==='Rutin önerilmez')},
+  {title:'Acil BT üretilmiyor',critical:true,test:r=>!r.some(x=>x.modality==='Kontrastsız beyin BT'&&x.status==='Önerilir')}
+ ]},
+ {name:'Thunderclap baş ağrısı',data:{age:'46',complaint:'Baş ağrısı',onset:'Ani',severity:'10',redFlags:['Ani başlayan yaşamın en şiddetli baş ağrısı']},checks:[
+  {title:'Kontrastsız beyin BT acil',critical:true,test:r=>r.some(x=>x.modality==='Kontrastsız beyin BT'&&x.priority==='Acil')},
+  {title:'BT anjiyografi seçeneği görünür',critical:true,test:r=>r.some(x=>/BT anjiyografi/.test(x.modality))}
+ ]},
+ {name:'Akut fokal nörolojik defisit',data:{age:'74',complaint:'Bilinç değişikliği',onset:'Ani',strokeAlert:'Evet',strokeDeficit:['Tek taraflı güçsüzlük'],redFlags:['Yeni nörolojik defisit']},checks:[
+  {title:'Kontrastsız beyin BT öneriliyor',critical:true,test:r=>r.some(x=>x.modality==='Kontrastsız beyin BT'&&x.status==='Önerilir')},
+  {title:'Baş-boyun BTA öneriliyor',critical:true,test:r=>r.some(x=>/Baş-boyun BT anjiyografi/.test(x.modality)&&x.status==='Önerilir')}
+ ]},
+ {name:'Düşük/orta PE olasılığı ve negatif D-dimer',data:{age:'42',complaint:'Nefes darlığı',ddimer:'Negatif',pulse:'84',spo2:'98'},checks:[
+  {title:'CTPA rutin önerilmiyor',critical:true,test:r=>r.some(x=>x.modality==='Pulmoner BT anjiyografi'&&x.status==='Rutin önerilmez')}
+ ]},
+ {name:'Yüksek klinik olasılıklı PE',data:{age:'68',complaint:'Nefes darlığı',pulse:'118',spo2:'88',peRisk:['PE en olası tanı'],symptoms:['VTE bulgusu']},checks:[
+  {title:'CTPA öneriliyor',critical:true,test:r=>r.some(x=>x.modality==='Pulmoner BT anjiyografi'&&x.status==='Önerilir')},
+  {title:'Acil öncelik veriliyor',critical:true,test:r=>r.some(x=>x.modality==='Pulmoner BT anjiyografi'&&x.priority==='Acil')}
+ ]},
+ {name:'Akut aort sendromu',data:{age:'64',complaint:'Göğüs ağrısı',painType:'Yırtılır',onset:'Ani',redFlags:['Ani yırtılır tarzda ağrı'],exam:['Nabız defisiti']},checks:[
+  {title:'Aort BTA öneriliyor',critical:true,test:r=>r.some(x=>/Aort BT anjiyografi/.test(x.modality)&&x.status==='Önerilir')}
+ ]},
+ {name:'Gebelik olasılığı ve sağ alt kadran ağrısı',data:{age:'28',sex:'Kadın',complaint:'Karın ağrısı',notes:'Sağ alt kadran ağrısı, appendisit şüphesi',pregnancyTest:'Bekleniyor'},checks:[
+  {title:'US ilk basamak',critical:true,test:r=>r.some(x=>/ultrasonografi/i.test(x.modality)&&x.status==='Önerilir')},
+  {title:'Kontrastsız MR seçeneği',critical:true,test:r=>r.some(x=>/MR \(kontrastsız\)/.test(x.modality))},
+  {title:'BT ilk seçenek değil',critical:true,test:r=>r.some(x=>/Kontrastlı abdomen BT/.test(x.modality)&&x.status==='İlk seçenek değil')}
+ ]},
+ {name:'Sağ üst kadran ağrısı',data:{age:'55',complaint:'Karın ağrısı',notes:'Sağ üst kadran ağrısı, biliyer kolik şüphesi'},checks:[
+  {title:'Sağ üst kadran US öneriliyor',critical:true,test:r=>r.some(x=>/Sağ üst kadran ultrasonografisi/.test(x.modality)&&x.status==='Önerilir')}
+ ]}
+]}
+function runOneImagingScenario(def){S={...JSON.parse(JSON.stringify(imagingScenarioBlank)),...JSON.parse(JSON.stringify(def.data))};const r=imagingDecisionSupport();const checks=def.checks.map(c=>{let pass=false,detail='';try{pass=!!c.test(r);detail=pass?'Beklenen görüntüleme davranışı doğrulandı.':'Beklenen görüntüleme davranışı oluşmadı.'}catch(err){detail=String(err&&err.message||err)}return {...c,pass,detail}});return {name:def.name,checks,passed:checks.filter(x=>x.pass).length,total:checks.length,criticalFailed:checks.some(x=>x.critical&&!x.pass)}}
+function runImagingScenarioTests(){
+ collect();const original=JSON.parse(JSON.stringify(S));let runs=[],unexpected='';try{runs=imagingScenarioDefinitions().map(runOneImagingScenario)}catch(err){unexpected=String(err&&err.message||err)}finally{S=original;render();updateAll()}
+ const checks=runs.flatMap(x=>x.checks),pass=checks.filter(x=>x.pass).length,fail=checks.length-pass,criticalFail=checks.filter(x=>!x.pass&&x.critical).length;
+ const summary=el('imagingScenarioSummary');if(summary){summary.className=`panel ${criticalFail?'urgent':fail?'warn':'ok'}`;summary.innerHTML=unexpected?`<b>Görüntüleme test motoru çalışırken hata oluştu</b><br>${esc(unexpected)}`:`<b>${criticalFail?'Kritik görüntüleme kontrolü başarısız':'Görüntüleme karar desteği doğrulaması tamamlandı'}</b><br>🩻 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${criticalFail} kritik hata · 🟠 ${fail-criticalFail} uyarı`}
+ const box=el('imagingScenarioResults');if(box)box.innerHTML=unexpected?`<div class="safety-alert safety-critical"><strong>🔴 JavaScript hatası</strong><div>${esc(unexpected)}</div></div>`:runs.map(r=>`<div class="scenario-suite"><div class="scenario-suite-head"><strong>${esc(r.name)}</strong><span class="scenario-score ${r.criticalFailed?'scenario-fail':r.passed===r.total?'scenario-pass':'scenario-warn'}">${r.passed}/${r.total}</span></div>${r.checks.map(c=>`<div class="scenario-check ${c.pass?'scenario-check-pass':c.critical?'scenario-check-fail':'scenario-check-warn'}"><b>${c.pass?'✓':c.critical?'✕':'!'} ${esc(c.title)}</b><div>${esc(c.detail)}</div></div>`).join('')}</div>`).join('');
+ lastImagingScenarioReport=[`ACİL KLİNİK ASİSTANI GÖRÜNTÜLEME KARAR DESTEĞİ RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v3.4.0 Beta`,`Sonuç: ${runs.length} senaryo, ${pass}/${checks.length} kontrol geçti, ${criticalFail} kritik hata, ${fail-criticalFail} uyarı`,'',...runs.flatMap(r=>[`${r.name} — ${r.passed}/${r.total}`,...r.checks.map(c=>`${c.pass?'GEÇTİ':c.critical?'HATA':'UYARI'} | ${c.title} | ${c.detail}`),''])].join('\n');
+ const card=el('imagingScenarioCard');if(card)card.open=true;return runs;
+}
+function downloadImagingScenarioReport(){if(!lastImagingScenarioReport)runImagingScenarioTests();const blob=new Blob([lastImagingScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-goruntuleme-v3.4.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 </script>
 </body></html>
