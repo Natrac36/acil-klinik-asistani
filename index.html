@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.0.1 Beta • Yapay Zekâ Klinik Asistanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.0.2 Beta • Yapay Zekâ Klinik Asistanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -2709,13 +2709,20 @@ function aiClinicalEngine(data){
  let critical=scored.filter(x=>x.urgency==='kritik'&&x.score>=24);
  const mustNotMiss=aiUnique([...critical.map(x=>x.name),...(data.redFlags||[]),...vital]);
  const top=scored.slice(0,6);
- const questions=aiUnique(top.flatMap(x=>x.questions)).slice(0,8);
+ const priorityQuestions=[];
+ if(data.age===null||data.age===undefined||String(data.age).trim()==='')priorityQuestions.push('Yaş ve temel risk profili nedir?');
+ if(data.spo2===null||data.spo2===undefined||String(data.spo2).trim()==='')priorityQuestions.push('SpO₂ ölçüldü mü?');
+ if(data.sbp===null||data.sbp===undefined||String(data.sbp).trim()==='')priorityQuestions.push('Kan basıncı ölçüldü mü?');
+ const questions=aiUnique([...priorityQuestions,...top.flatMap(x=>x.questions)]).slice(0,8);
  const exam=aiUnique(['Tam vital bulgular ve ABCDE',...top.flatMap(x=>x.exam)]).slice(0,8);
  const tests=aiUnique([...(typeof recommendedTestsForCurrentCase==='function'?recommendedTestsForCurrentCase():[]),...top.flatMap(x=>x.tests)]).slice(0,10);
- if(!data.age)questions.unshift('Yaş ve temel risk profili nedir?');
- if(!data.spo2)questions.push('SpO₂ ölçüldü mü?');
- if(!data.sbp)questions.push('Kan basıncı ölçüldü mü?');
- const disposition=(mustNotMiss.length||critical.length)?'Kritik olasılıklar dışlanmadan taburculuk düşünme; monitörizasyon, seri değerlendirme ve uygun acil konsültasyon/sevk planla.':top.length?'Hedefli değerlendirme ve seri yeniden muayene sonrası gözlem/taburculuk kararını güvenlik ağıyla ver.':'Veri yetersiz: temel vital, odak anamnez ve muayene tamamlanmadan düşük risk sınıflaması yapma.';
+ const hasClinicalInput=!!(
+  complaint.trim()||String(data.narrative||'').trim()||String(data.notes||'').trim()||
+  (data.symptoms||[]).length||(data.redFlags||[]).length||
+  [data.spo2,data.sbp,data.pulse,data.rr,data.temp].some(v=>v!==null&&v!==undefined&&String(v).trim()!=='')||
+  (data.mental&&data.mental!=='Normal')
+ );
+ const disposition=!hasClinicalInput?'Veri yetersiz: temel vital, odak anamnez ve muayene tamamlanmadan düşük risk sınıflaması yapma.':(mustNotMiss.length||critical.length)?'Kritik olasılıklar dışlanmadan taburculuk düşünme; monitörizasyon, seri değerlendirme ve uygun acil konsültasyon/sevk planla.':top.length?'Hedefli değerlendirme ve seri yeniden muayene sonrası gözlem/taburculuk kararını güvenlik ağıyla ver.':'Veri yetersiz: temel vital, odak anamnez ve muayene tamamlanmadan düşük risk sınıflaması yapma.';
  const summary=`${data.age?data.age+' yaş ':''}${data.sex||''} hasta; ana şikâyet: ${complaint||'belirtilmedi'}. ${String(data.narrative||data.notes||'Serbest metin girilmedi.').trim()}`;
  return {summary,top,mustNotMiss:aiUnique(mustNotMiss),questions:aiUnique(questions).slice(0,8),exam,tests,disposition,vital};
 }
@@ -2767,9 +2774,9 @@ function runAIClinicalAssistantTests(){
  ];
  const runs=cases.map(([name,data,test])=>{let pass=false,detail='';try{const r=aiClinicalEngine({...base,...data});pass=!!test(r);detail=pass?'Beklenen klinik davranış doğrulandı.':'Beklenen sonuç oluşmadı.'}catch(e){detail=String(e.message||e)}return {name,pass,detail}}),pass=runs.filter(x=>x.pass).length,fail=runs.length-pass;
  const sum=document.getElementById('aiClinicalScenarioSummary'),box=document.getElementById('aiClinicalScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Klinik asistan kontrolü başarısız':'Yapay zekâ klinik asistanı doğrulandı'}</b><br>🧠 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');
- lastAIClinicalAssistantReport=[`ACİL KLİNİK ASİSTANI YAPAY ZEKÂ KLİNİK ASİSTAN RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v5.0.1 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('aiClinicalScenarioCard')?.setAttribute('open','');return runs;
+ lastAIClinicalAssistantReport=[`ACİL KLİNİK ASİSTANI YAPAY ZEKÂ KLİNİK ASİSTAN RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v5.0.2 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('aiClinicalScenarioCard')?.setAttribute('open','');return runs;
 }
-function downloadAIClinicalAssistantReport(){if(!lastAIClinicalAssistantReport)runAIClinicalAssistantTests();const blob=new Blob([lastAIClinicalAssistantReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-yapay-zeka-v5.0.1.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function downloadAIClinicalAssistantReport(){if(!lastAIClinicalAssistantReport)runAIClinicalAssistantTests();const blob=new Blob([lastAIClinicalAssistantReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-yapay-zeka-v5.0.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 // Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
 load();
