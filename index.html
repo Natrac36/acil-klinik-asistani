@@ -60,7 +60,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.4.0 Beta • Akıllı Reçete Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.4.1 Beta • Reçete Motoru + Otomatik Doğrulama</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -275,7 +275,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 
 
 <div class="card" id="smartPrescriptionCard">
- <div class="section-title"><h3>Akıllı reçete motoru</h3><span class="phase-badge">v6.4</span></div>
+ <div class="section-title"><h3>Akıllı reçete motoru</h3><span class="phase-badge">v6.4.1</span></div>
  <p class="muted">Tanı/şikâyet, yaş, kilo ve güvenlik özelliklerine göre taburculuk reçetesi taslağı oluşturur. Antibiyotik ve riskli ilaçlarda otomatik kesin öneri yerine doğrulama adımı gösterir.</p>
  <div class="grid3">
   <label>Klinik durum<select id="rxScenario" onchange="renderPrescriptionEngine()"><option value="painFever">Ağrı / ateş</option><option value="viralUri">Viral ÜSYE</option><option value="pharyngitis">Akut farenjit</option><option value="otitis">Akut otitis media</option><option value="sinusitis">Akut sinüzit</option><option value="cystitis">Komplike olmayan sistit</option><option value="gastroenteritis">Akut gastroenterit</option><option value="urticaria">Akut ürtiker</option><option value="bronchospasm">Bronkospazm / astım alevlenmesi</option></select></label>
@@ -457,6 +457,15 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="doseScenarioSummary" class="panel neutral">Henüz doz hesaplama testi çalıştırılmadı.</div>
  <div id="doseScenarioResults" class="safety-grid"></div>
 </details>
+
+<details class="card collapse-card no-print" id="prescriptionScenarioCard">
+ <summary>Akıllı reçete motoru doğrulama paneli <span class="phase-badge">v6.4.1</span></summary>
+ <p class="muted">Çocuk doz hesabı, NSAİİ engelleri, penisilin alerjisi, böbrek işlev bozukluğu, gebelik ve alarm bulgularında güvenli yönlendirme davranışlarını otomatik sınar. Bu panel reçete oluşturmaz; yazılım davranışını kontrol eder.</p>
+ <div class="compact-actions"><button class="primary" onclick="runPrescriptionEngineTests()">8 reçete senaryosunu çalıştır</button><button onclick="downloadPrescriptionEngineReport()">Raporu TXT indir</button></div>
+ <div id="prescriptionScenarioSummary" class="panel neutral">Henüz akıllı reçete motoru testi çalıştırılmadı.</div>
+ <div id="prescriptionScenarioResults" class="safety-grid"></div>
+</details>
+
 <details class="card collapse-card no-print" id="qaCard">
  <summary>Klinik QA denetim paneli <span class="phase-badge">v2.9</span></summary>
  <p class="muted">Soru ağaçları, yaş-cinsiyet filtreleri ve tetkik eşleşmeleri otomatik kontrol edilir. Bu test klinik doğrulamanın yerine geçmez.</p>
@@ -3747,10 +3756,34 @@ function prescriptionEvaluate(d){
  return {meds,warnings,safety,child};
 }
 function rxItemHtml(x){const badge=x.status==='blocked'?'<span class="rx-badge stop">KULLANMA / DOĞRULA</span>':x.status==='caution'?'<span class="rx-badge warn">DOĞRULA</span>':'<span class="rx-badge">TASLAK</span>';return `<div class="rx-item ${x.status==='blocked'?'blocked':x.status==='caution'?'caution':''}"><b>${esc(x.name)} ${badge}</b><div><strong>Doz:</strong> ${esc(x.dose)}</div><div><strong>Yol:</strong> ${esc(x.route)} • <strong>Süre:</strong> ${esc(x.duration)}</div>${x.note?`<div class="rx-meta">${esc(x.note)}</div>`:''}</div>`}
-function renderPrescriptionEngine(ev){if(ev&&ev.preventDefault)ev.preventDefault();const btn=document.getElementById('createPrescriptionBtn');try{if(btn){btn.disabled=true;btn.textContent='Reçete hazırlanıyor...'}const d=readPrescriptionInputs(),r=prescriptionEvaluate(d);const list=document.getElementById('prescriptionList'),safe=document.getElementById('prescriptionSafety'),warn=document.getElementById('prescriptionWarnings'),sum=document.getElementById('prescriptionSummary');if(list)list.innerHTML=r.meds.map(rxItemHtml).join('')||'<div class="muted">Seçenek oluşmadı.</div>';if(safe)safe.innerHTML=r.safety.map(x=>`<div class="rx-item"><b>Güvenlik ağı</b><div>${esc(x)}</div></div>`).join('');if(warn)warn.innerHTML=r.warnings.length?`<div class="panel warn"><b>Reçete öncesi doğrulama</b><ul class="compact">${r.warnings.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'<div class="panel ok">Belirgin ek güvenlik uyarısı saptanmadı.</div>';if(sum)sum.textContent=['AKILLI REÇETE MOTORU — v6.4.0','Klinik durum: '+(document.getElementById('rxScenario')?.selectedOptions?.[0]?.textContent||''),'Hasta grubu: '+(r.child?'Çocuk':'Erişkin'),'',...r.meds.map((x,i)=>`${i+1}. ${x.name}\n   ${x.dose}\n   Yol: ${x.route} | Süre: ${x.duration}${x.note?'\n   Not: '+x.note:''}`),'','GÜVENLİK UYARILARI',...r.warnings.map(x=>'• '+x),'','TABURCULUK / KONTROL',...r.safety.map(x=>'• '+x),'','Bu metin hekim doğrulaması olmadan reçete olarak kullanılmamalıdır.'].join('\n');return false}catch(err){console.error(err);const warn=document.getElementById('prescriptionWarnings');if(warn)warn.innerHTML=`<div class="panel urgent"><b>Reçete oluşturulamadı.</b><br>${esc(err.message||'Bilinmeyen hata')}</div>`;return false}finally{if(btn){btn.disabled=false;btn.textContent='Reçete taslağını oluştur'}}}
+function renderPrescriptionEngine(ev){if(ev&&ev.preventDefault)ev.preventDefault();const btn=document.getElementById('createPrescriptionBtn');try{if(btn){btn.disabled=true;btn.textContent='Reçete hazırlanıyor...'}const d=readPrescriptionInputs(),r=prescriptionEvaluate(d);const list=document.getElementById('prescriptionList'),safe=document.getElementById('prescriptionSafety'),warn=document.getElementById('prescriptionWarnings'),sum=document.getElementById('prescriptionSummary');if(list)list.innerHTML=r.meds.map(rxItemHtml).join('')||'<div class="muted">Seçenek oluşmadı.</div>';if(safe)safe.innerHTML=r.safety.map(x=>`<div class="rx-item"><b>Güvenlik ağı</b><div>${esc(x)}</div></div>`).join('');if(warn)warn.innerHTML=r.warnings.length?`<div class="panel warn"><b>Reçete öncesi doğrulama</b><ul class="compact">${r.warnings.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'<div class="panel ok">Belirgin ek güvenlik uyarısı saptanmadı.</div>';if(sum)sum.textContent=['AKILLI REÇETE MOTORU — v6.4.1','Klinik durum: '+(document.getElementById('rxScenario')?.selectedOptions?.[0]?.textContent||''),'Hasta grubu: '+(r.child?'Çocuk':'Erişkin'),'',...r.meds.map((x,i)=>`${i+1}. ${x.name}\n   ${x.dose}\n   Yol: ${x.route} | Süre: ${x.duration}${x.note?'\n   Not: '+x.note:''}`),'','GÜVENLİK UYARILARI',...r.warnings.map(x=>'• '+x),'','TABURCULUK / KONTROL',...r.safety.map(x=>'• '+x),'','Bu metin hekim doğrulaması olmadan reçete olarak kullanılmamalıdır.'].join('\n');return false}catch(err){console.error(err);const warn=document.getElementById('prescriptionWarnings');if(warn)warn.innerHTML=`<div class="panel urgent"><b>Reçete oluşturulamadı.</b><br>${esc(err.message||'Bilinmeyen hata')}</div>`;return false}finally{if(btn){btn.disabled=false;btn.textContent='Reçete taslağını oluştur'}}}
 async function copyPrescriptionSummary(){renderPrescriptionEngine();const t=document.getElementById('prescriptionSummary')?.textContent||'';if(!t)return;try{await navigator.clipboard.writeText(t);alert('Reçete taslağı kopyalandı.')}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('Reçete taslağı kopyalandı.')}}
 function clearPrescriptionInputs(){['rxAge','rxWeight','rxAllergy','rxNote'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rxChild','rxPregnancy','rxBreastfeeding','rxRenal','rxHepatic','rxUlcer','rxAnticoag','rxAsthmaNsaid'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false});const s=document.getElementById('rxScenario');if(s)s.value='painFever';renderPrescriptionEngine()}
 document.addEventListener('DOMContentLoaded',()=>{try{renderPrescriptionEngine()}catch(e){console.error('Prescription engine init',e)}});
+
+let lastPrescriptionEngineReport='';
+function runPrescriptionEngineTests(){
+ const cases=[
+  {name:'Çocuk parasetamol dozu',d:{scenario:'painFever',age:5,weight:20,child:true,pregnancy:false,breastfeeding:false,renal:false,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'yok',note:''},check:r=>r.child&&r.meds.some(x=>x.name==='Parasetamol'&&x.dose.includes('300 mg/doz')),detail:'20 kg çocukta 15 mg/kg üzerinden 300 mg/doz üretmeli.'},
+  {name:'Gebelikte NSAİİ engeli',d:{scenario:'painFever',age:30,weight:60,child:false,pregnancy:true,breastfeeding:false,renal:false,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'yok',note:''},check:r=>r.meds.some(x=>x.name==='İbuprofen'&&x.status==='blocked')&&r.warnings.some(x=>x.includes('NSAİİ')),detail:'Gebelik işaretlendiğinde ibuprofen bloke edilmeli ve uyarı oluşmalı.'},
+  {name:'Böbrek yetmezliğinde nitrofurantoin engeli',d:{scenario:'cystitis',age:42,weight:70,child:false,pregnancy:false,breastfeeding:false,renal:true,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'yok',note:''},check:r=>r.meds.some(x=>x.name==='Nitrofurantoin'&&x.status==='blocked')&&r.warnings.some(x=>x.includes('eGFR')),detail:'Böbrek işlev bozukluğunda nitrofurantoin bloke edilmeli ve doz ayarı uyarısı görülmeli.'},
+  {name:'Penisilin alerjisinde amoksisilin engeli',d:{scenario:'pharyngitis',age:24,weight:65,child:false,pregnancy:false,breastfeeding:false,renal:false,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'penisilin',note:''},check:r=>!r.meds.some(x=>x.name==='Amoksisilin')&&r.warnings.some(x=>x.includes('Penisilin alerjisi')),detail:'Penisilin alerjisinde amoksisilin taslağa eklenmemeli.'},
+  {name:'Viral ÜSYE antibiyotik güvenliği',d:{scenario:'viralUri',age:35,weight:75,child:false,pregnancy:false,breastfeeding:false,renal:false,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'yok',note:''},check:r=>!r.meds.some(x=>/amoks|antibiyotik/i.test(x.name))&&r.safety.some(x=>x.includes('Antibiyotik rutin olarak önerilmez')),detail:'Viral ÜSYE’de antibiyotik otomatik eklenmemeli.'},
+  {name:'Ürtikerde anafilaksi alarmı',d:{scenario:'urticaria',age:31,weight:68,child:false,pregnancy:false,breastfeeding:false,renal:false,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'yok',note:''},check:r=>r.safety.some(x=>x.includes('anafilaksi')),detail:'Ürtiker senaryosunda hava yolu ve sistemik alarm bulguları belirtilmeli.'},
+  {name:'Bronkospazmda taburculuk engeli',d:{scenario:'bronchospasm',age:50,weight:80,child:false,pregnancy:false,breastfeeding:false,renal:false,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'yok',note:''},check:r=>r.safety.some(x=>x.includes('taburculuk uygun değildir')),detail:'Ağır bronkospazm bulgularında taburculuğun uygun olmadığı vurgulanmalı.'},
+  {name:'Alerji alanı zorunluluk uyarısı',d:{scenario:'painFever',age:40,weight:72,child:false,pregnancy:false,breastfeeding:false,renal:false,hepatic:false,ulcer:false,anticoag:false,asthmaNsaid:false,allergy:'',note:''},check:r=>r.warnings.some(x=>x.includes('İlaç alerjisi alanı boş')),detail:'Alerji alanı boş bırakıldığında doğrulama uyarısı oluşmalı.'}
+ ];
+ const runs=cases.map(c=>{try{const r=prescriptionEvaluate(c.d);const pass=!!c.check(r);return{name:c.name,pass,detail:c.detail};}catch(e){return{name:c.name,pass:false,detail:'JavaScript hatası: '+(e.message||e)}}});
+ const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass;
+ const sum=document.getElementById('prescriptionScenarioSummary'),box=document.getElementById('prescriptionScenarioResults');
+ if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Akıllı reçete motoru kontrolü başarısız':'Akıllı reçete motoru doğrulandı'}</b><br>🧪 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}
+ if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');
+ lastPrescriptionEngineReport=['ACİL KLİNİK ASİSTANI AKILLI REÇETE MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v6.4.1',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');
+ document.getElementById('prescriptionScenarioCard')?.setAttribute('open','');
+ return runs;
+}
+function downloadPrescriptionEngineReport(){if(!lastPrescriptionEngineReport)runPrescriptionEngineTests();const blob=new Blob([lastPrescriptionEngineReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-recete-motoru-v6.4.1.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
 
 </script>
 </body></html>
