@@ -71,7 +71,7 @@ body.module-view .layout aside{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.6.0 Stable • Stabilizasyon ve Kod Temizliği</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.6.1 Stable • Mod ve Sağlık Kontrolü Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -97,10 +97,10 @@ body.module-view .layout aside{display:none!important}
 <div class="layout">
 <section>
 <div class="card system-hub" id="systemHubCard">
- <div class="section-title"><h2>Sistem kontrol merkezi</h2><span class="phase-badge">v6.6.0</span></div>
+ <div class="section-title"><h2>Sistem kontrol merkezi</h2><span class="phase-badge">v6.6.1</span></div>
  <p class="muted">Kontrol etmek istediğiniz motoru seçin. Seçilen test paneli hemen aşağıda açılır.</p>
  <div id="stabilitySummary" class="panel neutral" style="margin:10px 0">Sistem sağlık kontrolü başlatılmadı.</div>
- <div class="compact-actions"><button class="primary" type="button" onclick="runStabilityChecks(true)">Sistem sağlık kontrolünü çalıştır</button></div>
+ <div class="compact-actions"><button id="stabilityCheckBtn" class="primary" type="button" onclick="runStabilityChecksSafe()">Sistem sağlık kontrolünü çalıştır</button></div>
  <div class="system-hub-grid" id="systemHubButtons"></div>
  <div class="compact-actions"><button class="primary" onclick="showAllSystemTests()">Tüm test panellerini göster</button><button onclick="closeAllSystemTests()">Panelleri kapat</button></div>
 </div>
@@ -646,7 +646,7 @@ body.module-view .layout aside{display:none!important}
 const fullSteps=['Hasta bilgisi','İlk güvenlik','Öykü','Özgeçmiş','Muayene','Tetkikler','Sepsis / şok','İnme / nöroloji','Tedavi motoru','Yeniden değerlendirme','Klinik muhakeme','Sonuç'];
 const quickOrder=[0,10,11];
 const detailedOrder=fullSteps.map((_,i)=>i);
-let quickMode=localStorage.getItem('acilQuickMode')!=='false';
+let quickMode=true;try{quickMode=localStorage.getItem('acilQuickMode')!=='false'}catch(e){quickMode=true}
 let currentStep=0;
 function order(){return quickMode?quickOrder:detailedOrder}
 function stepTitle(){return fullSteps[order()[currentStep]]}
@@ -3709,7 +3709,6 @@ function renderTreatmentEngineCore(){
  if(warningBox)warningBox.innerHTML=warns.length?`<div class="panel warn"><b>Güvenlik uyarıları</b><ul class="compact">${warns.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'<div class="panel info"><b>Senaryo bazlı taslak hazır</b><br>İlaç seçimi ve dozları kurum protokolü, preparat konsantrasyonu ve hasta özellikleriyle ayrıca doğrulanmalıdır.</div>';
  if(summary)summary.textContent=['AKILLI TEDAVİ VE ORDER MOTORU — v6.3.0','Senaryo: '+treatmentScenarioLabel(scenario),'',...orders.map(x=>`${x.time} | ${x.title} — ${x.detail}`),...(warns.length?['','GÜVENLİK UYARILARI',...warns.map(x=>'• '+x)]:[]),'','Not: Bu çıktı klinik karar veya otomatik ilaç emri değildir; hekim doğrulaması ve yerel protokol zorunludur.'].join('\n');
 }
-async 
 function renderTreatmentEngine(ev){
  if(ev && typeof ev.preventDefault==='function') ev.preventDefault();
  const btn=document.getElementById('createTreatmentOrderBtn');
@@ -3887,7 +3886,46 @@ function runStabilityChecks(showDetails){
  if(box){box.className='panel '+(passed===total?'ok':'warn');box.innerHTML='<strong>'+passed+'/'+total+' kontrol geçti</strong>'+(showDetails?'<ul class="compact">'+checks.map(function(c){return '<li>'+(c.ok?'✅':'❌')+' '+c.name+(c.detail?' — '+c.detail:'')+'</li>'}).join('')+'</ul>':'<div class="muted">Ayrıntılar için sağlık kontrolünü çalıştırın.</div>')}
  return {passed:passed,total:total,checks:checks}
 }
-function bindStableEvents(){var hub=document.getElementById('systemHubButtons');if(hub&&!hub.dataset.bound){hub.dataset.bound='1';hub.addEventListener('click',function(e){var btn=e.target.closest('[data-system-test]');if(btn)openSystemTest(btn.dataset.systemTest)})}}
+function toggleModeSafe(){
+ try{
+  if(typeof collect==='function')collect();
+  var oldPage=(typeof order==='function'&&order().length)?order()[currentStep]:0;
+  quickMode=!quickMode;
+  try{localStorage.setItem('acilQuickMode',String(quickMode))}catch(e){}
+  var nextOrder=typeof order==='function'?order():[];
+  var found=nextOrder.indexOf(oldPage);
+  currentStep=found>=0?found:0;
+  if(typeof render==='function')render();
+  var btn=document.getElementById('modeToggle');
+  if(btn)btn.textContent=quickMode?'Ayrıntılı moda geç':'Hızlı moda dön';
+ }catch(err){
+  console.error('Mod değiştirme hatası',err);
+  var btn=document.getElementById('modeToggle');
+  if(btn)btn.textContent=quickMode?'Ayrıntılı moda geç':'Hızlı moda dön';
+  alert('Mod değiştirilirken hata oluştu: '+(err.message||err));
+ }
+}
+function runStabilityChecksSafe(){
+ var box=document.getElementById('stabilitySummary');
+ try{
+  if(box){box.className='panel info';box.innerHTML='<strong>Kontroller çalıştırılıyor…</strong>'}
+  var result=runStabilityChecks(true);
+  if(!result&&box){box.className='panel warn';box.innerHTML='<strong>Sağlık kontrolü sonuç üretmedi.</strong>'}
+  return result;
+ }catch(err){
+  console.error('Sağlık kontrolü hatası',err);
+  if(box){box.className='panel urgent';box.innerHTML='<strong>Sağlık kontrolü çalıştırılamadı</strong><div class="muted">'+String(err.message||err).replace(/</g,'&lt;')+'</div>'}
+  return null;
+ }
+}
+function bindStableEvents(){
+ var hub=document.getElementById('systemHubButtons');
+ if(hub&&!hub.dataset.bound){hub.dataset.bound='1';hub.addEventListener('click',function(e){var btn=e.target.closest('[data-system-test]');if(btn)openSystemTest(btn.dataset.systemTest)})}
+ var modeBtn=document.getElementById('modeToggle');
+ if(modeBtn&&!modeBtn.dataset.bound){modeBtn.dataset.bound='1'}
+ var healthBtn=document.getElementById('stabilityCheckBtn');
+ if(healthBtn&&!healthBtn.dataset.bound){healthBtn.dataset.bound='1'}
+}
 function initializeClinicalModules(){
  [['Klinik skor',window.renderClinicalScoreForm],['Acil çekirdek',window.renderEmergencyCore],['Tetkik motoru',window.renderTestOrderEngine],['Tedavi motoru',window.renderTreatmentEngine],['Reçete motoru',window.renderPrescriptionEngine]].forEach(function(item){if(typeof item[1]==='function')safeCall(item[0],item[1])})
 }
@@ -3897,7 +3935,7 @@ function initAppStable(){
 }
 window.addEventListener('error',function(e){APP_REGISTRY.runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){APP_REGISTRY.runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks});
+Object.assign(window,{openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
 </script>
