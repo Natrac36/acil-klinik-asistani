@@ -71,7 +71,7 @@ body.module-view .layout aside{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.4 Beta • Düzeltilmiş Modüler Menü</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.5 Beta • Kararlı Modüler Menü</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -3824,35 +3824,44 @@ function downloadPrescriptionEngineReport(){if(!lastPrescriptionEngineReport)run
 
 
 
-/* v6.5.4 Modüler gezinme — doğrudan görünürlük yönetimi */
-window.MODULE_GROUPS={
- case:['caseEntryCard','clinicalNoteCard'],
- emergency:['emergencyCoreCard'],
- diagnosis:['aiClinicalAssistantCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard'],
- tests:['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard'],
- treatment:['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard'],
- prescription:['smartPrescriptionCard'],
- documents:['professionalDocCard'],
- system:['systemHubCard','qaCard','clinicalScoringScenarioCard','medicationSafetyScenarioCard','testOrderScenarioCard','emergencyCoreScenarioCard','laboratoryScenarioCard','guidelineScenarioCard','radiologyScenarioCard','aiClinicalScenarioCard','pediatricScenarioCard','ecgScenarioCard','doseScenarioCard','prescriptionScenarioCard','clinicalScenarioCard','treatmentScenarioCard','drugLibraryScenarioCard','icdScenarioCard','reasoningScenarioCard','imagingScenarioCard','consultDispositionScenarioCard','dischargeScenarioCard','coreScenarioCard','documentationScenarioCard']
-};
-window.MODULE_TITLES={case:'Yeni vaka',emergency:'Acil değerlendirme',diagnosis:'Tanı desteği',tests:'Tetkik ve sonuç yorumlama',treatment:'Tedavi ve order',prescription:'Akıllı reçete',documents:'Belge ve sonlandırma',system:'Sistem kontrolü'};
+/* v6.5.5 Modüler gezinme — global nesne bağımlılığı kaldırıldı */
+function getModuleIds(group){
+ switch(String(group||'')){
+  case 'case': return ['caseEntryCard','clinicalNoteCard'];
+  case 'emergency': return ['emergencyCoreCard'];
+  case 'diagnosis': return ['aiClinicalAssistantCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard'];
+  case 'tests': return ['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard'];
+  case 'treatment': return ['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard'];
+  case 'prescription': return ['smartPrescriptionCard'];
+  case 'documents': return ['professionalDocCard'];
+  case 'system': return ['systemHubCard','qaCard','clinicalScoringScenarioCard','medicationSafetyScenarioCard','testOrderScenarioCard','emergencyCoreScenarioCard','laboratoryScenarioCard','guidelineScenarioCard','radiologyScenarioCard','aiClinicalScenarioCard','pediatricScenarioCard','ecgScenarioCard','doseScenarioCard','prescriptionScenarioCard','clinicalScenarioCard','treatmentScenarioCard','drugLibraryScenarioCard','icdScenarioCard','reasoningScenarioCard','imagingScenarioCard','consultDispositionScenarioCard','dischargeScenarioCard','coreScenarioCard','documentationScenarioCard'];
+  default: return [];
+ }
+}
+function getModuleTitle(group){
+ switch(String(group||'')){
+  case 'case': return 'Yeni vaka';case 'emergency': return 'Acil değerlendirme';case 'diagnosis': return 'Tanı desteği';case 'tests': return 'Tetkik ve sonuç yorumlama';case 'treatment': return 'Tedavi ve order';case 'prescription': return 'Akıllı reçete';case 'documents': return 'Belge ve sonlandırma';case 'system': return 'Sistem kontrolü';default:return 'Araçlar';
+ }
+}
 const SYSTEM_TEST_NAMES={qaCard:'Genel kalite kontrolü',clinicalScoringScenarioCard:'Klinik skor testleri',medicationSafetyScenarioCard:'İlaç güvenliği testleri',testOrderScenarioCard:'Tetkik istem testleri',emergencyCoreScenarioCard:'Acil çekirdek testleri',laboratoryScenarioCard:'Laboratuvar testleri',guidelineScenarioCard:'Kılavuz testleri',radiologyScenarioCard:'Radyoloji testleri',aiClinicalScenarioCard:'Klinik asistan testleri',pediatricScenarioCard:'Pediatri testleri',ecgScenarioCard:'EKG testleri',doseScenarioCard:'Doz hesaplama testleri',prescriptionScenarioCard:'Reçete motoru testleri',clinicalScenarioCard:'Klinik senaryo testleri',treatmentScenarioCard:'Tedavi testleri',drugLibraryScenarioCard:'İlaç kütüphanesi testleri',icdScenarioCard:'ICD testleri',reasoningScenarioCard:'Gerekçelendirme testleri',imagingScenarioCard:'Görüntüleme testleri',consultDispositionScenarioCard:'Konsültasyon testleri',dischargeScenarioCard:'Taburculuk testleri',coreScenarioCard:'Ana çekirdek testleri',documentationScenarioCard:'Dokümantasyon testleri'};
 function allModuleElements(){return [...document.querySelectorAll('.layout section > .card,.layout section > details')];}
-function setModuleVisible(el,visible){if(!el)return;el.classList.toggle('module-hidden',!visible);el.style.setProperty('display',visible?'':'none',visible?'':'important');if(visible)el.style.removeProperty('display');}
+function setModuleVisible(el,visible){if(!el)return;el.classList.toggle('module-hidden',!visible);if(visible){el.style.removeProperty('display')}else{el.style.setProperty('display','none','important')}}
 function hideAllModules(){allModuleElements().forEach(el=>setModuleVisible(el,false));}
-function updateModuleHeading(group,title){const h=document.getElementById('moduleHeadingText');if(h)h.textContent=title||window.MODULE_TITLES[group]||'Araçlar';}
+function updateModuleHeading(group,title){const h=document.getElementById('moduleHeadingText');if(h)h.textContent=title||getModuleTitle(group);}
 function openModuleGroup(group){
  try{
-  const ids=window.MODULE_GROUPS[group];if(!ids)throw new Error('Kategori bulunamadı: '+group);
-  document.body.classList.remove('dashboard-home');document.body.classList.add('module-view');
-  hideAllModules();
-  if(group==='system'){
-   setModuleVisible(document.getElementById('systemHubCard'),true);
-   buildSystemHub();closeAllSystemTests();
-  }else ids.forEach(id=>setModuleVisible(document.getElementById(id),true));
-  if(group==='case'){currentStep=0;render();setModuleVisible(document.getElementById('caseEntryCard'),true);setModuleVisible(document.getElementById('clinicalNoteCard'),true);}
-  updateModuleHeading(group);
-  window.scrollTo({top:document.getElementById('moduleHeading')?.offsetTop||0,behavior:'smooth'});
+  const key=String(group||'');const ids=getModuleIds(key);if(!ids.length)throw new Error('Kategori bulunamadı: '+key);
+  document.body.classList.remove('dashboard-home');document.body.classList.add('module-view');hideAllModules();
+  if(key==='system'){
+   setModuleVisible(document.getElementById('systemHubCard'),true);buildSystemHub();closeAllSystemTests();
+  }else{ids.forEach(id=>setModuleVisible(document.getElementById(id),true));}
+  if(key==='case'){
+   currentStep=0;render();
+   setModuleVisible(document.getElementById('caseEntryCard'),true);
+   setModuleVisible(document.getElementById('clinicalNoteCard'),true);
+  }
+  updateModuleHeading(key);
+  requestAnimationFrame(()=>{const target=document.getElementById(key==='case'?'caseEntryCard':key==='system'?'systemHubCard':ids[0]);target?.scrollIntoView({behavior:'smooth',block:'start'});});
  }catch(err){console.error(err);alert('Bölüm açılırken hata oluştu: '+(err.message||err));}
 }
 function openSingleModule(id){
@@ -3866,22 +3875,22 @@ function openSingleModule(id){
 }
 function buildSystemHub(){
  const box=document.getElementById('systemHubButtons');if(!box||box.dataset.ready)return;
- const ids=window.MODULE_GROUPS.system.filter(id=>id!=='systemHubCard');
- box.innerHTML=ids.map(id=>`<button onclick="openSystemTest('${id}')">🧪 ${SYSTEM_TEST_NAMES[id]||id}</button>`).join('');box.dataset.ready='1';
+ const ids=getModuleIds('system').filter(id=>id!=='systemHubCard');
+ box.innerHTML=ids.map(id=>`<button type="button" onclick="openSystemTest('${id}')">🧪 ${SYSTEM_TEST_NAMES[id]||id}</button>`).join('');box.dataset.ready='1';
 }
 function openSystemTest(id){
- const hub=document.getElementById('systemHubCard');
- window.MODULE_GROUPS.system.filter(x=>x!=='systemHubCard').forEach(x=>setModuleVisible(document.getElementById(x),false));
- setModuleVisible(hub,true);const panel=document.getElementById(id);if(!panel){alert('Test paneli bulunamadı: '+id);return;}
- setModuleVisible(panel,true);if(panel.tagName==='DETAILS')panel.open=true;requestAnimationFrame(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}));
+ const ids=getModuleIds('system').filter(x=>x!=='systemHubCard');
+ ids.forEach(x=>setModuleVisible(document.getElementById(x),false));
+ const el=document.getElementById(id);if(!el){alert('Test paneli bulunamadı: '+id);return;}
+ setModuleVisible(document.getElementById('systemHubCard'),true);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;
+ requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'start'}));
 }
-function showAllSystemTests(){window.MODULE_GROUPS.system.forEach(id=>{const el=document.getElementById(id);setModuleVisible(el,true);if(el&&el.tagName==='DETAILS')el.open=false;});setModuleVisible(document.getElementById('systemHubCard'),true);}
-function closeAllSystemTests(){window.MODULE_GROUPS.system.filter(id=>id!=='systemHubCard').forEach(id=>{const el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false);});setModuleVisible(document.getElementById('systemHubCard'),true);}
-function showDashboardHome(){document.body.classList.add('dashboard-home');document.body.classList.remove('module-view');hideAllModules();window.scrollTo({top:0,behavior:'smooth'});}
-function filterDashboard(q){q=(q||'').toLocaleLowerCase('tr-TR').trim();let visible=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(b=>{const ok=!q||(b.dataset.search+' '+b.textContent).toLocaleLowerCase('tr-TR').includes(q);b.style.display=ok?'flex':'none';if(ok)visible++});document.getElementById('searchNoResult')?.classList.toggle('show',visible===0);}
+function showAllSystemTests(){getModuleIds('system').forEach(id=>{const el=document.getElementById(id);setModuleVisible(el,true);if(el&&el.tagName==='DETAILS')el.open=false;});setModuleVisible(document.getElementById('systemHubCard'),true);}
+function closeAllSystemTests(){getModuleIds('system').filter(id=>id!=='systemHubCard').forEach(id=>{const el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false);});setModuleVisible(document.getElementById('systemHubCard'),true);}
+function showDashboard(){document.body.classList.remove('module-view');document.body.classList.add('dashboard-home');hideAllModules();window.scrollTo({top:0,behavior:'smooth'});}
 function runModuleSearch(){const q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;const map=[['sistem','systemHubCard'],['test','systemHubCard'],['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']];const hit=map.find(x=>q.includes(x[0]));if(hit){if(hit[1]==='systemHubCard')openModuleGroup('system');else openSingleModule(hit[1]);}else{const btn=[...document.querySelectorAll('#dashboardGrid .dashboard-tile')].find(b=>b.style.display!=='none');btn?.click();}}
-function bootModularApp(){if(window.__acilAppBooted)return;window.__acilAppBooted=true;try{load()}catch(err){console.error('Uygulama başlangıç hatası',err);try{render()}catch(e){console.error(e)}}document.body.classList.add('dashboard-home');document.body.classList.remove('module-view');hideAllModules();buildSystemHub();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootModularApp);else bootModularApp();
-
+function filterDashboard(){const q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(btn=>{const text=(btn.textContent+' '+(btn.dataset.search||'')).toLocaleLowerCase('tr-TR');btn.style.display=!q||text.includes(q)?'':'none';});}
+function safeAppInit(){try{load();showDashboard();}catch(e){console.error('Başlangıç hatası',e);document.body.classList.add('dashboard-home');}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',safeAppInit,{once:true});else setTimeout(safeAppInit,0);
 </script>
 </body></html>
