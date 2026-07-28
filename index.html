@@ -63,7 +63,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.2 Beta • Modüler Ana Menü ve Hızlı Erişim</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.3 Beta • Modüler Ana Menü ve Hızlı Erişim</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -3819,7 +3819,7 @@ window.MODULE_GROUPS={
  treatment:['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard'],
  prescription:['smartPrescriptionCard'],
  documents:['professionalDocCard'],
- system:['prescriptionScenarioCard']
+ system:['qaCard','clinicalScoringScenarioCard','medicationSafetyScenarioCard','testOrderScenarioCard','emergencyCoreScenarioCard','laboratoryScenarioCard','guidelineScenarioCard','radiologyScenarioCard','aiClinicalScenarioCard','pediatricScenarioCard','ecgScenarioCard','doseScenarioCard','prescriptionScenarioCard','clinicalScenarioCard','treatmentScenarioCard','drugLibraryScenarioCard','icdScenarioCard','reasoningScenarioCard','imagingScenarioCard','consultDispositionScenarioCard','dischargeScenarioCard','coreScenarioCard','documentationScenarioCard']
 };
 window.MODULE_TITLES={case:'Yeni vaka',emergency:'Acil değerlendirme',diagnosis:'Tanı desteği',tests:'Tetkik ve sonuç yorumlama',treatment:'Tedavi ve order',prescription:'Akıllı reçete',documents:'Belge ve sonlandırma',system:'Sistem kontrolü'};
 function allModuleIds(){return [...new Set(Object.values(window.MODULE_GROUPS||{}).flat())]}
@@ -3830,6 +3830,10 @@ function openModuleGroup(group){
   hideAllModules();
   const ids=(window.MODULE_GROUPS&&window.MODULE_GROUPS[group])||[];
   ids.forEach(id=>document.getElementById(id)?.classList.remove('module-hidden'));
+  if(group==='system'){
+   const first=document.getElementById(ids[0]);
+   if(first&&first.tagName==='DETAILS')first.open=true;
+  }
   if(group==='case'){
    currentStep=0;
    render();
@@ -3837,7 +3841,7 @@ function openModuleGroup(group){
    document.getElementById('clinicalNoteCard')?.classList.remove('module-hidden');
   }
   const h=document.getElementById('moduleHeadingText');if(h)h.textContent=(window.MODULE_TITLES&&window.MODULE_TITLES[group])||'Araçlar';
-  requestAnimationFrame(()=>document.getElementById(group==='case'?'caseEntryCard':'moduleHeading')?.scrollIntoView({behavior:'smooth',block:'start'}));
+  requestAnimationFrame(()=>document.getElementById(group==='case'?'caseEntryCard':group==='system'?(ids[0]||'moduleHeading'):'moduleHeading')?.scrollIntoView({behavior:'smooth',block:'start'}));
  }catch(err){console.error('Kategori açılamadı',err);alert('Bölüm açılırken hata oluştu: '+(err.message||err));}
 }
 function openSingleModule(id){
