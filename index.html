@@ -50,10 +50,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 /* v6.1 Akıllı Tetkik İstem Motoru */
 .test-order-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.test-order-list{display:grid;gap:7px}.test-order-item{border:1px solid var(--line);border-left:5px solid #94a3b8;border-radius:11px;padding:10px;background:#fff}.test-order-item.strong{border-left-color:#dc2626;background:#fff7f7}.test-order-item.consider{border-left-color:#f59e0b;background:#fffbeb}.test-order-item.avoid{border-left-color:#64748b;background:#f8fafc}.test-order-item b{display:block;margin-bottom:3px}.test-order-meta{font-size:11px;color:var(--muted);margin-top:4px}.test-order-summary{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.test-priority{display:inline-block;padding:3px 7px;border-radius:99px;font-size:10px;font-weight:900;margin-left:5px;background:#e2e8f0}.test-priority.p1{background:#fee2e2;color:#991b1b}.test-priority.p2{background:#fef3c7;color:#92400e}.test-priority.p3{background:#e0f2fe;color:#075985}@media(max-width:700px){.test-order-grid{grid-template-columns:1fr}}
 
+/* v6.2 Akıllı Tedavi ve Order Motoru */
+.treatment-order-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.treatment-order-list{display:grid;gap:7px}.treatment-order-item{border:1px solid var(--line);border-left:5px solid #0f766e;border-radius:11px;padding:10px;background:#fff}.treatment-order-item b{display:block;margin-bottom:3px}.treatment-time{display:inline-block;padding:3px 7px;border-radius:99px;font-size:10px;font-weight:900;margin-left:5px;background:#e2e8f0}.treatment-time.now{background:#fee2e2;color:#991b1b}.treatment-time.early{background:#fef3c7;color:#92400e}.treatment-time.hour{background:#e0f2fe;color:#075985}.treatment-summary{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}@media(max-width:700px){.treatment-order-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.1.0 Beta • Akıllı Tetkik İstem Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.2.0 Beta • Akıllı Tedavi ve Order Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -238,6 +241,32 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="testOrderWarnings"></div>
  <div class="test-order-grid" style="margin-top:10px"><div><h3>Önerilen tetkikler</h3><div id="testOrderRecommended" class="test-order-list"><div class="muted">Senaryo seçildiğinde öneriler burada görünür.</div></div></div><div><h3>Gereksiz / ertelenebilir istemler</h3><div id="testOrderAvoid" class="test-order-list"><div class="muted">Gereksiz tetkik uyarıları burada görünür.</div></div></div></div>
  <div class="panel neutral test-order-summary" id="testOrderSummary" style="margin-top:10px">İstem özeti henüz oluşturulmadı.</div>
+</div>
+
+
+<div class="card" id="smartTreatmentOrderCard">
+ <div class="section-title"><h3>Akıllı tedavi ve order motoru</h3><span class="phase-badge">v6.2</span></div>
+ <p class="muted">Seçilen acil klinik senaryo için ilk saat yaklaşımını zaman önceliğine göre düzenleyen güvenli bir order taslağı oluşturur. Hekim değerlendirmesi, kontrendikasyon kontrolü ve yerel protokol zorunludur.</p>
+ <div class="grid3">
+  <label>Klinik senaryo<select id="trScenario" onchange="renderTreatmentEngine()"><option value="stemi">STEMI / OMI</option><option value="nstemi">NSTEMI / yüksek riskli AKS</option><option value="sepsis">Sepsis / septik şok</option><option value="anaphylaxis">Anafilaksi</option><option value="hyperkalemia">Hiperkalemi</option><option value="hypoglycemia">Hipoglisemi</option></select></label>
+  <label>Yaş<input id="trAge" type="number" min="0" placeholder="Örn. 58" oninput="renderTreatmentEngine()"></label>
+  <label>Kilo (kg)<input id="trWeight" type="number" min="0" step="0.1" placeholder="Doz aşaması için" oninput="renderTreatmentEngine()"></label>
+ </div>
+ <div class="question"><div class="question-title">Güvenlik bağlamı</div><div class="choices">
+  <label class="choice"><input type="checkbox" id="trUnstable" onchange="renderTreatmentEngine()">Hemodinamik instabilite / şok</label>
+  <label class="choice"><input type="checkbox" id="trHypoxia" onchange="renderTreatmentEngine()">Hipoksemi / ciddi solunum sıkıntısı</label>
+  <label class="choice"><input type="checkbox" id="trPregnancy" onchange="renderTreatmentEngine()">Gebelik / olası gebelik</label>
+  <label class="choice"><input type="checkbox" id="trRenal" onchange="renderTreatmentEngine()">Böbrek işlev bozukluğu</label>
+  <label class="choice"><input type="checkbox" id="trBleeding" onchange="renderTreatmentEngine()">Aktif kanama / yüksek kanama riski</label>
+  <label class="choice"><input type="checkbox" id="trAllergy" onchange="renderTreatmentEngine()">İlaç alerjisi öyküsü</label>
+ </div></div>
+ <div class="compact-actions no-print"><button class="primary" onclick="renderTreatmentEngine()">Order taslağını oluştur</button><button onclick="copyTreatmentSummary()">Özeti kopyala</button><button onclick="clearTreatmentInputs()">Temizle</button></div>
+ <div id="treatmentWarnings"></div>
+ <div class="treatment-order-grid" style="margin-top:10px">
+  <div><h3>İlk saat order taslağı</h3><div id="treatmentOrderList" class="treatment-order-list"><div class="muted">Senaryo seçildiğinde order iskeleti burada görünür.</div></div></div>
+  <div><h3>Zaman planı</h3><div id="treatmentTimeline" class="treatment-order-list"><div class="muted">0–5, 5–15 ve 15–60 dakika adımları burada görünür.</div></div></div>
+ </div>
+ <div class="panel neutral treatment-summary" id="treatmentSummary" style="margin-top:10px">Order özeti henüz oluşturulmadı.</div>
 </div>
 
 <div class="card" id="professionalDocCard">
@@ -3531,6 +3560,36 @@ function runTestOrderEngineTests(){
  const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,sum=document.getElementById('testOrderScenarioSummary'),box=document.getElementById('testOrderScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Tetkik istem motoru kontrolü başarısız':'Akıllı tetkik istem motoru doğrulandı'}</b><br>🧪 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastTestOrderReport=['ACİL KLİNİK ASİSTANI AKILLI TETKİK İSTEM MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v6.1.0 Beta',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('testOrderScenarioCard')?.setAttribute('open','');return runs}
 function downloadTestOrderEngineReport(){if(!lastTestOrderReport)runTestOrderEngineTests();const blob=new Blob([lastTestOrderReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-tetkik-motoru-v6.1.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 document.addEventListener('DOMContentLoaded',()=>{try{renderTestOrderEngine()}catch(e){console.error('Test order init',e)}});
+
+
+// v6.2.0 Akıllı Tedavi ve Order Motoru — güvenli iskelet
+function treatmentScenarioLabel(v){return ({stemi:'STEMI / OMI',nstemi:'NSTEMI / yüksek riskli AKS',sepsis:'Sepsis / septik şok',anaphylaxis:'Anafilaksi',hyperkalemia:'Hiperkalemi',hypoglycemia:'Hipoglisemi'})[v]||'Seçilmedi'}
+function renderTreatmentEngine(){
+ const scenario=document.getElementById('trScenario')?.value||'stemi';
+ const unstable=!!document.getElementById('trUnstable')?.checked,hypoxia=!!document.getElementById('trHypoxia')?.checked;
+ const pregnancy=!!document.getElementById('trPregnancy')?.checked,renal=!!document.getElementById('trRenal')?.checked,bleeding=!!document.getElementById('trBleeding')?.checked,allergy=!!document.getElementById('trAllergy')?.checked;
+ const base=[
+  {time:'0–5 dk',cls:'now',title:'ABCDE ve monitörizasyon',detail:'Havayolu, solunum ve dolaşımı değerlendir; sürekli ritim, SpO₂ ve seri vital izlemi başlat.'},
+  {time:'0–5 dk',cls:'now',title:'Damar yolu ve güvenlik kontrolü',detail:'Uygun damar yolu aç; kimlik, alerji, gebelik, kanama ve böbrek işlevi bilgisini doğrula.'},
+  {time:'5–15 dk',cls:'early',title:'Senaryoya özgü ilk yaklaşım',detail:'Tanı doğrulama, kontrendikasyon taraması ve ilgili acil protokolü başlat.'},
+  {time:'15–60 dk',cls:'hour',title:'Yanıtın yeniden değerlendirilmesi',detail:'Klinik yanıtı, vital trendini ve tetkik sonuçlarını değerlendir; yatış, sevk veya ileri girişim planını netleştir.'}
+ ];
+ const warns=[];
+ if(unstable)warns.push('Hemodinamik instabilite: resüsitasyon alanı, kıdemli hekim ve erken ileri destek önceliklidir.');
+ if(hypoxia)warns.push('Hipoksemi: hedefe yönelik oksijen/ventilasyon gereksinimini klinik duruma göre değerlendir.');
+ if(pregnancy)warns.push('Gebelik olasılığı: ilaç ve görüntüleme seçimlerini obstetrik güvenlik açısından doğrula.');
+ if(renal)warns.push('Böbrek işlev bozukluğu: sıvı, kontrast ve renally cleared ilaçlarda doz/uygunluk kontrolü yap.');
+ if(bleeding)warns.push('Kanama riski: antitrombotik ve invaziv işlemler öncesi yarar–risk değerlendirmesi gerekir.');
+ if(allergy)warns.push('İlaç alerjisi: uygulanacak her ilaç için etken madde ve çapraz reaksiyon kontrolü yap.');
+ const list=document.getElementById('treatmentOrderList'),timeline=document.getElementById('treatmentTimeline'),summary=document.getElementById('treatmentSummary'),warningBox=document.getElementById('treatmentWarnings');
+ if(list)list.innerHTML=base.map(x=>`<div class="treatment-order-item"><b>${esc(x.title)} <span class="treatment-time ${x.cls}">${x.time}</span></b><div class="muted">${esc(x.detail)}</div></div>`).join('');
+ if(timeline)timeline.innerHTML=['0–5 dk: stabilizasyon ve kritik güvenlik','5–15 dk: tanısal doğrulama ve protokol başlangıcı','15–60 dk: yanıt, konsültasyon ve sonlandırma'].map((x,i)=>`<div class="treatment-order-item"><b>${esc(x)}</b></div>`).join('');
+ if(warningBox)warningBox.innerHTML=warns.length?`<div class="panel warn"><b>Güvenlik uyarıları</b><ul class="compact">${warns.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'<div class="panel info"><b>İskelet sürümü</b><br>Bu aşamada ilaç/doz algoritması henüz etkin değildir; yalnızca güvenli ilk saat iş akışı gösterilir.</div>';
+ if(summary)summary.textContent=['AKILLI TEDAVİ VE ORDER MOTORU — v6.2.0','Senaryo: '+treatmentScenarioLabel(scenario),'','0–5 dk: ABCDE, monitörizasyon, damar yolu, güvenlik doğrulaması','5–15 dk: Senaryoya özgü değerlendirme ve protokol hazırlığı','15–60 dk: Klinik yanıt, konsültasyon ve sonlandırma planı',warns.length?'':'','Not: İlaç ve doz algoritması sonraki aşamada eklenecektir.',...(warns.length?['','Güvenlik uyarıları:',...warns.map(x=>'• '+x)]:[])].filter((x,i,a)=>!(x===''&&a[i-1]==='')).join('\n');
+}
+function copyTreatmentSummary(){const t=document.getElementById('treatmentSummary')?.textContent||'';if(!t)return;copyText(t,'Tedavi/order özeti kopyalandı.')}
+function clearTreatmentInputs(){['trAge','trWeight'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['trUnstable','trHypoxia','trPregnancy','trRenal','trBleeding','trAllergy'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false});const s=document.getElementById('trScenario');if(s)s.value='stemi';renderTreatmentEngine()}
+document.addEventListener('DOMContentLoaded',()=>{try{renderTreatmentEngine()}catch(e){console.error('Treatment engine init',e)}});
 
 </script>
 </body></html>
