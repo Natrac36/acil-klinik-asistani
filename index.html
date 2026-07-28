@@ -44,7 +44,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v3.1.0 Beta • Kırmızı bayrak motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v3.2.0 Beta • Akıllı tedavi güvenliği</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -76,6 +76,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions"><button class="primary" onclick="runClinicalScenarioTests()">7 yüksek riskli senaryoyu çalıştır</button><button onclick="downloadClinicalScenarioReport()">Raporu TXT indir</button></div>
  <div id="clinicalScenarioSummary" class="panel neutral">Henüz klinik senaryo testi çalıştırılmadı.</div>
  <div id="clinicalScenarioResults" class="safety-grid"></div>
+</details>
+<details class="card collapse-card no-print" id="treatmentScenarioCard">
+ <summary>Tedavi güvenliği doğrulama paneli <span class="phase-badge">v3.2</span></summary>
+ <p class="muted">Doz sınırları, alerji/kanama engelleri, hipotansiyon, ritim uyumsuzluğu, gebelik ve böbrek fonksiyonu uyarıları otomatik sınanır. Bu panel ilaç emri oluşturmaz.</p>
+ <div class="compact-actions"><button class="primary" onclick="runTreatmentScenarioTests()">7 tedavi güvenliği senaryosunu çalıştır</button><button onclick="downloadTreatmentScenarioReport()">Raporu TXT indir</button></div>
+ <div id="treatmentScenarioSummary" class="panel neutral">Henüz tedavi güvenliği testi çalıştırılmadı.</div>
+ <div id="treatmentScenarioResults" class="safety-grid"></div>
 </details>
 </section>
 <aside>
@@ -786,9 +793,24 @@ function drugEngine(){
  if(eg!==null&&eg<30)warn.push('eGFR <30: böbrekten atılan ilaçlarda doz/interval ve kontrast güvenliği ayrıca doğrulanmalı.');
  if(S.treatmentSafety.includes('Gebelik olasılığı')||S.pregnancyTest==='Pozitif')warn.push('Gebelik olasılığı/pozitif test: ilaç seçimi ve görüntüleme planını gebeliğe göre doğrula.');
  if(S.allergy&&S.allergy.trim()&&!['yok','yok.','bilinmiyor'].includes(S.allergy.trim().toLowerCase()))warn.push('Kaydedilmiş alerji: '+S.allergy+'.');
+ if(sc!=='Seçilmedi'&&S.drugRoute==='Seçilmedi')block.push('Uygulama yolu seçilmedi.');
+ if(sc==='Anafilaksi'&&S.drugRoute!=='Seçilmedi'&&S.drugRoute!=='IM')warn.push('Anafilakside ilk tercih IM adrenalin yoludur; seçilen yolu yeniden doğrula.');
+ if(sc==='Düzenli dar QRS taşikardi'&&S.drugRoute!=='Seçilmedi'&&S.drugRoute!=='IV/IO')block.push('Adenosin için hızlı IV/IO erişim ve uygun uygulama tekniği gerekir.');
+ if((S.pregnancyTest==='Pozitif'||S.treatmentSafety.includes('Gebelik olasılığı'))&&!safety.includes('Gebelik/emzirme değerlendirildi'))block.push('Gebelik/emzirme güvenlik kontrolü tamamlanmadı.');
+ if(eg!==null&&eg<30&&!safety.includes('Böbrek fonksiyonu değerlendirildi'))block.push('eGFR <30 iken böbrek doz kontrolü tamamlanmadı.');
  return {rec:[...new Set(rec)],warn:[...new Set(warn)],block:[...new Set(block)]};
 }
-function renderDrugRecommendation(){const box=el('drugRecommendation');if(!box)return;const d=drugEngine();box.className='panel '+(d.block.length?'urgent':d.warn.length?'warn':'info');box.innerHTML=`<h3>${d.block.length?'Güvenlik kontrolü tamamlanmadı':'Doz ve uygulama desteği'}</h3>${d.block.length?`<p><b>Uygulama öncesi:</b></p><ul class="compact">${d.block.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<ul class="compact">${d.rec.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${d.warn.length?`<p><b>Dikkat:</b></p><ul class="compact">${d.warn.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<p class="muted">Dozlar yalnız hekim karar desteğidir. Konsantrasyon, preparat, yol, yerel protokol ve güncel ürün bilgisi uygulama öncesi doğrulanmalıdır.</p>`;}
+function renderDrugRecommendation(){
+ const box=el('drugRecommendation');if(!box)return;const d=drugEngine();
+ const checks=['Alerji doğrulandı','Kilo doğrulandı','Böbrek fonksiyonu değerlendirildi','Gebelik/emzirme değerlendirildi','Etkileşimler değerlendirildi','Monitörizasyon hazır'];
+ const done=checks.filter(x=>(S.administeredMeds||[]).includes(x)).length;
+ box.className='panel '+(d.block.length?'urgent':d.warn.length?'warn':'info');
+ box.innerHTML=`<div class="section-title"><h3>${d.block.length?'Uygulama engeli / eksik güvenlik adımı':'Akıllı tedavi desteği'}</h3><span class="phase-badge">Güvenlik ${done}/${checks.length}</span></div>
+ ${d.block.length?`<div class="safety-alert safety-critical"><strong>Önce tamamla</strong><ul class="compact">${d.block.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+ <div class="safety-alert safety-info"><strong>Önerilen yaklaşım</strong><ul class="compact">${d.rec.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+ ${d.warn.length?`<div class="safety-alert safety-warning"><strong>Dikkat / kaçın</strong><ul class="compact">${d.warn.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+ <p class="muted">Bu çıktı reçete veya otomatik ilaç emri değildir. Endikasyon, konsantrasyon, preparat, yol, maksimum doz, yerel protokol ve güncel ürün bilgisi uygulama öncesi hekim tarafından doğrulanmalıdır.</p>`;
+}
 
 function treatmentPlan(){
  if(S.complaint!=='Göğüs ağrısı') return {tx:['Bu şikâyet için ilaç öneri modülü henüz etkin değil; ABCDE, vital bulgular, glukoz ve hedefli muayeneyi klinik gerekliliğe göre tamamla.'],contraind:['Tanı netleşmeden otomatik tedavi önerisi kullanılmamalıdır.']};
@@ -1612,5 +1634,51 @@ function saveCase(){collect();localStorage.setItem('acilCase',JSON.stringify(S))
 function newCase(){if(!confirm('Mevcut vaka temizlensin mi?'))return;localStorage.removeItem('acilCase');localStorage.removeItem('acilStep');location.reload()}
 function load(){try{const x=localStorage.getItem('acilCase');if(x)S={...S,...JSON.parse(x)};currentStep=Math.min(order().length-1,parseInt(localStorage.getItem('acilStep')||'0'))}catch(e){}render();document.addEventListener('input',()=>{collect();updateAll()});document.addEventListener('change',()=>{collect();updateAll()})}
 load();
+
+
+let lastTreatmentScenarioReport='';
+function treatmentScenarioDefinitions(){return [
+ {name:'Erişkin anafilaksi',summary:'IM adrenalin erişkin dozu ve yol güvenliği',data:{age:'35',weight:'72',drugScenario:'Anafilaksi',drugRoute:'IM',administeredMeds:['Alerji doğrulandı','Kilo doğrulandı','Gebelik/emzirme değerlendirildi','Etkileşimler değerlendirildi','Monitörizasyon hazır']},checks:[
+  {title:'Erişkin IM adrenalin dozu',critical:true,test:d=>d.rec.some(x=>x.includes('500 mikrogram IM'))},
+  {title:'Doğru yolda yol uyarısı yok',critical:true,test:d=>!d.warn.some(x=>x.includes('ilk tercih IM'))}
+ ]},
+ {name:'Çocuk anafilaksi doz üst sınırı',summary:'0,01 mg/kg ve maksimum 0,5 mg kontrolü',data:{age:'8',weight:'80',drugScenario:'Anafilaksi',drugRoute:'IM',administeredMeds:['Alerji doğrulandı','Kilo doğrulandı','Gebelik/emzirme değerlendirildi','Etkileşimler değerlendirildi','Monitörizasyon hazır']},checks:[
+  {title:'Pediatrik hesaplama 0,5 mg ile sınırlandı',critical:true,test:d=>d.rec.some(x=>x.includes('Hesaplanan doz: 0.50 mg'))}
+ ]},
+ {name:'Semptomatik bradikardi',summary:'Atropin başlangıç ve maksimum doz kontrolü',data:{age:'68',weight:'75',sbp:'75',mental:'Konfüze',drugScenario:'Semptomatik bradikardi',drugRoute:'IV/IO',administeredMeds:['Alerji doğrulandı','Kilo doğrulandı','Böbrek fonksiyonu değerlendirildi','Etkileşimler değerlendirildi','Monitörizasyon hazır']},checks:[
+  {title:'Atropin 1 mg ve toplam 3 mg sınırı',critical:true,test:d=>d.rec.some(x=>x.includes('Atropin 1 mg')&&x.includes('en fazla 3 mg'))}
+ ]},
+ {name:'Düzensiz taşikardide adenosin engeli',summary:'AF işaretliyken adenosin tedavi uyarısı',data:{age:'60',weight:'78',ecgRhythm:'Atriyal fibrilasyon',drugScenario:'Düzenli dar QRS taşikardi',drugRoute:'IV/IO',administeredMeds:['Alerji doğrulandı','Kilo doğrulandı','Böbrek fonksiyonu değerlendirildi','Etkileşimler değerlendirildi','Monitörizasyon hazır']},checks:[
+  {title:'Düzensiz ritim engeli oluştu',critical:true,test:d=>d.block.some(x=>x.includes('Düzensiz ritimde adenosin'))}
+ ]},
+ {name:'AKS ve aspirin alerjisi',summary:'Aspirin önerisinin güvenli biçimde engellenmesi',data:{age:'58',weight:'82',complaint:'Göğüs ağrısı',ecg:'ST elevasyonu',treatmentSafety:['ASA/NSAİİ alerjisi'],drugScenario:'Olası akut koroner sendrom',drugRoute:'Oral',administeredMeds:['Alerji doğrulandı','Kilo doğrulandı','Böbrek fonksiyonu değerlendirildi','Gebelik/emzirme değerlendirildi','Etkileşimler değerlendirildi','Monitörizasyon hazır']},checks:[
+  {title:'Aspirin önerisi engellendi',critical:true,test:d=>d.warn.some(x=>x.includes('Aspirin önerisi engellendi'))},
+  {title:'Aspirin yükleme önerisi çıkmadı',critical:true,test:d=>!d.rec.some(x=>x.includes('aspirin 150–300'))}
+ ]},
+ {name:'AKS, hipotansiyon ve PDE-5',summary:'Nitrat güvenlik engelleri',data:{age:'55',weight:'80',complaint:'Göğüs ağrısı',ecg:'ST depresyonu/T inversiyonu',sbp:'82',treatmentSafety:['PDE5 yakın kullanım'],drugScenario:'Olası akut koroner sendrom',drugRoute:'Oral',administeredMeds:['Alerji doğrulandı','Kilo doğrulandı','Böbrek fonksiyonu değerlendirildi','Gebelik/emzirme değerlendirildi','Etkileşimler değerlendirildi','Monitörizasyon hazır']},checks:[
+  {title:'PDE-5 nedeniyle nitrat uyarısı',critical:true,test:d=>d.warn.some(x=>x.includes('nitrat verme'))},
+  {title:'Hipotansiyon uyarısı',critical:true,test:d=>d.warn.some(x=>x.includes('Düşük sistolik tansiyon'))}
+ ]},
+ {name:'İleri böbrek yetmezliği',summary:'eGFR düşükken doz kontrolü zorunluluğu',data:{age:'73',weight:'68',egfr:'22',drugScenario:'Opioid toksisitesi',drugRoute:'IV/IO',administeredMeds:['Alerji doğrulandı','Kilo doğrulandı','Etkileşimler değerlendirildi','Monitörizasyon hazır']},checks:[
+  {title:'Renal doz uyarısı oluştu',critical:true,test:d=>d.warn.some(x=>x.includes('eGFR <30'))},
+  {title:'Eksik böbrek kontrolü uygulama engeli',critical:true,test:d=>d.block.some(x=>x.includes('böbrek doz kontrolü tamamlanmadı'))}
+ ]}
+]}
+function runOneTreatmentScenario(def){
+ S={...JSON.parse(JSON.stringify(clinicalScenarioBlank)),...JSON.parse(JSON.stringify(def.data))};
+ const d=drugEngine();
+ const checks=def.checks.map(c=>{let pass=false,detail='';try{pass=!!c.test(d);detail=pass?'Beklenen güvenlik davranışı doğrulandı.':'Beklenen güvenlik davranışı oluşmadı.'}catch(err){detail=String(err&&err.message||err)}return {...c,pass,detail}});
+ return {name:def.name,summary:def.summary,checks,passed:checks.filter(x=>x.pass).length,total:checks.length,criticalFailed:checks.some(x=>x.critical&&!x.pass)};
+}
+function runTreatmentScenarioTests(){
+ collect();const original=JSON.parse(JSON.stringify(S));let runs=[],unexpected='';
+ try{runs=treatmentScenarioDefinitions().map(runOneTreatmentScenario)}catch(err){unexpected=String(err&&err.message||err)}finally{S=original;render();updateAll();}
+ const checks=runs.flatMap(x=>x.checks),pass=checks.filter(x=>x.pass).length,fail=checks.length-pass,criticalFail=checks.filter(x=>!x.pass&&x.critical).length;
+ const summary=el('treatmentScenarioSummary');if(summary){summary.className=`panel ${criticalFail?'urgent':fail?'warn':'ok'}`;summary.innerHTML=unexpected?`<b>Tedavi test motoru çalışırken hata oluştu</b><br>${esc(unexpected)}`:`<b>${criticalFail?'Kritik tedavi güvenliği kontrolü başarısız':'Tedavi güvenliği doğrulaması tamamlandı'}</b><br>💊 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${criticalFail} kritik hata · 🟠 ${fail-criticalFail} uyarı`;}
+ const box=el('treatmentScenarioResults');if(box)box.innerHTML=unexpected?`<div class="safety-alert safety-critical"><strong>🔴 JavaScript hatası</strong><div>${esc(unexpected)}</div></div>`:runs.map(r=>`<div class="scenario-suite"><div class="scenario-suite-head"><div><strong>${esc(r.name)}</strong><div class="muted">${esc(r.summary)}</div></div><span class="scenario-score ${r.criticalFailed?'scenario-fail':r.passed===r.total?'scenario-pass':'scenario-warn'}">${r.passed}/${r.total}</span></div>${r.checks.map(c=>`<div class="scenario-check ${c.pass?'scenario-check-pass':c.critical?'scenario-check-fail':'scenario-check-warn'}"><b>${c.pass?'✓':c.critical?'✕':'!'} ${esc(c.title)}</b><div>${esc(c.detail)}</div></div>`).join('')}</div>`).join('');
+ lastTreatmentScenarioReport=[`ACİL KLİNİK ASİSTANI TEDAVİ GÜVENLİĞİ RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v3.2.0 Beta`,`Sonuç: ${runs.length} senaryo, ${pass}/${checks.length} kontrol geçti, ${criticalFail} kritik hata, ${fail-criticalFail} uyarı`,'',...runs.flatMap(r=>[`${r.name} — ${r.passed}/${r.total}`,...r.checks.map(c=>`${c.pass?'GEÇTİ':c.critical?'HATA':'UYARI'} | ${c.title} | ${c.detail}`),''])].join('\n');
+ const card=el('treatmentScenarioCard');if(card)card.open=true;return runs;
+}
+function downloadTreatmentScenarioReport(){if(!lastTreatmentScenarioReport)runTreatmentScenarioTests();const blob=new Blob([lastTreatmentScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-tedavi-guvenligi-v3.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);}
 </script>
 </body></html>
