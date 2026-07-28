@@ -63,7 +63,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.1 Beta • Modüler Ana Menü ve Hızlı Erişim</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.5.2 Beta • Modüler Ana Menü ve Hızlı Erişim</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -3811,7 +3811,7 @@ function downloadPrescriptionEngineReport(){if(!lastPrescriptionEngineReport)run
 
 
 /* v6.5 Modüler gezinme */
-const MODULE_GROUPS={
+window.MODULE_GROUPS={
  case:['caseEntryCard','clinicalNoteCard'],
  emergency:['emergencyCoreCard'],
  diagnosis:['aiClinicalAssistantCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard'],
@@ -3821,14 +3821,14 @@ const MODULE_GROUPS={
  documents:['professionalDocCard'],
  system:['prescriptionScenarioCard']
 };
-const MODULE_TITLES={case:'Yeni vaka',emergency:'Acil değerlendirme',diagnosis:'Tanı desteği',tests:'Tetkik ve sonuç yorumlama',treatment:'Tedavi ve order',prescription:'Akıllı reçete',documents:'Belge ve sonlandırma',system:'Sistem kontrolü'};
-function allModuleIds(){return [...new Set(Object.values(MODULE_GROUPS).flat())]}
+window.MODULE_TITLES={case:'Yeni vaka',emergency:'Acil değerlendirme',diagnosis:'Tanı desteği',tests:'Tetkik ve sonuç yorumlama',treatment:'Tedavi ve order',prescription:'Akıllı reçete',documents:'Belge ve sonlandırma',system:'Sistem kontrolü'};
+function allModuleIds(){return [...new Set(Object.values(window.MODULE_GROUPS||{}).flat())]}
 function hideAllModules(){document.querySelectorAll('.layout section > .card,.layout section > details').forEach(el=>el.classList.add('module-hidden'))}
 function openModuleGroup(group){
  try{
   document.body.classList.remove('dashboard-home');
   hideAllModules();
-  const ids=MODULE_GROUPS[group]||[];
+  const ids=(window.MODULE_GROUPS&&window.MODULE_GROUPS[group])||[];
   ids.forEach(id=>document.getElementById(id)?.classList.remove('module-hidden'));
   if(group==='case'){
    currentStep=0;
@@ -3836,7 +3836,7 @@ function openModuleGroup(group){
    document.getElementById('caseEntryCard')?.classList.remove('module-hidden');
    document.getElementById('clinicalNoteCard')?.classList.remove('module-hidden');
   }
-  const h=document.getElementById('moduleHeadingText');if(h)h.textContent=MODULE_TITLES[group]||'Araçlar';
+  const h=document.getElementById('moduleHeadingText');if(h)h.textContent=(window.MODULE_TITLES&&window.MODULE_TITLES[group])||'Araçlar';
   requestAnimationFrame(()=>document.getElementById(group==='case'?'caseEntryCard':'moduleHeading')?.scrollIntoView({behavior:'smooth',block:'start'}));
  }catch(err){console.error('Kategori açılamadı',err);alert('Bölüm açılırken hata oluştu: '+(err.message||err));}
 }
@@ -3852,11 +3852,15 @@ function openSingleModule(id){
 function showDashboardHome(){document.body.classList.add('dashboard-home');hideAllModules();window.scrollTo({top:0,behavior:'smooth'})}
 function filterDashboard(q){q=(q||'').toLocaleLowerCase('tr-TR').trim();let visible=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(b=>{const ok=!q||(b.dataset.search+' '+b.textContent).toLocaleLowerCase('tr-TR').includes(q);b.style.display=ok?'flex':'none';if(ok)visible++});document.getElementById('searchNoResult')?.classList.toggle('show',visible===0)}
 function runModuleSearch(){const q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;const map=[['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']];const hit=map.find(x=>q.includes(x[0]));if(hit)openSingleModule(hit[1]);else{const btn=[...document.querySelectorAll('#dashboardGrid .dashboard-tile')].find(b=>b.style.display!=='none');btn?.click()}}
-document.addEventListener('DOMContentLoaded',()=>{
+function bootModularApp(){
+ if(window.__acilAppBooted)return;
+ window.__acilAppBooted=true;
  try{load()}catch(err){console.error('Uygulama başlangıç hatası',err);try{render()}catch(e){console.error(e)}}
  document.body.classList.add('dashboard-home');
- hideAllModules();
-});
+ try{hideAllModules()}catch(err){console.error('Modül görünürlüğü başlatılamadı',err)}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootModularApp);
+else bootModularApp();
 
 </script>
 </body></html>
