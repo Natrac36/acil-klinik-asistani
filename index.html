@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.1.0 Beta • Kanıta Dayalı Kılavuz Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.2.0 Beta • Laboratuvar Yorumlama Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -80,6 +80,36 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions no-print"><button class="primary" onclick="renderGuidelineEngine()">Kılavuz eşleştirmesini yenile</button><button onclick="copyGuidelineSummary()">Özeti kopyala</button></div>
  <div id="guidelineEnginePanel" class="safety-grid"><div class="muted">Vaka bilgileri girildikçe uygun kılavuz eşleşmeleri burada görünür.</div></div>
 </div>
+
+<div class="card" id="laboratoryEngineCard">
+ <div class="section-title"><h3>Laboratuvar yorumlama motoru</h3><span class="phase-badge">v5.2</span></div>
+ <p class="muted">Hemogram, biyokimya, inflamasyon belirteçleri, kardiyak belirteçler ve kan gazını birlikte değerlendirir; kritik değerleri ve olası örüntüleri görünür kılar. Referans aralıkları laboratuvara göre değişebilir ve sonuçlar klinik bağlamla doğrulanmalıdır.</p>
+ <div class="grid3">
+  <label>Hemoglobin (g/dL)<input id="labHb" type="number" step="0.1" placeholder="Örn. 12.4" oninput="renderLaboratoryEngine()"></label>
+  <label>MCV (fL)<input id="labMcv" type="number" step="0.1" placeholder="Örn. 78" oninput="renderLaboratoryEngine()"></label>
+  <label>Lökosit (10³/µL)<input id="labWbc" type="number" step="0.1" placeholder="Örn. 14.2" oninput="renderLaboratoryEngine()"></label>
+  <label>Nötrofil (%)<input id="labNeut" type="number" step="0.1" placeholder="Örn. 82" oninput="renderLaboratoryEngine()"></label>
+  <label>Lenfosit (%)<input id="labLymph" type="number" step="0.1" placeholder="Örn. 10" oninput="renderLaboratoryEngine()"></label>
+  <label>Trombosit (10³/µL)<input id="labPlt" type="number" step="1" placeholder="Örn. 220" oninput="renderLaboratoryEngine()"></label>
+  <label>Glukoz (mg/dL)<input id="labGlucose" type="number" step="1" placeholder="Örn. 118" oninput="renderLaboratoryEngine()"></label>
+  <label>Sodyum (mmol/L)<input id="labNa" type="number" step="0.1" placeholder="Örn. 138" oninput="renderLaboratoryEngine()"></label>
+  <label>Potasyum (mmol/L)<input id="labK" type="number" step="0.1" placeholder="Örn. 4.2" oninput="renderLaboratoryEngine()"></label>
+  <label>Kreatinin (mg/dL)<input id="labCr" type="number" step="0.01" placeholder="Örn. 0.9" oninput="renderLaboratoryEngine()"></label>
+  <label>AST (U/L)<input id="labAst" type="number" step="1" placeholder="Örn. 32" oninput="renderLaboratoryEngine()"></label>
+  <label>ALT (U/L)<input id="labAlt" type="number" step="1" placeholder="Örn. 28" oninput="renderLaboratoryEngine()"></label>
+  <label>CRP (mg/L)<input id="labCrp" type="number" step="0.1" placeholder="Örn. 48" oninput="renderLaboratoryEngine()"></label>
+  <label>Troponin<input id="labTroponin" type="number" step="0.001" placeholder="Laboratuvar birimi" oninput="renderLaboratoryEngine()"></label>
+  <label>Troponin üst referans sınırı<input id="labTroponinUrl" type="number" step="0.001" placeholder="Örn. 0.014" oninput="renderLaboratoryEngine()"></label>
+  <label>Laktat (mmol/L)<input id="labLactate" type="number" step="0.1" placeholder="Örn. 1.4" oninput="renderLaboratoryEngine()"></label>
+  <label>pH<input id="labPh" type="number" step="0.01" placeholder="Örn. 7.40" oninput="renderLaboratoryEngine()"></label>
+  <label>pCO₂ (mmHg)<input id="labPco2" type="number" step="0.1" placeholder="Örn. 40" oninput="renderLaboratoryEngine()"></label>
+  <label>HCO₃⁻ (mmol/L)<input id="labHco3" type="number" step="0.1" placeholder="Örn. 24" oninput="renderLaboratoryEngine()"></label>
+  <label>Klor (mmol/L)<input id="labCl" type="number" step="0.1" placeholder="Anyon açıklığı için" oninput="renderLaboratoryEngine()"></label>
+ </div>
+ <div class="compact-actions no-print"><button class="primary" onclick="renderLaboratoryEngine()">Sonuçları yorumla</button><button onclick="copyLaboratorySummary()">Özeti kopyala</button><button onclick="clearLaboratoryInputs()">Temizle</button></div>
+ <div id="laboratoryEnginePanel" class="safety-grid"><div class="muted">Laboratuvar değerleri girildikçe yorumlar burada görünür.</div></div>
+</div>
+
 <div class="card" id="professionalDocCard">
  <div class="section-title"><h3>Akıllı klinik dokümantasyon</h3><span class="phase-badge">v3.7</span></div>
  <div class="doc-kind"><label>Belge türü<select id="docType" onchange="renderProfessionalDocs()"><option value="consult">Konsültasyon notu</option><option value="referral">Sevk notu</option><option value="discharge">Taburculuk notu</option><option value="epicrisis">Acil epikriz</option><option value="handover">Devir / yatış notu</option><option value="patientInfo">Hasta bilgilendirme metni</option></select></label><button class="primary" onclick="renderProfessionalDocs()">Belgeyi oluştur</button></div>
@@ -150,6 +180,15 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="pediatricEmergencyResult" class="safety-grid" style="margin-top:12px"><div class="panel neutral">Yaş ve klinik verileri gir.</div></div>
  <p class="muted">Kaynak yaklaşımı: pediatrik ETAT triyajı, ateşli çocuk trafik ışığı ve standart kilo-temelli matematik. Referans aralıkları yaşa, ateşe, ağlamaya ve yerel protokole göre değişebilir; ilaç ve sıvı uygulamasından önce güncel kurum protokolü ile preparat konsantrasyonu doğrulanmalıdır.</p>
 </div>
+
+
+<details class="card collapse-card no-print" id="laboratoryScenarioCard">
+ <summary>Laboratuvar motoru doğrulama paneli <span class="phase-badge">v5.2</span></summary>
+ <p class="muted">Kritik elektrolit, hemogram, kan gazı, laktat, troponin ve örüntü yorumlarını 24 senaryoda sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runLaboratoryEngineTests()">24 laboratuvar senaryosunu çalıştır</button><button onclick="downloadLaboratoryEngineReport()">Raporu TXT indir</button></div>
+ <div id="laboratoryScenarioSummary" class="panel neutral">Henüz laboratuvar motoru testi çalıştırılmadı.</div>
+ <div id="laboratoryScenarioResults" class="safety-grid"></div>
+</details>
 
 <details class="card collapse-card no-print" id="guidelineScenarioCard">
  <summary>Kılavuz motoru doğrulama paneli <span class="phase-badge">v5.1</span></summary>
@@ -2718,6 +2757,42 @@ const AI_CLINICAL_RULES=[
  {id:'ectopic',name:'Ektopik gebelik',urgency:'kritik',keywords:['gebe','gebelik','adet gecik','vajinal kan','alt karın','omuz ağr'],complaints:['Karın ağrısı','Senkop / presenkop'],tests:['Gebelik testi','Hemogram','Transvajinal USG ve β-hCG'],exam:['Hemodinamik durum','Batın/periton irritasyonu','Uygun ortamda jinekolojik muayene'],questions:['Son adet tarihi ve gebelik olasılığı nedir?','Vajinal kanama veya omuz ağrısı var mı?','Önceki ektopik gebelik, RİA veya tüp cerrahisi var mı?']},
  {id:'asthma',name:'Astım atağı / bronkospazm',urgency:'yüksek',keywords:['wheezing','hırıltı','astım','nefes darl','konuşam','yardımcı kas'],complaints:['Nefes darlığı'],tests:['SpO₂','PEF mümkünse','Kan gazı ağır olguda'],exam:['Konuşma cümleleri ve yardımcı kaslar','Hava girişi/sessiz akciğer','Tedaviye seri yanıt'],questions:['Önceki yoğun bakım/entübasyon var mı?','Kurtarıcı inhaler kullanımı ve yanıtı nedir?','Tetikleyici enfeksiyon veya alerjen var mı?']}
 ];
+
+// v5.2 Laboratuvar yorumlama motoru
+function labNum(id){const el=document.getElementById(id);if(!el||el.value==='')return null;const n=Number(el.value);return Number.isFinite(n)?n:null}
+function laboratoryDataFromUi(){return {hb:labNum('labHb'),mcv:labNum('labMcv'),wbc:labNum('labWbc'),neut:labNum('labNeut'),lymph:labNum('labLymph'),plt:labNum('labPlt'),glucose:labNum('labGlucose'),na:labNum('labNa'),k:labNum('labK'),cr:labNum('labCr'),ast:labNum('labAst'),alt:labNum('labAlt'),crp:labNum('labCrp'),troponin:labNum('labTroponin'),troponinUrl:labNum('labTroponinUrl'),lactate:labNum('labLactate'),ph:labNum('labPh'),pco2:labNum('labPco2'),hco3:labNum('labHco3'),cl:labNum('labCl')}}
+function laboratoryEngine(d){
+ const alerts=[],patterns=[],notes=[];let entered=0;Object.values(d).forEach(v=>{if(v!==null)entered++});
+ const push=(level,title,text)=>alerts.push({level,title,text});
+ if(d.hb!==null){if(d.hb<7)push('critical','Kritik anemi','Hb <7 g/dL. Hemodinami, aktif kanama, semptomlar ve transfüzyon gereksinimini acil değerlendir.');else if(d.hb<10)push('warning','Orta-ağır anemi','Anemi klinik bağlam, kanama ve kroniklik açısından değerlendirilmelidir.');else if(d.hb<12)patterns.push('Hafif anemi olası; cinsiyet, yaş ve laboratuvar referansına göre doğrula.');}
+ if(d.mcv!==null&&d.hb!==null&&d.hb<12){if(d.mcv<80)patterns.push('Mikrositik anemi örüntüsü: demir eksikliği, kronik hastalık veya hemoglobinopati ayırıcı tanısı düşünülür.');else if(d.mcv>100)patterns.push('Makrositik anemi örüntüsü: B12/folat eksikliği, ilaçlar, karaciğer hastalığı veya hipotiroidi açısından değerlendir.');else patterns.push('Normositik anemi örüntüsü: akut kanama, kronik hastalık, böbrek hastalığı veya hemoliz bağlamında değerlendir.');}
+ if(d.wbc!==null){if(d.wbc<2)push('critical','Belirgin lökopeni','Ciddi enfeksiyon riski ve kemik iliği baskılanması açısından acil değerlendirme gerekebilir.');else if(d.wbc>30)push('critical','Belirgin lökositoz','Ağır enfeksiyon, stres yanıtı veya hematolojik nedenler açısından acil klinik korelasyon gerekir.');else if(d.wbc>12)patterns.push('Lökositoz mevcut. Enfeksiyon, inflamasyon, stres veya ilaç etkisiyle birlikte değerlendir.');else if(d.wbc<4)patterns.push('Lökopeni mevcut. Viral enfeksiyon, ilaç etkisi veya kemik iliği baskılanması ayırıcı tanıda.');}
+ if(d.neut!==null&&d.neut>75)patterns.push('Nötrofil baskınlığı; bakteriyel enfeksiyon veya stres yanıtı ile uyumlu olabilir.');
+ if(d.lymph!==null&&d.lymph<15)patterns.push('Lenfopeni mevcut; akut stres, viral enfeksiyon veya immünsüpresyon bağlamında değerlendir.');
+ if(d.plt!==null){if(d.plt<20)push('critical','Kritik trombositopeni','Spontan kanama riski. Kanama bulguları, ilaçlar ve hematoloji değerlendirmesi acildir.');else if(d.plt<50)push('warning','Ağır trombositopeni','Girişim ve kanama riski açısından dikkat.');else if(d.plt<150)patterns.push('Trombositopeni mevcut. Enfeksiyon, ilaç, karaciğer hastalığı veya hematolojik nedenleri değerlendir.');else if(d.plt>600)patterns.push('Belirgin trombositoz; reaktif veya miyeloproliferatif nedenlerle ilişkili olabilir.');}
+ if(d.glucose!==null){if(d.glucose<40)push('critical','Kritik hipoglisemi','Derhal doğrula ve klinik protokole göre tedavi et.');else if(d.glucose<70)push('warning','Hipoglisemi','Semptom, ilaç ve oral alım durumu ile birlikte değerlendir.');else if(d.glucose>=300)push('warning','Belirgin hiperglisemi','Keton, kan gazı, elektrolit ve hiperozmolarite açısından değerlendir.');}
+ if(d.na!==null){if(d.na<120)push('critical','Ağır hiponatremi','Nörolojik semptom ve akutluk açısından acil değerlendirme gerekir. Hızlı düzeltmeden kaçın.');else if(d.na<130)push('warning','Hiponatremi','Volüm durumu, ilaçlar ve osmolalite ile birlikte değerlendir.');else if(d.na>160)push('critical','Ağır hipernatremi','Serbest su açığı ve nörolojik durum açısından acil değerlendirme; kontrollü düzeltme gerekir.');else if(d.na>150)push('warning','Hipernatremi','Dehidratasyon ve su kaybı nedenlerini değerlendir.');}
+ if(d.k!==null){if(d.k<2.5)push('critical','Kritik hipokalemi','Aritmi riski. EKG, magnezyum ve kontrollü replasman gereksinimini acil değerlendir.');else if(d.k<3)push('warning','Belirgin hipokalemi','EKG ve eşlik eden magnezyum düşüklüğü açısından değerlendir.');else if(d.k>=6.5)push('critical','Kritik hiperkalemi','EKG değişikliği olmasa bile acil doğrulama ve tedavi protokolü gerekir. Hemolizi dışla.');else if(d.k>=5.5)push('warning','Hiperkalemi','Numune hemolizi, böbrek işlevi ve EKG ile birlikte değerlendir.');}
+ if(d.cr!==null&&d.cr>=2)patterns.push('Kreatinin yüksekliği böbrek işlev bozukluğunu düşündürür; bazal değer, eGFR ve idrar çıkışı gereklidir.');
+ if(d.ast!==null&&d.alt!==null){const mx=Math.max(d.ast,d.alt);if(mx>1000)push('critical','Çok yüksek aminotransferaz','İskemik, toksik veya akut viral hepatit gibi nedenler açısından acil değerlendirme gerekir.');else if(mx>120)patterns.push('Belirgin transaminaz yüksekliği mevcut; hepatoselüler hasar bağlamında değerlendir.');}
+ if(d.crp!==null){if(d.crp>100)patterns.push('CRP belirgin yüksek; ağır enfeksiyon veya inflamasyon olasılığını klinik bulgularla birlikte değerlendir.');else if(d.crp>10)patterns.push('CRP yüksek; tek başına bakteriyel enfeksiyon tanısı koydurmaz.');}
+ if(d.troponin!==null&&d.troponinUrl!==null&&d.troponinUrl>0){const ratio=d.troponin/d.troponinUrl;if(ratio>1){push('warning','Troponin üst referans sınırının üzerinde',`Sonuç yaklaşık ${ratio.toFixed(1)} kat yüksek. Akut miyokard hasarı için seri değişim, EKG ve klinik bağlam gerekir.`);}else notes.push('Troponin üst referans sınırının altında; tek ölçüm erken AKS’yi dışlamaz.');}
+ if(d.lactate!==null){if(d.lactate>=4)push('critical','Laktat ≥4 mmol/L','Doku hipoperfüzyonu veya ağır metabolik stres açısından acil yeniden değerlendirme gerekir.');else if(d.lactate>=2)push('warning','Laktat yüksek','Sepsis, hipoperfüzyon, nöbet, adrenerjik ilaçlar ve karaciğer klirensi ile birlikte değerlendir.');}
+ if(d.ph!==null){if(d.ph<7.1)push('critical','Ağır asidemi','Ventilasyon, perfüzyon, elektrolitler ve altta yatan neden açısından acil değerlendirme gerekir.');else if(d.ph>7.6)push('critical','Ağır alkalemi','Aritmi ve nörolojik komplikasyon riski nedeniyle acil değerlendirme gerekir.');}
+ if(d.ph!==null&&d.pco2!==null&&d.hco3!==null){if(d.ph<7.35){if(d.hco3<22)patterns.push('Metabolik asidoz örüntüsü. Anyon açıklığı, laktat, keton ve böbrek işlevini değerlendir.');if(d.pco2>45)patterns.push('Respiratuvar asidoz bileşeni mevcut. Hipoventilasyon nedenlerini değerlendir.');}else if(d.ph>7.45){if(d.hco3>26)patterns.push('Metabolik alkaloz örüntüsü. Kusma, diüretik ve klor kaybını değerlendir.');if(d.pco2<35)patterns.push('Respiratuvar alkaloz bileşeni mevcut. Hipoksemi, ağrı, sepsis veya emboli bağlamında değerlendir.');}}
+ let ag=null;if(d.na!==null&&d.cl!==null&&d.hco3!==null){ag=d.na-d.cl-d.hco3;if(ag>16)patterns.push(`Anyon açıklığı yüksek (${ag.toFixed(1)} mmol/L): laktik asidoz, ketoasidoz, böbrek yetmezliği veya toksinleri değerlendir.`);}
+ if(entered===0)notes.push('Yorum için en az bir laboratuvar değeri girilmelidir.');
+ return {alerts,patterns:[...new Set(patterns)],notes:[...new Set(notes)],anionGap:ag,entered};
+}
+function renderLaboratoryEngine(){const box=document.getElementById('laboratoryEnginePanel');if(!box)return;const r=laboratoryEngine(laboratoryDataFromUi());if(!r.entered){box.innerHTML='<div class="panel neutral">Laboratuvar değerlerini gir.</div>';return;}const a=r.alerts.map(x=>`<div class="safety-alert ${x.level==='critical'?'safety-critical':'safety-warning'}"><strong>${esc(x.title)}</strong>${esc(x.text)}</div>`).join('');const p=r.patterns.length?`<div class="panel info"><h3>Olası laboratuvar örüntüleri</h3><ul class="compact">${r.patterns.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'';const n=r.notes.length?`<div class="panel neutral"><ul class="compact">${r.notes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'';box.innerHTML=(a||'<div class="panel ok"><b>Kritik eşik saptanmadı.</b></div>')+p+n+`<div class="panel neutral"><b>Güvenlik notu:</b> Referans aralıkları yaş, cinsiyet, gebelik, cihaz ve laboratuvara göre değişebilir. Sonuçları hastanın kliniği ve seri ölçümlerle doğrula.</div>`;window.__lastLaboratorySummary=['LABORATUVAR YORUMU',...r.alerts.map(x=>`${x.title}: ${x.text}`),...r.patterns,...r.notes].join('\n')}
+function copyLaboratorySummary(){renderLaboratoryEngine();const txt=window.__lastLaboratorySummary||'';if(navigator.clipboard)navigator.clipboard.writeText(txt)}
+function clearLaboratoryInputs(){['labHb','labMcv','labWbc','labNeut','labLymph','labPlt','labGlucose','labNa','labK','labCr','labAst','labAlt','labCrp','labTroponin','labTroponinUrl','labLactate','labPh','labPco2','labHco3','labCl'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});renderLaboratoryEngine()}
+let lastLaboratoryEngineReport='';
+function runLaboratoryEngineTests(){const C=[
+['Kritik anemi',{hb:6.5},r=>r.alerts.some(x=>/Kritik anemi/.test(x.title))],['Mikrositik anemi',{hb:9,mcv:72},r=>r.patterns.some(x=>/Mikrositik/.test(x))],['Makrositik anemi',{hb:9,mcv:108},r=>r.patterns.some(x=>/Makrositik/.test(x))],['Lökopeni',{wbc:1.8},r=>r.alerts.some(x=>/lökopeni/i.test(x.title))],['Lökositoz',{wbc:35},r=>r.alerts.some(x=>/lökositoz/i.test(x.title))],['Nötrofil baskınlığı',{neut:85},r=>r.patterns.some(x=>/Nötrofil/.test(x))],['Kritik trombositopeni',{plt:15},r=>r.alerts.some(x=>/Kritik trombositopeni/.test(x.title))],['Hipoglisemi',{glucose:55},r=>r.alerts.some(x=>/Hipoglisemi/.test(x.title))],['Kritik hipoglisemi',{glucose:35},r=>r.alerts.some(x=>/Kritik hipoglisemi/.test(x.title))],['Ağır hiponatremi',{na:116},r=>r.alerts.some(x=>/Ağır hiponatremi/.test(x.title))],['Ağır hipernatremi',{na:165},r=>r.alerts.some(x=>/Ağır hipernatremi/.test(x.title))],['Kritik hipokalemi',{k:2.2},r=>r.alerts.some(x=>/Kritik hipokalemi/.test(x.title))],['Kritik hiperkalemi',{k:6.8},r=>r.alerts.some(x=>/Kritik hiperkalemi/.test(x.title))],['Kreatinin yüksek',{cr:2.4},r=>r.patterns.some(x=>/Kreatinin/.test(x))],['AST ALT çok yüksek',{ast:1400,alt:900},r=>r.alerts.some(x=>/aminotransferaz/.test(x.title))],['CRP yüksek',{crp:150},r=>r.patterns.some(x=>/CRP belirgin/.test(x))],['Troponin yüksek',{troponin:.05,troponinUrl:.014},r=>r.alerts.some(x=>/Troponin/.test(x.title))],['Troponin normal tek ölçüm',{troponin:.01,troponinUrl:.014},r=>r.notes.some(x=>/tek ölçüm/.test(x))],['Laktat kritik',{lactate:4.5},r=>r.alerts.some(x=>/Laktat/.test(x.title))],['Ağır asidemi',{ph:7.05},r=>r.alerts.some(x=>/Ağır asidemi/.test(x.title))],['Metabolik asidoz',{ph:7.2,pco2:30,hco3:12},r=>r.patterns.some(x=>/Metabolik asidoz/.test(x))],['Respiratuvar asidoz',{ph:7.25,pco2:60,hco3:25},r=>r.patterns.some(x=>/Respiratuvar asidoz/.test(x))],['Yüksek anyon açıklığı',{na:140,cl:100,hco3:15},r=>r.patterns.some(x=>/Anyon açıklığı yüksek/.test(x))],['Boş veri',{},r=>r.entered===0]
+];const base={hb:null,mcv:null,wbc:null,neut:null,lymph:null,plt:null,glucose:null,na:null,k:null,cr:null,ast:null,alt:null,crp:null,troponin:null,troponinUrl:null,lactate:null,ph:null,pco2:null,hco3:null,cl:null};const runs=C.map(([name,d,test])=>{let pass=false,detail='';try{const r=laboratoryEngine({...base,...d});pass=!!test(r);detail=pass?'Beklenen laboratuvar davranışı doğrulandı.':'Beklenen sonuç oluşmadı.'}catch(e){detail=String(e.message||e)}return {name,pass,detail}});const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass;const sum=document.getElementById('laboratoryScenarioSummary'),box=document.getElementById('laboratoryScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Laboratuvar motoru kontrolü başarısız':'Laboratuvar motoru doğrulandı'}</b><br>🧪 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastLaboratoryEngineReport=['ACİL KLİNİK ASİSTANI LABORATUVAR MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v5.2.0 Beta',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('laboratoryScenarioCard')?.setAttribute('open','');return runs}
+function downloadLaboratoryEngineReport(){if(!lastLaboratoryEngineReport)runLaboratoryEngineTests();const blob=new Blob([lastLaboratoryEngineReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-laboratuvar-v5.2.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
 function aiNormText(v){return String(v||'').toLocaleLowerCase('tr-TR').replace(/[İI]/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c')}
 function aiUnique(a){return [...new Set((a||[]).filter(Boolean))]}
 function aiClinicalEngine(data){
@@ -2858,6 +2933,6 @@ function downloadGuidelineEngineReport(){if(!lastGuidelineEngineReport)runGuidel
 
 // Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
 load();
-setTimeout(()=>{syncDoseInputs();renderDoseCalculator();renderPediatricEmergency();renderAIClinicalAssistant();renderGuidelineEngine()},0);
+setTimeout(()=>{syncDoseInputs();renderDoseCalculator();renderPediatricEmergency();renderAIClinicalAssistant();renderGuidelineEngine();renderLaboratoryEngine()},0);
 </script>
 </body></html>
