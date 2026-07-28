@@ -68,17 +68,37 @@ body.module-view .layout aside{display:none!important}
 .system-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .system-hub-grid button{text-align:left;min-height:54px}
 @media(max-width:560px){.system-hub-grid{grid-template-columns:1fr}}
+
+/* v6.7.0 Vaka iş akışı ve birleşik özet */
+.workflow-summary-card{display:none}
+.workflow-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.workflow-summary-box{border:1px solid var(--line);border-radius:14px;padding:12px;background:#f8fafc}
+.workflow-summary-box h3{margin:0 0 7px;font-size:14px;color:#0f766e}
+.workflow-summary-box p{margin:4px 0;font-size:13px}
+.workflow-summary-box ul{margin:5px 0 0;padding-left:18px}
+.workflow-summary-box li{margin:4px 0;font-size:13px}
+.workflow-summary-hero{grid-column:1/-1;background:linear-gradient(135deg,#0f172a,#0f766e);color:#fff;border:0}
+.workflow-summary-hero h3{color:#ccfbf1}
+.workflow-empty{color:var(--muted);font-style:italic}
+.workflow-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mobile-dock.workflow-dock{grid-template-columns:repeat(4,1fr)}
+.mobile-dock .dock-active{background:#0f766e;color:#fff}
+@media(max-width:560px){.workflow-summary-grid{grid-template-columns:1fr}.workflow-summary-hero{grid-column:auto}}
+
+
+/* v6.7.1 Kullanılabilirlik ve mobil güvenlik */
+html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;height:auto}.card,.question,.panel,.workflow-summary-box{min-width:0;overflow-wrap:anywhere}.grid>* ,.grid3>* ,.choices>* ,.dashboard-grid>*{min-width:0}.dashboard-tile{touch-action:manipulation}.dashboard-tile:focus-visible,button:focus-visible{outline:3px solid rgba(45,212,191,.55);outline-offset:2px}.mobile-dock button{touch-action:manipulation}.module-heading{position:sticky;top:96px;z-index:9;background:rgba(238,245,248,.94);backdrop-filter:blur(10px);padding:7px 0}.usability-status{font-size:12px;margin-top:8px}.mobile-safe-table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:560px){body{padding-bottom:78px}.head{gap:7px}.head>div:first-child{min-width:0}.head h1{white-space:normal}.status{max-width:48%}.dashboard-grid{grid-template-columns:1fr}.dashboard-tile{min-height:88px}.dashboard-quick{display:grid;grid-template-columns:1fr 1fr}.dashboard-quick b{grid-column:1/-1}.dashboard-quick button{width:100%}.actions{position:static;margin-bottom:4px}.actions button{min-height:46px}.module-heading{top:88px}.card input,.card select,.card textarea{font-size:16px}.workflow-toolbar button{flex:1;min-width:130px}}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.6.3 Stable • Ayrıntılı Mod Görünürlük Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.7.1 Stable • Kullanılabilirlik ve Mobil Düzeltmeler</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
  <div class="card dashboard-hero">
   <h2>Ne yapmak istiyorsunuz?</h2><p>Aracı kategoriyle açın veya adını yazarak doğrudan bulun.</p>
   <div class="dashboard-search"><input id="moduleSearch" type="search" placeholder="Örn. HEART, troponin, reçete, sepsis..." oninput="filterDashboard(this.value)"><button class="primary" onclick="runModuleSearch()">Ara</button></div>
-  <div id="searchNoResult" class="panel warn search-no-result">Eşleşen araç bulunamadı.</div>
+  <div id="searchNoResult" class="panel warn search-no-result">Eşleşen araç bulunamadı.</div><div id="usabilityStatus" class="usability-status muted">Menü ve mobil görünüm hazırlanıyor…</div>
  </div>
  <div class="dashboard-grid" id="dashboardGrid">
   <button class="dashboard-tile" data-search="yeni vaka hasta vital klinik not" onclick="openModuleGroup('case')"><span>🩺</span><b>Yeni vaka</b><small>Hasta bilgisi ve klinik akış</small></button>
@@ -97,7 +117,7 @@ body.module-view .layout aside{display:none!important}
 <div class="layout">
 <section>
 <div class="card system-hub" id="systemHubCard">
- <div class="section-title"><h2>Sistem kontrol merkezi</h2><span class="phase-badge">v6.6.1</span></div>
+ <div class="section-title"><h2>Sistem kontrol merkezi</h2><span class="phase-badge">v6.7.1</span></div>
  <p class="muted">Kontrol etmek istediğiniz motoru seçin. Seçilen test paneli hemen aşağıda açılır.</p>
  <div id="stabilitySummary" class="panel neutral" style="margin:10px 0">Sistem sağlık kontrolü başlatılmadı.</div>
  <div class="compact-actions"><button id="stabilityCheckBtn" class="primary" type="button" onclick="runStabilityChecksSafe()">Sistem sağlık kontrolünü çalıştır</button></div>
@@ -111,6 +131,19 @@ body.module-view .layout aside{display:none!important}
 </div>
 <div class="card" id="clinicalNoteCard">
  <h3>Klinik not taslağı</h3><textarea id="clinicalNote" rows="12" placeholder="Girilen bilgilerle otomatik oluşur..."></textarea>
+</div>
+
+<div class="card workflow-summary-card" id="workflowSummaryCard">
+ <div class="section-title"><h2>Vaka özeti</h2><span class="phase-badge">Canlı</span></div>
+ <p class="muted">Girilen vaka verileri ve çalışan klinik motorların çıktıları tek ekranda birleştirilir. Son karar hekim doğrulaması gerektirir.</p>
+ <div class="workflow-toolbar no-print">
+  <button class="primary" type="button" onclick="renderWorkflowSummary()">Özeti yenile</button>
+  <button type="button" onclick="copyWorkflowSummary()">Özeti kopyala</button>
+  <button type="button" onclick="window.print()">Yazdır / PDF</button>
+ </div>
+ <div id="workflowSummaryPanel" class="workflow-summary-grid">
+  <div class="workflow-summary-box workflow-summary-hero"><h3>Vaka henüz oluşturulmadı</h3><p>Vaka formuna hasta bilgilerini ve klinik verileri girin.</p></div>
+ </div>
 </div>
 <div class="card" id="aiClinicalAssistantCard">
  <div class="section-title"><h3>Yapay zekâ klinik asistanı</h3><span class="phase-badge">v5.0.2</span></div>
@@ -634,11 +667,11 @@ body.module-view .layout aside{display:none!important}
 </div>
 <div class="footer-note">Prototip yalnızca hekim kullanımına yönelik karar desteğidir. Tanı veya tedavi emri değildir; yerel protokol, güncel kılavuz ve klinik değerlendirme esastır.</div>
 </main>
-<div class="mobile-dock no-print" aria-label="Hızlı erişim menüsü">
-<button onclick="prevStep()" aria-label="Önceki adım"><span>‹</span>Geri</button>
-<button onclick="document.getElementById('appMain').scrollIntoView({behavior:'smooth'})" aria-label="Formun başına git"><span>⌂</span>Form</button>
-<button onclick="document.querySelector('aside').scrollIntoView({behavior:'smooth'})" aria-label="Klinik özete git"><span>✦</span>Özet</button>
-<button class="primary-dock" onclick="nextStep()" aria-label="Sonraki adım"><span>›</span>Devam</button>
+<div class="mobile-dock workflow-dock no-print" aria-label="Vaka iş akışı menüsü">
+<button id="dockHomeBtn" type="button" onclick="showDashboardHome()" aria-label="Ana menüyü aç"><span>⌂</span>Ana Menü</button>
+<button id="dockCaseBtn" type="button" onclick="showCaseWorkspace()" aria-label="Vaka formunu aç"><span>📝</span>Vaka</button>
+<button id="dockSummaryBtn" type="button" onclick="showWorkflowSummary()" aria-label="Vaka özetini aç"><span>✦</span>Özet</button>
+<button id="dockToolsBtn" type="button" onclick="showToolsWorkspace()" aria-label="Klinik araçları aç"><span>🧰</span>Araçlar</button>
 </div>
 <button class="jump-top no-print" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Sayfanın başına dön">↑</button>
 
@@ -3830,6 +3863,7 @@ function downloadPrescriptionEngineReport(){if(!lastPrescriptionEngineReport)run
 var APP_REGISTRY={
  groups:{
   case:{title:'Yeni vaka',ids:['caseEntryCard','clinicalNoteCard']},
+  summary:{title:'Vaka özeti',ids:['workflowSummaryCard']},
   emergency:{title:'Acil değerlendirme',ids:['emergencyCoreCard']},
   diagnosis:{title:'Tanı desteği',ids:['aiClinicalAssistantCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard']},
   tests:{title:'Tetkik ve sonuç yorumlama',ids:['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard']},
@@ -3868,7 +3902,7 @@ function buildSystemHub(){var box=document.getElementById('systemHubButtons'),en
 function openSystemTest(id){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(x){return x!=='systemHubCard'}).forEach(function(x){setModuleVisible(document.getElementById(x),false)});var el=document.getElementById(id);if(!el){alert('Test paneli bulunamadı: '+id);return}setModuleVisible(document.getElementById('systemHubCard'),true);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}
 function showAllSystemTests(){var entry=getGroup('system');if(entry)entry.ids.forEach(function(id){setModuleVisible(document.getElementById(id),true)})}
 function closeAllSystemTests(){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(id){return id!=='systemHubCard'}).forEach(function(id){var el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false)});setModuleVisible(document.getElementById('systemHubCard'),true)}
-function showDashboard(){document.body.classList.remove('module-view');document.body.classList.add('dashboard-home');hideAllModules();var layout=document.querySelector('.layout');if(layout)layout.style.removeProperty('display');window.scrollTo({top:0,behavior:'smooth'})}
+function showDashboard(){document.body.classList.remove('module-view');document.body.classList.add('dashboard-home');hideAllModules();var layout=document.querySelector('.layout');if(layout)layout.style.removeProperty('display');if(typeof setDockActive==='function')setDockActive('dockHomeBtn');window.scrollTo({top:0,behavior:'smooth'})}
 function showDashboardHome(){showDashboard()}
 function filterDashboard(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim(),found=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(function(btn){var text=(btn.textContent+' '+(btn.dataset.search||'')).toLocaleLowerCase('tr-TR'),visible=!q||text.includes(q);btn.style.display=visible?'':'none';if(visible)found++});document.getElementById('searchNoResult')?.classList.toggle('show',!!q&&!found)}
 function runModuleSearch(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;var map=[['sistem','system'],['test','system'],['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']],hit=map.find(function(x){return q.includes(x[0])});if(hit){hit[1]==='system'?openModuleGroup('system'):openSingleModule(hit[1])}else{var first=Array.from(document.querySelectorAll('#dashboardGrid .dashboard-tile')).find(function(b){return b.style.display!=='none'});if(first)first.click()}}
@@ -3880,10 +3914,10 @@ function runStabilityChecks(showDetails){
  add('Sistem kontrol merkezi',!!document.getElementById('systemHubCard'));
  Object.keys(APP_REGISTRY.groups).forEach(function(key){var g=APP_REGISTRY.groups[key];add('Kategori: '+g.title,g.ids.some(function(id){return !!document.getElementById(id)}),'Tanımlı kart: '+g.ids.length)});
  var ids=Array.from(document.querySelectorAll('[id]')).map(function(el){return el.id}),dups=ids.filter(function(id,i){return ids.indexOf(id)!==i});add('Benzersiz HTML kimlikleri',dups.length===0,dups.length?dups.join(', '):'Çakışma yok');
- ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
+ ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
  add('Başlatma hatası',APP_REGISTRY.initErrors.length===0,APP_REGISTRY.initErrors.join(' | '));
  add('Çalışma zamanı hatası',APP_REGISTRY.runtimeErrors.length===0,APP_REGISTRY.runtimeErrors.slice(-5).join(' | '));
- var passed=checks.filter(function(c){return c.ok}).length,total=checks.length,box=document.getElementById('stabilitySummary');
+ var ux=typeof runUsabilityChecks==='function'?runUsabilityChecks():null;if(ux)ux.checks.forEach(function(c){checks.push({name:'Kullanılabilirlik: '+c.name,ok:c.ok,detail:c.detail})});var passed=checks.filter(function(c){return c.ok}).length,total=checks.length,box=document.getElementById('stabilitySummary');
  if(box){box.className='panel '+(passed===total?'ok':'warn');box.innerHTML='<strong>'+passed+'/'+total+' kontrol geçti</strong>'+(showDetails?'<ul class="compact">'+checks.map(function(c){return '<li>'+(c.ok?'✅':'❌')+' '+c.name+(c.detail?' — '+c.detail:'')+'</li>'}).join('')+'</ul>':'<div class="muted">Ayrıntılar için sağlık kontrolünü çalıştırın.</div>')}
  return {passed:passed,total:total,checks:checks}
 }
@@ -3903,7 +3937,8 @@ function toggleModeSafe(){
    setModuleVisible(document.getElementById('caseEntryCard'),true);
    setModuleVisible(document.getElementById('clinicalNoteCard'),true);
   }
-  if(typeof updateModuleHeading==='function')updateModuleHeading('case','Yeni vaka');
+  if(typeof updateModuleHeading==='function')updateModuleHeading('Yeni vaka');
+  if(typeof setDockActive==='function')setDockActive('dockCaseBtn');
   if(typeof render==='function')render();
   var btn=document.getElementById('modeToggle');
   if(btn)btn.textContent=quickMode?'Ayrıntılı moda geç':'Hızlı moda dön';
@@ -3939,13 +3974,53 @@ function bindStableEvents(){
 function initializeClinicalModules(){
  [['Klinik skor',window.renderClinicalScoreForm],['Acil çekirdek',window.renderEmergencyCore],['Tetkik motoru',window.renderTestOrderEngine],['Tedavi motoru',window.renderTreatmentEngine],['Reçete motoru',window.renderPrescriptionEngine]].forEach(function(item){if(typeof item[1]==='function')safeCall(item[0],item[1])})
 }
+
+function workflowText(id,fallback){var el=document.getElementById(id);var text=el?String(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim():'';return text||fallback||''}
+function workflowList(values,emptyText){var arr=(values||[]).filter(function(x){return String(x||'').trim()});if(!arr.length)return '<p class="workflow-empty">'+esc(emptyText||'Henüz veri yok')+'</p>';return '<ul>'+arr.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'}
+function renderWorkflowSummary(){try{if(typeof collect==='function')collect()}catch(e){}var panel=document.getElementById('workflowSummaryPanel');if(!panel)return;var age=S.age?S.age+' yaş':'Yaş girilmedi',sex=S.sex||'Cinsiyet girilmedi',complaint=S.complaint||'Ana şikâyet girilmedi';var vitals=[S.sbp?'TA '+S.sbp+(S.dbp?'/'+S.dbp:'')+' mmHg':'',S.pulse?'Nabız '+S.pulse+'/dk':'',S.rr?'SS '+S.rr+'/dk':'',S.spo2?'SpO₂ %'+S.spo2:'',S.temp?'Ateş '+S.temp+' °C':'',S.mental?'Bilinç: '+S.mental:''].filter(Boolean);var red=(S.redFlags||[]),symptoms=(S.symptoms||[]),tests=(S.orderedTests||[]).slice();if(S.ecg&&S.ecg!=='Bekleniyor')tests.push('EKG: '+S.ecg);if(S.troponin&&S.troponin!=='Bekleniyor')tests.push('Troponin: '+S.troponin);if(S.repeatTroponin&&S.repeatTroponin!=='Bekleniyor')tests.push('Kontrol troponin: '+S.repeatTroponin);if(S.cxr&&S.cxr!=='Bekleniyor')tests.push('Akciğer grafisi: '+S.cxr);var treatmentText=workflowText('treatmentSummary','Henüz tedavi/order özeti oluşturulmadı.'),prescriptionText=workflowText('prescriptionSummary','Henüz reçete özeti oluşturulmadı.'),consultantText=workflowText('consultantPanel','Tanı desteği için yeterli veri yok.'),dispositionText=S.disposition||workflowText('dispositionPanel','Sonlandırma kararı henüz girilmedi.'),selected=document.getElementById('selectedIcd'),icdText=S.selectedIcd||(selected?selected.value:'')||'ICD-10 kodu seçilmedi',note=(document.getElementById('clinicalNote')?document.getElementById('clinicalNote').value:'').trim(),alarms=[];if(red.length)alarms.push(red.length+' kırmızı bayrak işaretli');if(Number(S.spo2)&&Number(S.spo2)<92)alarms.push('Hipoksemi');if(Number(S.sbp)&&Number(S.sbp)<90)alarms.push('Hipotansiyon');if(S.mental&&S.mental!=='Normal')alarms.push('Bilinç değişikliği');panel.innerHTML='<div class="workflow-summary-box workflow-summary-hero"><h3>'+esc(age+' · '+sex+' · '+complaint)+'</h3><p>'+(alarms.length?'Öncelikli uyarılar: '+esc(alarms.join(' · ')):'Belirgin kritik alarm henüz kaydedilmedi.')+'</p></div>'+'<div class="workflow-summary-box"><h3>Hasta ve klinik durum</h3><p><b>Şikâyet:</b> '+esc(complaint)+'</p><p><b>Başlangıç:</b> '+esc(S.onset||'Belirtilmedi')+'</p>'+workflowList(symptoms,'Eşlik eden belirti girilmedi')+'</div>'+'<div class="workflow-summary-box"><h3>Vital bulgular</h3>'+workflowList(vitals,'Vital bulgu girilmedi')+'</div>'+'<div class="workflow-summary-box"><h3>Kırmızı bayraklar</h3>'+workflowList(red,'Kırmızı bayrak işaretlenmedi')+'</div>'+'<div class="workflow-summary-box"><h3>Tanı desteği</h3><p>'+esc(consultantText.slice(0,800))+'</p></div>'+'<div class="workflow-summary-box"><h3>Tetkikler</h3>'+workflowList(Array.from(new Set(tests)),'Tetkik seçilmedi veya sonuç girilmedi')+'</div>'+'<div class="workflow-summary-box"><h3>Tedavi / Order</h3><p>'+esc(treatmentText.slice(0,1000))+'</p></div>'+'<div class="workflow-summary-box"><h3>Reçete</h3><p>'+esc(prescriptionText.slice(0,800))+'</p></div>'+'<div class="workflow-summary-box"><h3>ICD ve son karar</h3><p><b>ICD-10:</b> '+esc(icdText)+'</p><p><b>Sonlandırma:</b> '+esc(dispositionText.slice(0,600))+'</p></div>'+'<div class="workflow-summary-box"><h3>Klinik not</h3><p>'+(note?esc(note.slice(0,1200)):'<span class="workflow-empty">Klinik not henüz oluşmadı.</span>')+'</p></div>';return panel.innerText}
+function setDockActive(id){['dockHomeBtn','dockCaseBtn','dockSummaryBtn','dockToolsBtn'].forEach(function(x){var btn=document.getElementById(x);if(btn)btn.classList.toggle('dock-active',x===id)})}
+function showCaseWorkspace(){openModuleGroup('case');setDockActive('dockCaseBtn')}
+function showWorkflowSummary(){try{enterModuleView();hideAllModules();var card=document.getElementById('workflowSummaryCard');setModuleVisible(card,true);updateModuleHeading('Vaka özeti');renderWorkflowSummary();setDockActive('dockSummaryBtn');setTimeout(function(){if(card)card.scrollIntoView({behavior:'smooth',block:'start'})},20)}catch(err){console.error('Özet açma hatası',err);alert('Özet açılırken hata oluştu: '+(err.message||err))}}
+function showToolsWorkspace(){showDashboard();setDockActive('dockToolsBtn');var grid=document.getElementById('dashboardGrid');setTimeout(function(){if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'})},20)}
+function copyWorkflowSummary(){var text=renderWorkflowSummary()||'';if(!text)return;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert('Vaka özeti kopyalandı.')}).catch(function(){fallbackCopy(text)})}else fallbackCopy(text)}
+function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('Vaka özeti kopyalandı.')}catch(e){alert('Kopyalama başarısız oldu.')}ta.remove()}
+
+
+function setActiveDockForGroup(group){
+ var map={case:'dockCaseBtn',summary:'dockSummaryBtn'};
+ if(map[group])setDockActive(map[group]);
+ else if(group==='system'||group==='emergency'||group==='diagnosis'||group==='tests'||group==='treatment'||group==='prescription'||group==='documents')setDockActive('dockToolsBtn');
+}
+function applyUsabilityGuards(){
+ document.querySelectorAll('table').forEach(function(t){if(!t.parentElement.classList.contains('mobile-safe-table')){var w=document.createElement('div');w.className='mobile-safe-table';t.parentNode.insertBefore(w,t);w.appendChild(t)}});
+ document.querySelectorAll('button').forEach(function(b){if(!b.getAttribute('type'))b.setAttribute('type','button')});
+ var search=document.getElementById('moduleSearch');
+ if(search&&!search.dataset.enterBound){search.dataset.enterBound='1';search.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runModuleSearch()}})}
+ var status=document.getElementById('usabilityStatus');
+ if(status){var overflow=document.documentElement.scrollWidth>document.documentElement.clientWidth+2;status.textContent=overflow?'⚠ Yatay taşma algılandı; ilgili kartı Sistem Kontrolü ile inceleyin.':'✓ Menü, dokunmatik alanlar ve mobil genişlik kontrol edildi.';status.className='usability-status '+(overflow?'confidence-mid':'confidence-high')}
+}
+function runUsabilityChecks(){
+ var checks=[];
+ function add(name,ok,detail){checks.push({name:name,ok:!!ok,detail:detail||''})}
+ add('Ana kategori kartları',document.querySelectorAll('#dashboardGrid .dashboard-tile').length===8,document.querySelectorAll('#dashboardGrid .dashboard-tile').length+'/8');
+ add('Alt iş akışı menüsü',document.querySelectorAll('.workflow-dock button').length===4,document.querySelectorAll('.workflow-dock button').length+'/4');
+ add('Vaka formu',!!document.getElementById('caseEntryCard'));
+ add('Birleşik özet',!!document.getElementById('workflowSummaryCard'));
+ add('Araç araması',!!document.getElementById('moduleSearch')&&typeof runModuleSearch==='function');
+ add('Mod değişimi',typeof toggleModeSafe==='function');
+ add('Yatay sayfa taşması',document.documentElement.scrollWidth<=document.documentElement.clientWidth+2,document.documentElement.scrollWidth+' / '+document.documentElement.clientWidth+' px');
+ add('Dokunmatik butonlar',Array.from(document.querySelectorAll('.mobile-dock button')).every(function(b){return b.getBoundingClientRect().height>=44}));
+ var passed=checks.filter(function(c){return c.ok}).length;
+ return {passed:passed,total:checks.length,checks:checks};
+}
+
 function initAppStable(){
  safeCall('Kayıt yükleme',function(){if(typeof load==='function')load()});
- initializeClinicalModules();bindStableEvents();buildSystemHub();showDashboard();runStabilityChecks(false)
+ initializeClinicalModules();bindStableEvents();buildSystemHub();showDashboard();applyUsabilityGuards();setTimeout(applyUsabilityGuards,250);runStabilityChecks(false)
 }
 window.addEventListener('error',function(e){APP_REGISTRY.runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){APP_REGISTRY.runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe});
+Object.assign(window,{openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
 </script>
