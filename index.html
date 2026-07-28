@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.3.1 Beta • ICD-10 Test Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.3.2 Beta • ICD-10 Başlatma Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -1900,7 +1900,6 @@ function renderTimeline(){el('timeline').innerHTML=order().map((page,i)=>`<span 
 function saveCase(){collect();localStorage.setItem('acilCase',JSON.stringify(S));localStorage.setItem('acilStep',currentStep);updateAll();alert('Vaka bu cihazın tarayıcısına kaydedildi.')}
 function newCase(){if(!confirm('Mevcut vaka temizlensin mi?'))return;localStorage.removeItem('acilCase');localStorage.removeItem('acilStep');location.reload()}
 function load(){try{const x=localStorage.getItem('acilCase');if(x)S={...S,...JSON.parse(x)};currentStep=Math.min(order().length-1,parseInt(localStorage.getItem('acilStep')||'0'))}catch(e){}render();renderClinicalValidationSummary();document.addEventListener('input',()=>{collect();updateAll()});document.addEventListener('change',()=>{collect();updateAll()})}
-load();
 
 
 let lastTreatmentScenarioReport='';
@@ -2389,13 +2388,13 @@ function runIcdTests(){
  }
  lastIcdReport=unexpected
   ? `ACİL KLİNİK ASİSTANI ICD-10 TEST HATASI\nTarih: ${new Date().toLocaleString('tr-TR')}\nHata: ${unexpected}`
-  : [`ACİL KLİNİK ASİSTANI ICD-10 ÖNERİ MOTORU RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.3.1 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');
+  : [`ACİL KLİNİK ASİSTANI ICD-10 ÖNERİ MOTORU RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.3.2 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');
  const card=el('icdScenarioCard');
  if(card)card.open=true;
  try{render();updateAll();}catch(err){console.error('ICD testi sonrası ekran yenileme hatası:',err)}
  return runs;
 }
-function downloadIcdReport(){if(!lastIcdReport)runIcdTests();const blob=new Blob([lastIcdReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-icd10-v4.3.1.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function downloadIcdReport(){if(!lastIcdReport)runIcdTests();const blob=new Blob([lastIcdReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-icd10-v4.3.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 let lastDrugLibraryReport='';
 function runDrugLibraryTests(){
@@ -2412,5 +2411,8 @@ function runDrugLibraryTests(){
  lastDrugLibraryReport=[`ACİL KLİNİK ASİSTANI AKILLI İLAÇ KARTLARI RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.2.0 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');const card=el('drugLibraryScenarioCard');if(card)card.open=true;return runs;
 }
 function downloadDrugLibraryReport(){if(!lastDrugLibraryReport)runDrugLibraryTests();const blob=new Blob([lastDrugLibraryReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-ilac-kartlari-v4.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
+// Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
+load();
 </script>
 </body></html>
