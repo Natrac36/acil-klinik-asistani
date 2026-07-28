@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.3.0 Beta • ICD-10 Öneri Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.3.1 Beta • ICD-10 Test Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -2343,7 +2343,10 @@ function renderIcdSuggestions(){
 }
 let lastIcdReport='';
 function runIcdTests(){
- collect();const original=JSON.parse(JSON.stringify(S));const defs=[
+ const summary=el('icdScenarioSummary');
+ const box=el('icdScenarioResults');
+ const original=JSON.parse(JSON.stringify(S));
+ const defs=[
   {name:'ST elevasyonlu MI',data:{complaint:'Göğüs ağrısı',ecg:'ST elevasyonu',troponin:'Yüksek'},expect:'I21.3'},
   {name:'Troponin yüksek NSTEMI',data:{complaint:'Göğüs ağrısı',ecg:'ST depresyonu/T negatifliği',troponin:'Yüksek'},expect:'I21.4'},
   {name:'Tanısı net olmayan göğüs ağrısı',data:{complaint:'Göğüs ağrısı',ecg:'Normal / akut iskemi yok',troponin:'Normal',notes:''},expect:'R07.4'},
@@ -2352,12 +2355,47 @@ function runIcdTests(){
   {name:'Grafide infiltrasyon',data:{complaint:'Nefes darlığı',cxr:'İnfiltrasyon'},expect:'J18.9'},
   {name:'Basit senkop',data:{complaint:'Senkop / presenkop',notes:'',ecg:'Normal / akut iskemi yok'},expect:'R55'},
   {name:'Anafilaktik şok',data:{complaint:'Döküntü / alerjik reaksiyon',notes:'anafilaksi',sbp:'78',spo2:'88'},expect:'T78.2'}
- ];let runs=[];try{runs=defs.map(d=>{S={...JSON.parse(JSON.stringify(original)),...d.data,icdSearch:''};const first=icdSuggestions()[0];return {name:d.name,pass:!!first&&first.code===d.expect,detail:first?`İlk öneri ${first.code}; beklenen ${d.expect}.`:`Öneri oluşmadı; beklenen ${d.expect}.`}})}finally{S=original;render();updateAll()}
- const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,summary=el('icdScenarioSummary');if(summary){summary.className='panel '+(fail?'urgent':'ok');summary.innerHTML=`<b>${fail?'ICD-10 öneri kontrolü başarısız':'ICD-10 öneri motoru doğrulaması tamamlandı'}</b><br>🏷️ ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`}
- const box=el('icdScenarioResults');if(box)box.innerHTML=runs.map(r=>`<div class="scenario-check ${r.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${r.pass?'✓':'✕'} ${esc(r.name)}</b><div>${esc(r.detail)}</div></div>`).join('');
- lastIcdReport=[`ACİL KLİNİK ASİSTANI ICD-10 ÖNERİ MOTORU RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.3.0 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');const card=el('icdScenarioCard');if(card)card.open=true;return runs;
+ ];
+ let runs=[];
+ let unexpected='';
+ try{
+  collect();
+  runs=defs.map(d=>{
+   S={...JSON.parse(JSON.stringify(original)),...d.data,icdSearch:'',selectedIcd:''};
+   const first=icdSuggestions()[0];
+   return {
+    name:d.name,
+    pass:!!first&&first.code===d.expect,
+    detail:first?`İlk öneri ${first.code}; beklenen ${d.expect}.`:`Öneri oluşmadı; beklenen ${d.expect}.`
+   };
+  });
+ }catch(err){
+  unexpected=String(err&&err.message||err);
+ }finally{
+  S=original;
+ }
+ const pass=runs.filter(x=>x.pass).length;
+ const fail=runs.length-pass;
+ if(summary){
+  summary.className='panel '+(unexpected||fail?'urgent':'ok');
+  summary.innerHTML=unexpected
+   ? `<b>ICD-10 test motoru çalışırken hata oluştu</b><br>${esc(unexpected)}`
+   : `<b>${fail?'ICD-10 öneri kontrolü başarısız':'ICD-10 öneri motoru doğrulaması tamamlandı'}</b><br>🏷️ ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;
+ }
+ if(box){
+  box.innerHTML=unexpected
+   ? `<div class="safety-alert safety-critical"><strong>🔴 JavaScript hatası</strong><div>${esc(unexpected)}</div></div>`
+   : runs.map(r=>`<div class="scenario-check ${r.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${r.pass?'✓':'✕'} ${esc(r.name)}</b><div>${esc(r.detail)}</div></div>`).join('');
+ }
+ lastIcdReport=unexpected
+  ? `ACİL KLİNİK ASİSTANI ICD-10 TEST HATASI\nTarih: ${new Date().toLocaleString('tr-TR')}\nHata: ${unexpected}`
+  : [`ACİL KLİNİK ASİSTANI ICD-10 ÖNERİ MOTORU RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.3.1 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');
+ const card=el('icdScenarioCard');
+ if(card)card.open=true;
+ try{render();updateAll();}catch(err){console.error('ICD testi sonrası ekran yenileme hatası:',err)}
+ return runs;
 }
-function downloadIcdReport(){if(!lastIcdReport)runIcdTests();const blob=new Blob([lastIcdReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-icd10-v4.3.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function downloadIcdReport(){if(!lastIcdReport)runIcdTests();const blob=new Blob([lastIcdReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-icd10-v4.3.1.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 let lastDrugLibraryReport='';
 function runDrugLibraryTests(){
