@@ -260,7 +260,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
   <label class="choice"><input type="checkbox" id="trBleeding" onchange="renderTreatmentEngine()">Aktif kanama / yüksek kanama riski</label>
   <label class="choice"><input type="checkbox" id="trAllergy" onchange="renderTreatmentEngine()">İlaç alerjisi öyküsü</label>
  </div></div>
- <div class="compact-actions no-print"><button class="primary" onclick="renderTreatmentEngine()">Order taslağını oluştur</button><button onclick="copyTreatmentSummary()">Özeti kopyala</button><button onclick="clearTreatmentInputs()">Temizle</button></div>
+ <div class="compact-actions no-print"><button type="button" id="createTreatmentOrderBtn" class="primary" onclick="return renderTreatmentEngine(event)">Order taslağını oluştur</button><button onclick="copyTreatmentSummary()">Özeti kopyala</button><button onclick="clearTreatmentInputs()">Temizle</button></div>
  <div id="treatmentWarnings"></div>
  <div class="treatment-order-grid" style="margin-top:10px">
   <div><h3>İlk saat order taslağı</h3><div id="treatmentOrderList" class="treatment-order-list"><div class="muted">Senaryo seçildiğinde order iskeleti burada görünür.</div></div></div>
@@ -3612,7 +3612,7 @@ function treatmentScenarioOrders(scenario,d){
  if(d.hypoxia)arr.splice(1,0,{time:'Hemen',cls:'now',title:'Hedefe yönelik oksijen/ventilasyon',detail:'Hipoksemi ve solunum iş yüküne göre oksijen veya ventilasyon desteğini titrasyonla başlat.'});
  return arr;
 }
-function renderTreatmentEngine(){
+function renderTreatmentEngineCore(){
  const scenario=document.getElementById('trScenario')?.value||'stemi';
  const d={unstable:!!document.getElementById('trUnstable')?.checked,hypoxia:!!document.getElementById('trHypoxia')?.checked,pregnancy:!!document.getElementById('trPregnancy')?.checked,renal:!!document.getElementById('trRenal')?.checked,bleeding:!!document.getElementById('trBleeding')?.checked,allergy:!!document.getElementById('trAllergy')?.checked};
  const orders=treatmentScenarioOrders(scenario,d),warns=[];
@@ -3629,7 +3629,27 @@ function renderTreatmentEngine(){
  if(warningBox)warningBox.innerHTML=warns.length?`<div class="panel warn"><b>Güvenlik uyarıları</b><ul class="compact">${warns.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'<div class="panel info"><b>Senaryo bazlı taslak hazır</b><br>İlaç seçimi ve dozları kurum protokolü, preparat konsantrasyonu ve hasta özellikleriyle ayrıca doğrulanmalıdır.</div>';
  if(summary)summary.textContent=['AKILLI TEDAVİ VE ORDER MOTORU — v6.3.0','Senaryo: '+treatmentScenarioLabel(scenario),'',...orders.map(x=>`${x.time} | ${x.title} — ${x.detail}`),...(warns.length?['','GÜVENLİK UYARILARI',...warns.map(x=>'• '+x)]:[]),'','Not: Bu çıktı klinik karar veya otomatik ilaç emri değildir; hekim doğrulaması ve yerel protokol zorunludur.'].join('\n');
 }
-function copyTreatmentSummary(){const t=document.getElementById('treatmentSummary')?.textContent||'';if(!t)return;copyText(t,'Tedavi/order özeti kopyalandı.')}
+async 
+function renderTreatmentEngine(ev){
+ if(ev && typeof ev.preventDefault==='function') ev.preventDefault();
+ const btn=document.getElementById('createTreatmentOrderBtn');
+ try{
+  if(btn){btn.disabled=true;btn.textContent='Order oluşturuluyor...';}
+  renderTreatmentEngineCore();
+  const card=document.getElementById('smartTreatmentOrderCard');
+  const out=document.getElementById('treatmentOrderList');
+  if(out && card && ev){out.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  return false;
+ }catch(err){
+  console.error('Tedavi/order motoru hatası:',err);
+  const warningBox=document.getElementById('treatmentWarnings');
+  if(warningBox) warningBox.innerHTML='<div class="panel urgent"><b>Order oluşturulamadı.</b><br>'+esc(err && err.message ? err.message : 'Bilinmeyen hata')+'<br><span class="muted">Sayfayı yenileyip tekrar deneyin.</span></div>';
+  return false;
+ }finally{
+  if(btn){btn.disabled=false;btn.textContent='Order taslağını oluştur';}
+ }
+}
+async function copyTreatmentSummary(){const t=document.getElementById('treatmentSummary')?.textContent||'';if(!t)return;try{await navigator.clipboard.writeText(t);alert('Tedavi/order özeti kopyalandı.')}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('Tedavi/order özeti kopyalandı.')}}
 function clearTreatmentInputs(){['trAge','trWeight'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['trUnstable','trHypoxia','trPregnancy','trRenal','trBleeding','trAllergy'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false});const s=document.getElementById('trScenario');if(s)s.value='stemi';renderTreatmentEngine()}
 document.addEventListener('DOMContentLoaded',()=>{try{renderTreatmentEngine()}catch(e){console.error('Treatment engine init',e)}});
 
