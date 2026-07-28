@@ -43,10 +43,14 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 @media print{.mobile-dock,.jump-top{display:none!important}.card{box-shadow:none;background:#fff}.actions{position:static}}
 
+
+/* v6.0 Entegre Acil Yönetim Çekirdeği */
+.em-core-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}.em-abcd{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.em-abcd label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff;font-size:12px}.em-abcd input{width:18px;height:18px;min-height:0}.em-alarmbar{border-radius:14px;padding:12px;margin:10px 0;font-weight:900}.em-critical{background:#7f1d1d;color:#fff}.em-high{background:#c2410c;color:#fff}.em-watch{background:#a16207;color:#fff}.em-clear{background:#166534;color:#fff}.em-timer{font-variant-numeric:tabular-nums;font-size:22px;font-weight:900}.em-matrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.em-tile{border:1px solid var(--line);border-radius:11px;padding:10px;background:#f8fafc}.em-tile b{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}.em-next{border-left:5px solid var(--teal);background:#f0fdfa;border-radius:11px;padding:11px;font-weight:800}.em-block{border-left:5px solid #dc2626;background:#fff1f2;border-radius:11px;padding:11px}.em-testline{font-size:12px;padding:7px 9px;border-radius:9px;margin:5px 0}@media(max-width:700px){.em-core-grid{grid-template-columns:1fr}.em-abcd{grid-template-columns:1fr}.em-matrix{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v5.5.0 Beta • Klinik Skorlama Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.0.0 Alpha • Entegre Acil Yönetim Çekirdeği</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -172,6 +176,43 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <p class="muted">Klinik karar kuralının hedef popülasyonu, dışlama ölçütleri ve yerel protokolü uygulanmadan sonuç yorumlanmamalıdır.</p>
 </div>
 
+
+<div class="card" id="emergencyCoreCard">
+ <div class="section-title"><h3>Entegre acil yönetim çekirdeği</h3><span class="phase-badge">v6.0</span></div>
+ <p class="muted">ABCDE, kritik alarm, zaman hedefi ve güvenli sonlandırmayı tek akışta birleştirir. Klinik kararın yerini tutmaz.</p>
+ <div id="emGlobalAlarm" class="em-alarmbar em-clear">Kritik alarm saptanmadı</div>
+ <div class="em-core-grid">
+  <div>
+   <div class="question"><div class="question-title">ABCDE tamamlanma durumu</div><div class="em-abcd">
+    <label><input type="checkbox" data-em-abcd="A" onchange="renderEmergencyCore()">A — Havayolu</label>
+    <label><input type="checkbox" data-em-abcd="B" onchange="renderEmergencyCore()">B — Solunum</label>
+    <label><input type="checkbox" data-em-abcd="C" onchange="renderEmergencyCore()">C — Dolaşım</label>
+    <label><input type="checkbox" data-em-abcd="D" onchange="renderEmergencyCore()">D — Nöroloji</label>
+    <label><input type="checkbox" data-em-abcd="E" onchange="renderEmergencyCore()">E — Maruziyet</label>
+   </div></div>
+   <div class="grid3">
+    <label>Sistolik TA<input id="emSbp" type="number" placeholder="mmHg" oninput="renderEmergencyCore()"></label>
+    <label>SpO₂<input id="emSpo2" type="number" placeholder="%" oninput="renderEmergencyCore()"></label>
+    <label>Solunum sayısı<input id="emRr" type="number" placeholder="/dk" oninput="renderEmergencyCore()"></label>
+    <label>Nabız<input id="emHr" type="number" placeholder="/dk" oninput="renderEmergencyCore()"></label>
+    <label>GKS<input id="emGcs" type="number" min="3" max="15" placeholder="3–15" oninput="renderEmergencyCore()"></label>
+    <label>Glukoz<input id="emGlucose" type="number" placeholder="mg/dL" oninput="renderEmergencyCore()"></label>
+   </div>
+   <div class="question"><div class="question-title">Zaman kritik durum</div><div class="grid">
+    <label>Olay türü<select id="emEvent" onchange="emTimerReset();renderEmergencyCore()"><option value="none">Seçilmedi</option><option value="stemi">STEMI / OMI</option><option value="stroke">Akut inme</option><option value="sepsis">Sepsis / septik şok</option><option value="trauma">Majör travma</option><option value="anaphylaxis">Anafilaksi</option><option value="status">Status epileptikus</option></select></label>
+    <label>Başlangıç zamanı<input id="emStart" type="datetime-local" onchange="renderEmergencyCore()"></label>
+   </div><div class="compact-actions no-print"><button class="primary" onclick="emStartNow()">Şimdi başlat</button><button onclick="emTimerReset()">Sıfırla</button></div></div>
+  </div>
+  <div>
+   <div class="em-tile"><b>Geçen süre</b><div id="emElapsed" class="em-timer">00:00</div><div id="emTarget" class="muted">Zaman hedefi seçilmedi.</div></div>
+   <div id="emCoreSummary" class="em-matrix" style="margin-top:9px"></div>
+   <div id="emNextAction" class="em-next" style="margin-top:9px">Önce ABCDE ve vital bulguları tamamla.</div>
+   <div id="emDisposition" class="em-block" style="margin-top:9px">Sonlandırma değerlendirmesi için veri yetersiz.</div>
+  </div>
+ </div>
+ <div class="compact-actions no-print"><button class="primary" onclick="renderEmergencyCore()">Çekirdeği yenile</button><button onclick="copyEmergencyCoreSummary()">Özeti kopyala</button><button onclick="clearEmergencyCore()">Temizle</button></div>
+</div>
+
 <div class="card" id="professionalDocCard">
  <div class="section-title"><h3>Akıllı klinik dokümantasyon</h3><span class="phase-badge">v3.7</span></div>
  <div class="doc-kind"><label>Belge türü<select id="docType" onchange="renderProfessionalDocs()"><option value="consult">Konsültasyon notu</option><option value="referral">Sevk notu</option><option value="discharge">Taburculuk notu</option><option value="epicrisis">Acil epikriz</option><option value="handover">Devir / yatış notu</option><option value="patientInfo">Hasta bilgilendirme metni</option></select></label><button class="primary" onclick="renderProfessionalDocs()">Belgeyi oluştur</button></div>
@@ -260,6 +301,15 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions"><button class="primary" onclick="runMedicationSafetyTests()">30 ilaç güvenliği senaryosunu çalıştır</button><button onclick="downloadMedicationSafetyReport()">Raporu TXT indir</button></div>
  <div id="medicationSafetyScenarioSummary" class="panel neutral">Henüz ilaç güvenliği testi çalıştırılmadı.</div>
  <div id="medicationSafetyScenarioResults" class="safety-grid"></div>
+</details>
+
+
+<details class="card collapse-card no-print" id="emergencyCoreScenarioCard">
+ <summary>Entegre acil yönetim doğrulama paneli <span class="phase-badge">v6.0</span></summary>
+ <p class="muted">ABCDE, kritik vital alarmı, zaman hedefi, sonraki adım ve güvenli sonlandırmayı 100 otomatik senaryoda sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runEmergencyCoreTests()">100 entegre senaryoyu çalıştır</button><button onclick="downloadEmergencyCoreReport()">Raporu TXT indir</button></div>
+ <div id="emergencyCoreScenarioSummary" class="panel neutral">Henüz entegre çekirdek testi çalıştırılmadı.</div>
+ <div id="emergencyCoreScenarioResults" class="safety-grid"></div>
 </details>
 
 <details class="card collapse-card no-print" id="laboratoryScenarioCard">
@@ -3283,6 +3333,70 @@ function runClinicalScoringTests(){
  const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,sum=document.getElementById('clinicalScoringScenarioSummary'),box=document.getElementById('clinicalScoringScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Klinik skorlama kontrolü başarısız':'Klinik skorlama motoru doğrulandı'}</b><br>📊 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastClinicalScoringReport=['ACİL KLİNİK ASİSTANI KLİNİK SKORLAMA MOTORU RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v5.5.0 Beta',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('clinicalScoringScenarioCard')?.setAttribute('open','');return runs}
 function downloadClinicalScoringReport(){if(!lastClinicalScoringReport)runClinicalScoringTests();const blob=new Blob([lastClinicalScoringReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-klinik-skorlama-v5.5.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 document.addEventListener('DOMContentLoaded',()=>{try{renderClinicalScoreForm()}catch(e){console.error('Clinical score init',e)}});
+
+
+
+// v6.0.0 Integrated Emergency Management Core
+let emTimerHandle=null,lastEmergencyCoreReport='';
+const EM_TARGETS={stemi:{name:'STEMI / OMI',minutes:90,label:'Kapı-balon hedefi ≤90 dk'},stroke:{name:'Akut inme',minutes:60,label:'Kapı-iğne hedefi ≤60 dk'},sepsis:{name:'Sepsis',minutes:60,label:'İlk saat paketi ≤60 dk'},trauma:{name:'Majör travma',minutes:10,label:'Primer değerlendirme hedefi ≤10 dk'},anaphylaxis:{name:'Anafilaksi',minutes:5,label:'Adrenalin gecikmemeli; hedef ≤5 dk'},status:{name:'Status epileptikus',minutes:5,label:'İlk benzodiazepin hedefi ≤5 dk'}};
+function emNum(v){if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null}
+function emergencyCoreEvaluate(d={}){
+ const abcd=d.abcd||{};const done=['A','B','C','D','E'].filter(k=>!!abcd[k]).length;const missing=['A','B','C','D','E'].filter(k=>!abcd[k]);
+ const alerts=[];const add=(sev,title,reason)=>alerts.push({sev,title,reason});
+ const sbp=emNum(d.sbp),spo2=emNum(d.spo2),rr=emNum(d.rr),hr=emNum(d.hr),gcs=emNum(d.gcs),glu=emNum(d.glucose);
+ if(spo2!==null&&spo2<85)add('critical','Ağır hipoksemi',`SpO₂ ${spo2}%`);else if(spo2!==null&&spo2<92)add('high','Hipoksemi',`SpO₂ ${spo2}%`);
+ if(sbp!==null&&sbp<70)add('critical','Derin hipotansiyon',`Sistolik TA ${sbp}`);else if(sbp!==null&&sbp<90)add('high','Hipotansiyon',`Sistolik TA ${sbp}`);
+ if(rr!==null&&(rr<8||rr>35))add('critical','Kritik solunum sayısı',`SS ${rr}/dk`);else if(rr!==null&&(rr<10||rr>30))add('high','Anormal solunum sayısı',`SS ${rr}/dk`);
+ if(hr!==null&&(hr<35||hr>160))add('critical','Kritik nabız',`Nabız ${hr}/dk`);else if(hr!==null&&(hr<45||hr>130))add('high','Belirgin nabız anormalliği',`Nabız ${hr}/dk`);
+ if(gcs!==null&&gcs<=8)add('critical','Havayolu koruma riski',`GKS ${gcs}`);else if(gcs!==null&&gcs<13)add('high','Bilinç bozukluğu',`GKS ${gcs}`);
+ if(glu!==null&&glu<40)add('critical','Ağır hipoglisemi',`Glukoz ${glu}`);else if(glu!==null&&glu<70)add('high','Hipoglisemi',`Glukoz ${glu}`);else if(glu!==null&&glu>600)add('critical','Ağır hiperglisemi',`Glukoz ${glu}`);
+ if(!abcd.A&&(gcs!==null&&gcs<=8))add('critical','ABCDE kritik eksik','A adımı tamamlanmamış');
+ if(!abcd.B&&(spo2!==null&&spo2<92))add('high','ABCDE kritik eksik','B adımı tamamlanmamış');
+ if(!abcd.C&&(sbp!==null&&sbp<90))add('high','ABCDE kritik eksik','C adımı tamamlanmamış');
+ const rank={critical:3,high:2,watch:1};alerts.sort((a,b)=>(rank[b.sev]||0)-(rank[a.sev]||0));
+ let event=d.event||'none',elapsed=emNum(d.elapsedMinutes)||0,target=EM_TARGETS[event]||null,timerState='none';if(target)timerState=elapsed>target.minutes?'overdue':elapsed>target.minutes*.75?'warning':'ok';
+ let next='ABCDE değerlendirmesini tamamla.';if(alerts[0])next=`Öncelik: ${alerts[0].title} — ${alerts[0].reason}.`;else if(missing.length)next=`ABCDE eksik adımlarını tamamla: ${missing.join(', ')}.`;else if(target&&timerState==='overdue')next=`${target.name} zaman hedefi aşıldı; ekip eskalasyonu ve gecikme nedenini kaydet.`;else if(target)next=`${target.name} yolunu sürdür; ${target.label}.`;else next='Kritik alarm yok; hedefe yönelik değerlendirme ve yeniden vital kontrolü sürdür.';
+ const critical=alerts.some(a=>a.sev==='critical'),high=alerts.some(a=>a.sev==='high');const vitalComplete=[sbp,spo2,rr,hr,gcs,glu].every(x=>x!==null);let disposition='blocked',dispositionText='Taburculuk / sonlandırma güvenli değil.';if(!critical&&!high&&done===5&&vitalComplete&&!target){disposition='review';dispositionText='Kritik engel saptanmadı; tanı, seri değerlendirme, bekleyen sonuç, konsültasyon ve takip ayrıca doğrulanmalı.'}if(critical||high)dispositionText='Kritik vital veya alarm nedeniyle sonlandırma engellendi.';else if(done<5)dispositionText=`ABCDE tamamlanmadı (${done}/5).`;else if(!vitalComplete)dispositionText='Zorunlu vital veriler eksik.';else if(target)dispositionText='Zaman kritik klinik yol aktif; sonlandırma uygun değil.';
+ return {done,missing,alerts,event,target,timerState,elapsed,next,disposition,dispositionText,vitalComplete};
+}
+function readEmergencyCore(){const abcd={};document.querySelectorAll('[data-em-abcd]').forEach(x=>abcd[x.dataset.emAbcd]=x.checked);let elapsed=0;const start=document.getElementById('emStart')?.value;if(start){elapsed=Math.max(0,(Date.now()-new Date(start).getTime())/60000)}return{abcd,sbp:document.getElementById('emSbp')?.value,spo2:document.getElementById('emSpo2')?.value,rr:document.getElementById('emRr')?.value,hr:document.getElementById('emHr')?.value,gcs:document.getElementById('emGcs')?.value,glucose:document.getElementById('emGlucose')?.value,event:document.getElementById('emEvent')?.value||'none',elapsedMinutes:elapsed}}
+function renderEmergencyCore(){const r=emergencyCoreEvaluate(readEmergencyCore()),alarm=document.getElementById('emGlobalAlarm'),summary=document.getElementById('emCoreSummary'),next=document.getElementById('emNextAction'),disp=document.getElementById('emDisposition'),elapsed=document.getElementById('emElapsed'),target=document.getElementById('emTarget');if(alarm){const top=r.alerts[0];alarm.className='em-alarmbar '+(!top?'em-clear':top.sev==='critical'?'em-critical':'em-high');alarm.textContent=top?`${top.title}: ${top.reason}`:'Kritik alarm saptanmadı'}if(summary)summary.innerHTML=`<div class="em-tile"><b>ABCDE</b>${r.done}/5 tamamlandı</div><div class="em-tile"><b>Alarm</b>${r.alerts.length} aktif uyarı</div><div class="em-tile"><b>Vital veri</b>${r.vitalComplete?'Tam':'Eksik'}</div><div class="em-tile"><b>Zaman yolu</b>${r.target?r.target.name:'Aktif değil'}</div>`;if(next)next.textContent=r.next;if(disp){disp.textContent=r.dispositionText;disp.className=r.disposition==='review'?'em-next':'em-block'}if(elapsed){const sec=Math.floor(r.elapsed*60),m=Math.floor(sec/60),s=sec%60;elapsed.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}if(target)target.textContent=r.target?`${r.target.label} • ${r.timerState==='overdue'?'HEDEF AŞILDI':r.timerState==='warning'?'Hedef yaklaşıyor':'Süre içinde'}`:'Zaman hedefi seçilmedi.';return r}
+function emStartNow(){const el=document.getElementById('emStart');if(el){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());el.value=d.toISOString().slice(0,16)}if(emTimerHandle)clearInterval(emTimerHandle);emTimerHandle=setInterval(renderEmergencyCore,1000);renderEmergencyCore()}
+function emTimerReset(){const el=document.getElementById('emStart');if(el)el.value='';if(emTimerHandle){clearInterval(emTimerHandle);emTimerHandle=null}renderEmergencyCore()}
+function clearEmergencyCore(){document.querySelectorAll('[data-em-abcd]').forEach(x=>x.checked=false);['emSbp','emSpo2','emRr','emHr','emGcs','emGlucose','emStart'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const ev=document.getElementById('emEvent');if(ev)ev.value='none';emTimerReset()}
+function copyEmergencyCoreSummary(){const r=renderEmergencyCore();const t=['ENTEGRE ACİL YÖNETİM ÖZETİ',`ABCDE: ${r.done}/5`,`Aktif alarm: ${r.alerts.length}`,`Sonraki adım: ${r.next}`,`Sonlandırma: ${r.dispositionText}`,r.target?`Zaman yolu: ${r.target.name}, geçen ${Math.round(r.elapsed)} dk`:'Zaman yolu aktif değil'].join('\n');navigator.clipboard?.writeText(t)}
+function runEmergencyCoreTests(){
+ const tests=[];const add=(name,data,check)=>tests.push({name,data,check});
+ // 20 baseline/ABCDE
+ for(let i=0;i<5;i++)add(`ABCDE ${i}/5`,{abcd:Object.fromEntries(['A','B','C','D','E'].map((k,j)=>[k,j<i])),sbp:120,spo2:98,rr:16,hr:80,gcs:15,glucose:100},r=>r.done===i);
+ for(let i=0;i<5;i++)add(`Tek eksik ${'ABCDE'[i]}`,{abcd:{A:1,B:1,C:1,D:1,E:1,['ABCDE'[i]]:0},sbp:120,spo2:98,rr:16,hr:80,gcs:15,glucose:100},r=>r.missing.length===1);
+ [70,80,90,100,120].forEach((v,i)=>add(`SBP temel ${v}`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:v,spo2:98,rr:16,hr:80,gcs:15,glucose:100},r=>i<2?r.alerts.length>0:r.alerts.every(a=>!a.title.includes('hipotansiyon'))));
+ [85,91,92,95,99].forEach(v=>add(`SpO2 temel ${v}`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:v,rr:16,hr:80,gcs:15,glucose:100},r=>v<92?r.alerts.length>0:r.alerts.every(a=>!a.title.includes('Hipoksemi'))));
+ // 30 critical vital boundaries
+ [30,34,35,44,45,80,130,131,160,161].forEach(v=>add(`Nabız sınır ${v}`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:16,hr:v,gcs:15,glucose:100},r=>(v<45||v>130)?r.alerts.length>0:r.alerts.length===0));
+ [5,7,8,9,10,16,30,31,35,36].forEach(v=>add(`Solunum sınır ${v}`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:v,hr:80,gcs:15,glucose:100},r=>(v<10||v>30)?r.alerts.length>0:r.alerts.length===0));
+ [3,7,8,9,12,13,14,15].forEach(v=>add(`GKS ${v}`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:16,hr:80,gcs:v,glucose:100},r=>v<13?r.alerts.length>0:r.alerts.length===0));
+ [20,39,40,69,70,100,600,601].forEach(v=>add(`Glukoz ${v}`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:16,hr:80,gcs:15,glucose:v},r=>(v<70||v>600)?r.alerts.length>0:r.alerts.length===0));
+ // 18 event/timer states
+ Object.entries(EM_TARGETS).forEach(([k,t])=>{add(`${t.name} süre içinde`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:16,hr:80,gcs:15,glucose:100,event:k,elapsedMinutes:t.minutes/2},r=>r.timerState==='ok');add(`${t.name} uyarı`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:16,hr:80,gcs:15,glucose:100,event:k,elapsedMinutes:t.minutes*.8},r=>r.timerState==='warning');add(`${t.name} aşıldı`,{abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:16,hr:80,gcs:15,glucose:100,event:k,elapsedMinutes:t.minutes+1},r=>r.timerState==='overdue')});
+ // 14 disposition/data completeness to exactly 100
+ const base={abcd:{A:1,B:1,C:1,D:1,E:1},sbp:120,spo2:98,rr:16,hr:80,gcs:15,glucose:100};
+ add('Güvenli inceleme adayı',base,r=>r.disposition==='review');
+ ['sbp','spo2','rr','hr','gcs','glucose'].forEach(k=>add(`Eksik vital ${k}`,{...base,[k]:null},r=>r.disposition==='blocked'&&!r.vitalComplete));
+ ['A','B','C','D','E'].forEach(k=>add(`Eksik ABCDE engeli ${k}`,{...base,abcd:{...base.abcd,[k]:0}},r=>r.disposition==='blocked'));
+ add('Aktif olay sonlandırma engeli',{...base,event:'stroke',elapsedMinutes:10},r=>r.disposition==='blocked');
+ add('Hipotansiyon sonlandırma engeli',{...base,sbp:80},r=>r.disposition==='blocked');
+ const combined=[
+  ['Hipoksi + hipotansiyon',{spo2:88,sbp:80}],['Hipoksi + düşük GKS',{spo2:88,gcs:7}],['Hipotansiyon + taşikardi',{sbp:80,hr:145}],
+  ['Bradikardi + hipotansiyon',{hr:40,sbp:80}],['Hipoglisemi + düşük GKS',{glucose:35,gcs:7}],['Hiperglisemi + taşikardi',{glucose:650,hr:145}],
+  ['Takipne + hipoksi',{rr:34,spo2:89}],['Bradipne + düşük GKS',{rr:7,gcs:8}],['Üçlü kritik',{sbp:65,spo2:82,gcs:6}],
+  ['C eksik + hipotansiyon',{sbp:80,abcd:{...base.abcd,C:0}}],['B eksik + hipoksi',{spo2:88,abcd:{...base.abcd,B:0}}],['A eksik + düşük GKS',{gcs:7,abcd:{...base.abcd,A:0}}]
+ ];combined.forEach(([name,over])=>add(name,{...base,...over},r=>r.alerts.length>=2&&r.disposition==='blocked'));
+ if(tests.length!==100)throw new Error(`Test sayısı ${tests.length}, 100 olmalı`);
+ const runs=tests.map(t=>{try{const r=emergencyCoreEvaluate(t.data),pass=!!t.check(r);return{name:t.name,pass,detail:pass?'Beklenen davranış doğrulandı.':JSON.stringify({done:r.done,alerts:r.alerts.length,timer:r.timerState,disp:r.disposition})}}catch(e){return{name:t.name,pass:false,detail:String(e.message||e)}}});
+ const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,sum=document.getElementById('emergencyCoreScenarioSummary'),box=document.getElementById('emergencyCoreScenarioResults');if(sum){sum.className='panel '+(fail?'urgent':'ok');sum.innerHTML=`<b>${fail?'Entegre çekirdek kontrolü başarısız':'Entegre acil yönetim çekirdeği doğrulandı'}</b><br>🚑 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}if(box)box.innerHTML=runs.map(x=>`<div class="scenario-check ${x.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${x.pass?'✓':'✕'} ${esc(x.name)}</b><div>${esc(x.detail)}</div></div>`).join('');lastEmergencyCoreReport=['ACİL KLİNİK ASİSTANI ENTEGRE ACİL YÖNETİM RAPORU',`Tarih: ${new Date().toLocaleString('tr-TR')}`,'Sürüm: v6.0.0 Alpha',`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(x=>`${x.pass?'GEÇTİ':'HATA'} | ${x.name} | ${x.detail}`)].join('\n');document.getElementById('emergencyCoreScenarioCard')?.setAttribute('open','');return runs}
+function downloadEmergencyCoreReport(){if(!lastEmergencyCoreReport)runEmergencyCoreTests();const blob=new Blob([lastEmergencyCoreReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-entegre-yonetim-v6.0.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+document.addEventListener('DOMContentLoaded',()=>{try{renderEmergencyCore()}catch(e){console.error('Emergency core init',e)}});
 
 </script>
 </body></html>
