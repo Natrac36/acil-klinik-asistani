@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.0.2 Beta • Core Öncelik Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.0.3 Beta • GKS Eksik Veri Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -1041,12 +1041,14 @@ function renderSepsis(){const box=el('sepsisResult');if(!box)return;const x=seps
 
 function neuroAnalysis(){
  const ni=['nihssLOC','nihssQuestions','nihssCommands','nihssGaze','nihssVisual','nihssFacial','nihssArmL','nihssArmR','nihssLegL','nihssLegR','nihssAtaxia','nihssSensory','nihssLanguage','nihssDysarthria','nihssExtinction'].reduce((a,k)=>a+(parseInt(S[k])||0),0);
- const g=(parseInt(S.gcsEye)||0)+(parseInt(S.gcsVerbal)||0)+(parseInt(S.gcsMotor)||0);
- let urgent=[],out=[`GKS ${g}/15; NIHSS ${ni}.`],actions=[];
+ const gcsParts=[S.gcsEye,S.gcsVerbal,S.gcsMotor];
+ const gcsComplete=gcsParts.every(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
+ const g=gcsComplete?gcsParts.reduce((a,v)=>a+(parseInt(v)||0),0):null;
+ let urgent=[],out=[gcsComplete?`GKS ${g}/15; NIHSS ${ni}.`:`GKS girilmedi; NIHSS ${ni}.`],actions=[];
  const deficit=S.strokeDeficit.length>0||S.exam.includes('Yeni nörolojik defisit')||S.redFlags.includes('Yeni nörolojik defisit');
  const glu=n(S.strokeGlucose||S.glucose);
  if(glu!==null&&(glu<60||glu>400))urgent.push(`Glukoz ${glu} mg/dL: inme taklitçisi/metabolik acil eşzamanlı yönetilmeli.`);
- if(g<=8)urgent.push(`GKS ${g}: hava yolu koruması ve kritik bakım değerlendirmesi.`);
+ if(gcsComplete&&g<=8)urgent.push(`GKS ${g}: hava yolu koruması ve kritik bakım değerlendirmesi.`);
  if(deficit&&S.strokeAlert==='Hayır')urgent.push('Yeni fokal defisit var; inme alarmı henüz aktif değil.');
  if(deficit&&!S.lastKnownWell)urgent.push('Son normal görülme zamanı kaydedilmedi.');
  if(S.brainCT==='İntrakraniyal kanama'||S.brainCT==='SAK şüphesi'||S.brainCT==='Kitle etkisi/orta hat kayması')urgent.push(`Beyin BT kritik: ${S.brainCT}.`);
@@ -1062,7 +1064,7 @@ function neuroAnalysis(){
  if(S.seizureOngoing==='Evet'){actions.push('Hava yolu/oksijenasyon, glukoz ve IV erişimi sağla; benzodiazepin ilk basamak, ardından uygun ikinci basamak antiepileptik ve neden araştırması.');}
  return{ni,g,urgent:[...new Set(urgent)],out,actions:[...new Set(actions)]};
 }
-function renderNeuro(){const box=el('neuroResult');if(!box)return;const x=neuroAnalysis();box.innerHTML=`<div class="panel ${x.urgent.length?'urgent':'info'}"><h3>${x.urgent.length?'Nörolojik acil uyarıları':'Nörolojik değerlendirme özeti'}</h3><p><b>GKS ${x.g}/15 • NIHSS ${x.ni}</b></p>${x.urgent.length?`<ul class="compact">${x.urgent.map(y=>`<li>${esc(y)}</li>`).join('')}</ul>`:''}<ul class="compact">${x.out.map(y=>`<li>${esc(y)}</li>`).join('')}</ul></div><div class="panel warn"><h3>Önerilen iş akışı</h3><ul class="compact">${(x.actions.length?x.actions:['Aktif nörolojik acil bulgusu girilmedi.']).map(y=>`<li>${esc(y)}</li>`).join('')}</ul></div>`}
+function renderNeuro(){const box=el('neuroResult');if(!box)return;const x=neuroAnalysis();box.innerHTML=`<div class="panel ${x.urgent.length?'urgent':'info'}"><h3>${x.urgent.length?'Nörolojik acil uyarıları':'Nörolojik değerlendirme özeti'}</h3><p><b>${x.g===null?'GKS girilmedi':'GKS '+x.g+'/15'} • NIHSS ${x.ni}</b></p>${x.urgent.length?`<ul class="compact">${x.urgent.map(y=>`<li>${esc(y)}</li>`).join('')}</ul>`:''}<ul class="compact">${x.out.map(y=>`<li>${esc(y)}</li>`).join('')}</ul></div><div class="panel warn"><h3>Önerilen iş akışı</h3><ul class="compact">${(x.actions.length?x.actions:['Aktif nörolojik acil bulgusu girilmedi.']).map(y=>`<li>${esc(y)}</li>`).join('')}</ul></div>`}
 
 
 function resultState(label,status,doneValues){
@@ -1573,7 +1575,7 @@ function runCoreScenarioTests(){
  lastCoreScenarioReport=[`ACİL KLİNİK ASİSTANI CORE RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.0.2 Beta`,`Sonuç: ${runs.length} senaryo, ${pass}/${checks.length} kontrol geçti, ${criticalFail} kritik hata`,'',...runs.flatMap(r=>[`${r.name} — ${r.passed}/${r.total}`,...r.checks.map(c=>`${c.pass?'GEÇTİ':'HATA'} | ${c.title} | ${c.detail}`),''])].join('\n');
  const card=el('coreScenarioCard');if(card)card.open=true;return runs;
 }
-function downloadCoreScenarioReport(){if(!lastCoreScenarioReport)runCoreScenarioTests();const blob=new Blob([lastCoreScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-core-v4.0.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function downloadCoreScenarioReport(){if(!lastCoreScenarioReport)runCoreScenarioTests();const blob=new Blob([lastCoreScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-core-v4.0.3.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 function renderProfessionalDocs(){
  const box=el('professionalDoc');if(!box)return;
