@@ -18,6 +18,8 @@ ul.compact{margin:5px 0 0;padding-left:19px}ul.compact li{margin:4px 0}.dx{displ
 .reason-grid{display:grid;gap:8px}.reason-meter{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden}.reason-meter span{display:block;height:100%;background:linear-gradient(90deg,#94a3b8,#0f766e)}.reason-item{border:1px solid var(--line);border-radius:10px;padding:9px;background:#f8fafc}.reason-item b{display:block;font-size:12px;color:var(--muted);margin-bottom:3px;text-transform:uppercase}.confidence-high{color:#166534}.confidence-mid{color:#a16207}.confidence-low{color:#b91c1c}.evidence-columns{display:grid;grid-template-columns:1fr 1fr;gap:7px}.evidence-mini{border-radius:9px;padding:8px;font-size:12px}.evidence-for{background:#f0fdf4;border:1px solid #bbf7d0}.evidence-against{background:#fff7ed;border:1px solid #fed7aa}@media(max-width:560px){.evidence-columns{grid-template-columns:1fr}}
 .safety-grid{display:grid;gap:8px}.safety-alert{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fff}.safety-alert strong{display:block;margin-bottom:4px}.safety-critical{border-left:5px solid #dc2626;background:#fff1f2}.safety-warning{border-left:5px solid #f59e0b;background:#fffbeb}.safety-info{border-left:5px solid #2563eb;background:#eff6ff}.safety-ok{border-left:5px solid #16a34a;background:#f0fdf4}.safety-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.safety-tag{display:inline-block;padding:3px 7px;border-radius:99px;background:#e2e8f0;font-size:10px;font-weight:900}.safety-action{margin-top:6px;font-size:12px;font-weight:700}
 @media(max-width:820px){.layout{grid-template-columns:1fr}.sticky{position:static}.grid3{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.grid,.grid3,.choices{grid-template-columns:1fr}.head p{display:none}.status{font-size:10px}}
+
+.scenario-suite{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;margin:9px 0}.scenario-suite-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:9px}.scenario-score{display:inline-grid;place-items:center;min-width:48px;padding:6px 8px;border-radius:999px;font-weight:900;font-size:12px}.scenario-pass{background:#dcfce7;color:#166534}.scenario-warn{background:#fef3c7;color:#92400e}.scenario-fail{background:#fee2e2;color:#991b1b}.scenario-check{padding:8px 9px;border-radius:10px;margin:6px 0;font-size:12px;border-left:4px solid}.scenario-check b{display:block;margin-bottom:2px}.scenario-check-pass{background:#f0fdf4;border-color:#22c55e}.scenario-check-warn{background:#fffbeb;border-color:#f59e0b}.scenario-check-fail{background:#fff1f2;border-color:#dc2626}
 @media print{header,.actions,.no-print{display:none!important}body{background:white}.layout{display:block}.card{box-shadow:none;border:0}.sticky{position:static}}
 
 /* v2.6 Visual refresh & accessibility */
@@ -41,7 +43,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v2.9.1 Beta • Gebelik filtresi düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v3.0.0 Beta • Klinik senaryo doğrulaması</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -66,6 +68,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions"><button class="primary" onclick="runQATests()">Tüm otomatik testleri çalıştır</button><button onclick="downloadQAReport()">Raporu TXT indir</button></div>
  <div id="qaSummary" class="panel neutral">Henüz test çalıştırılmadı.</div>
  <div id="qaResults" class="safety-grid"></div>
+</details>
+<details class="card collapse-card no-print" id="clinicalScenarioCard">
+ <summary>Klinik senaryo doğrulama paneli <span class="phase-badge">v3.0</span></summary>
+ <p class="muted">STEMI, septik şok ve akut inme için zaman kritik uyarı, tetkik, iş akışı ve yanlış taburculuk engelleri otomatik sınanır. Senaryolar eğitim ve yazılım doğrulaması içindir; hasta üzerinde tedavi emri oluşturmaz.</p>
+ <div class="compact-actions"><button class="primary" onclick="runClinicalScenarioTests()">3 yüksek riskli senaryoyu çalıştır</button><button onclick="downloadClinicalScenarioReport()">Raporu TXT indir</button></div>
+ <div id="clinicalScenarioSummary" class="panel neutral">Henüz klinik senaryo testi çalıştırılmadı.</div>
+ <div id="clinicalScenarioResults" class="safety-grid"></div>
 </details>
 </section>
 <aside>
@@ -1432,7 +1441,7 @@ function runQATests(){
   if(!quickHTML.includes('onclick="recommendTests()"'))results.push(qaResult('critical','Önerilenleri seç düğmesi bağlı değil','recommendTests() çağrısı bulunamadı.'));
   else results.push(qaResult('ok','Tetkik seçme düğmesi bağlı','recommendTests() çağrısı mevcut.'));
  }catch(err){results.push(qaResult('critical','QA çalışırken JavaScript hatası',String(err&&err.message||err)))}
- finally{S=original;}
+ finally{S=original;currentStep=originalStep;}
  const counts={critical:0,warning:0,ok:0};results.forEach(r=>counts[r.level]++);
  const status=counts.critical?'urgent':counts.warning?'warn':'ok';
  const summary=el('qaSummary');if(summary){summary.className=`panel ${status}`;summary.innerHTML=`<b>${counts.critical?'Denetimde hata bulundu':'Otomatik teknik denetim tamamlandı'}</b><br>🔴 ${counts.critical} hata · 🟠 ${counts.warning} uyarı · 🟢 ${counts.ok} geçti`;}
@@ -1445,6 +1454,82 @@ function downloadQAReport(){
  if(!lastQAReport)runQATests();
  const blob=new Blob([lastQAReport],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`acil_qa_${new Date().toISOString().slice(0,10)}.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
+
+
+const clinicalScenarioBlank=JSON.parse(JSON.stringify(S));
+let lastClinicalScenarioReport='';
+function scenarioText(snapshot){
+ const tests=testRecommendationEngine();
+ const actions=actionPlan();
+ const reassess=reassessment();
+ const neuro=neuroAnalysis();
+ const sepsis=sepsisAnalysis();
+ return {
+  criticals:criticals(),
+  required:[...(tests.required||[])],consider:[...(tests.consider||[])],avoid:[...(tests.avoid||[])],
+  now:[...(actions.now||[])],wait:[...(actions.wait||[])],dont:[...(actions.avoid||[])],
+  dischargeBlocks:[...(reassess.dischargeBlocks||[])],recommendation:reassess.recommendation||'',
+  neuroUrgent:[...(neuro.urgent||[])],neuroActions:[...(neuro.actions||[])],
+  sepsisUrgent:[...(sepsis.urgent||[])],sepsisActions:[...(sepsis.actions||[])],
+  diagnoses:diagnoses().map(x=>x.name),snapshot
+ };
+}
+function hasAnyText(arr,terms){const text=(arr||[]).join(' | ').toLocaleLowerCase('tr-TR');return terms.some(t=>text.includes(String(t).toLocaleLowerCase('tr-TR')))}
+function scenarioCheck(title,pass,detail,critical=true){return {title,pass,detail,critical}}
+function runOneClinicalScenario(def){
+ currentStep=Math.max(1,order().length-1);
+ S={...JSON.parse(JSON.stringify(clinicalScenarioBlank)),...JSON.parse(JSON.stringify(def.data))};
+ const x=scenarioText(def.id);
+ const checks=def.checks(x).map(c=>scenarioCheck(c[0],c[1],c[2],c.length<4?true:c[3]));
+ return {id:def.id,name:def.name,summary:def.summary,checks,passed:checks.filter(c=>c.pass).length,total:checks.length,criticalFailed:checks.filter(c=>!c.pass&&c.critical).length};
+}
+function clinicalScenarioDefinitions(){return [
+ {
+  id:'STEMI',name:'STEMI / akut koroner oklüzyon',summary:'Devam eden göğüs ağrısı ve ST elevasyonu olan hipotansif erişkin.',
+  data:{age:'58',sex:'Erkek',complaint:'Göğüs ağrısı',onset:'Ani',duration:'45 dakika',severity:'9',sbp:'86',dbp:'58',pulse:'112',rr:'24',spo2:'93',mental:'Normal',exam:['Genel durum kötü/soğuk-soluk-terli'],redFlags:['Devam eden şiddetli/artan ağrı'],ecg:'ST elevasyonu',ecgFindings:['ST elevasyonu'],ecgTerritory:['İnferior'],troponin:'Bekleniyor',repeatTroponin:'Bekleniyor',orderedTests:['EKG','Troponin'],disposition:'Taburculuk',response:'Değerlendirilmedi'},
+  checks:x=>[
+   ['ST elevasyonu kritik uyarısı',hasAnyText(x.criticals,['ST elevasyonu']),x.criticals.join(' | ')||'Kritik uyarı yok'],
+   ['STEMI aktivasyon/reperfüzyon iş akışı',hasAnyText(x.now,['STEMI','reperfüzyon','kardiyoloji']),x.now.join(' | ')],
+   ['EKG ve troponin yolu',hasAnyText([...x.required,...x.consider],['EKG'])&&hasAnyText([...x.required,...x.consider],['Troponin']),[...x.required,...x.consider].join(' | ')],
+   ['Yanlış taburculuk engellendi',x.dischargeBlocks.length>0&&hasAnyText(x.dischargeBlocks,['kritik','EKG','troponin','seri']),x.dischargeBlocks.join(' | ')||'Engel oluşmadı'],
+   ['Tek normal troponinle dışlama uyarısı',hasAnyText(x.dont,['tek bir normal EKG','tek troponin','seri değerlendirme']),x.dont.join(' | '),false]
+  ]
+ },
+ {
+  id:'SEPSIS',name:'Septik şok / hipoperfüzyon',summary:'Enfeksiyon şüphesi, hipotansiyon, konfüzyon ve laktat yüksekliği.',
+  data:{age:'72',sex:'Kadın',complaint:'Ateş',duration:'1 gün',sbp:'78',dbp:'44',pulse:'128',rr:'30',spo2:'91',temp:'39.4',mental:'Konfüzyon',weight:'70',sepsisSuspected:'Septik şok',infectionSource:'Üriner',lactate:'4.8',capRefill:'5',urineOutput:'0.3',cultureStatus:'Bekleniyor',antibioticStatus:'Başlanmadı',fluidGiven:'0',vasopressor:'Başlanmadı',orderedTests:['Hemogram','Biyokimya','Laktat'],disposition:'Taburculuk',response:'Değerlendirilmedi'},
+  checks:x=>[
+   ['Şok/hipoperfüzyon kritik uyarısı',hasAnyText([...x.criticals,...x.sepsisUrgent],['hipotansiyon','şok','hipoperfüzyon','laktat']),[...x.criticals,...x.sepsisUrgent].join(' | ')],
+   ['Laktat ve kültür değerlendirmesi',hasAnyText([...x.required,...x.consider,...x.sepsisActions],['laktat'])&&hasAnyText([...x.required,...x.consider,...x.sepsisActions],['kültür']),[...x.required,...x.consider,...x.sepsisActions].join(' | ')],
+   ['Erken antimikrobiyal iş akışı',hasAnyText(x.sepsisActions,['antibiyotik','antimikrobiyal']),x.sepsisActions.join(' | ')],
+   ['Sıvı yanıtı ve vazopressör/MAP yaklaşımı',hasAnyText(x.sepsisActions,['kristalloid','sıvı'])&&hasAnyText(x.sepsisActions,['vazopressör','MAP']),x.sepsisActions.join(' | ')],
+   ['Yanlış taburculuk engellendi',x.dischargeBlocks.length>0&&hasAnyText(x.dischargeBlocks,['kritik','kötüleşme','vital']),x.dischargeBlocks.join(' | ')||'Engel oluşmadı']
+  ]
+ },
+ {
+  id:'STROKE',name:'Akut iskemik inme / LVO şüphesi',summary:'Ani afazi ve sağ hemiparezi; son normal görülme zamanı bilinen hasta.',
+  data:{age:'67',sex:'Kadın',complaint:'Bilinç değişikliği',onset:'Ani',duration:'70 dakika',sbp:'176',dbp:'96',pulse:'88',rr:'18',spo2:'96',temp:'36.8',mental:'Konfüzyon',strokeAlert:'Evet',lastKnownWell:'70 dakika önce',strokeDeficit:['Afazi','Sağ kol güçsüzlüğü','Sağ bacak güçsüzlüğü'],exam:['Yeni nörolojik defisit'],strokeGlucose:'118',glucose:'118',brainCT:'Bekleniyor',ctaResult:'Bekleniyor',nihssLanguage:'2',nihssArmR:'3',nihssLegR:'2',dysphagiaScreen:'Yapılmadı',orderedTests:['Kontrastsız beyin BT','BT anjiyografi','Glukoz'],disposition:'Taburculuk',response:'Değerlendirilmedi'},
+  checks:x=>[
+   ['Yeni nörolojik defisit kritik uyarısı',hasAnyText([...x.criticals,...x.neuroUrgent],['nörolojik defisit','inme']),[...x.criticals,...x.neuroUrgent].join(' | ')],
+   ['İnme protokolü aktive edildi',hasAnyText(x.neuroActions,['İnme protokolünü aktive']),x.neuroActions.join(' | ')],
+   ['Kontrastsız beyin BT önerisi',hasAnyText([...x.required,...x.consider,...x.neuroActions],['Kontrastsız beyin BT','beyin BT']),[...x.required,...x.consider,...x.neuroActions].join(' | ')],
+   ['LVO için BT anjiyografi yaklaşımı',hasAnyText([...x.required,...x.consider,...x.neuroActions],['BT anjiyografi','LVO']),[...x.required,...x.consider,...x.neuroActions].join(' | ')],
+   ['Oral alım öncesi disfaji taraması',hasAnyText(x.neuroActions,['disfaji']),x.neuroActions.join(' | '),false],
+   ['Yanlış taburculuk engellendi',x.dischargeBlocks.length>0&&hasAnyText(x.dischargeBlocks,['kritik','beyin BT','BT anjiyografi','kötüleşme']),x.dischargeBlocks.join(' | ')||'Engel oluşmadı']
+  ]
+ }
+]}
+function runClinicalScenarioTests(){
+ const original=JSON.parse(JSON.stringify(S));const originalStep=currentStep;let runs=[];let unexpected='';
+ try{runs=clinicalScenarioDefinitions().map(runOneClinicalScenarioTestsSafe)}catch(err){unexpected=String(err&&err.message||err)}finally{S=original;}
+ const checks=runs.flatMap(r=>r.checks);const pass=checks.filter(c=>c.pass).length;const fail=checks.length-pass;const criticalFail=checks.filter(c=>!c.pass&&c.critical).length;
+ const summary=el('clinicalScenarioSummary');if(summary){summary.className=`panel ${criticalFail?'urgent':fail?'warn':'ok'}`;summary.innerHTML=unexpected?`<b>Senaryo motoru çalışırken hata oluştu</b><br>${esc(unexpected)}`:`<b>${criticalFail?'Kritik klinik kontrol başarısız':'Klinik senaryo doğrulaması tamamlandı'}</b><br>🧪 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${criticalFail} kritik hata · 🟠 ${fail-criticalFail} uyarı`;}
+ const box=el('clinicalScenarioResults');if(box)box.innerHTML=unexpected?`<div class="safety-alert safety-critical"><strong>🔴 JavaScript hatası</strong><div>${esc(unexpected)}</div></div>`:runs.map(r=>`<div class="scenario-suite"><div class="scenario-suite-head"><div><strong>${esc(r.name)}</strong><div class="muted">${esc(r.summary)}</div></div><span class="scenario-score ${r.criticalFailed?'scenario-fail':r.passed===r.total?'scenario-pass':'scenario-warn'}">${r.passed}/${r.total}</span></div>${r.checks.map(c=>`<div class="scenario-check ${c.pass?'scenario-check-pass':c.critical?'scenario-check-fail':'scenario-check-warn'}"><b>${c.pass?'✓':c.critical?'✕':'!'} ${esc(c.title)}</b><div>${esc(c.detail||'Detay yok')}</div></div>`).join('')}</div>`).join('');
+ lastClinicalScenarioReport=[`ACİL KLİNİK ASİSTANI KLİNİK SENARYO RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v3.0.0 Beta`,`Sonuç: ${runs.length} senaryo, ${pass}/${checks.length} kontrol geçti, ${criticalFail} kritik hata, ${fail-criticalFail} uyarı`,'',...runs.flatMap(r=>[`${r.name} — ${r.passed}/${r.total}`, ...r.checks.map(c=>`${c.pass?'GEÇTİ':c.critical?'HATA':'UYARI'} | ${c.title} | ${c.detail}`),''])].join('\n');
+ const card=el('clinicalScenarioCard');if(card)card.open=true;return runs;
+}
+function runOneClinicalScenarioTestsSafe(def){try{return runOneClinicalScenario(def)}catch(err){return {id:def.id,name:def.name,summary:def.summary,passed:0,total:1,criticalFailed:1,checks:[scenarioCheck('Senaryo çalıştırma hatası',false,String(err&&err.message||err),true)]}}}
+function downloadClinicalScenarioReport(){if(!lastClinicalScenarioReport)runClinicalScenarioTests();const blob=new Blob([lastClinicalScenarioReport],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`acil_klinik_senaryo_${new Date().toISOString().slice(0,10)}.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 
 function summaryHTML(){const ds=diagnoses().slice(0,5),cr=criticals(),ap=actionPlan();return `${trafficHTML()}<div class="panel ${cr.length?'urgent':'ok'}"><h3>${cr.length?'Kritik bulgu mevcut':'Kritik eşik saptanmadı'}</h3>${cr.length?`<ul class="compact">${cr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p>Bu sonuç, yalnız girilen verilere dayanır.</p>'}</div><div class="panel neutral"><h3>Öncelikli düşünülmesi gerekenler</h3><ol>${ds.map(x=>`<li><b>${esc(x.name)}</b> — göreli destek ${x.score}/100<br><span class="muted">Lehine: ${esc(x.plus.slice(0,4).join(', ')||'belirgin veri yok')} ${x.minus.length?' | Aleyhine: '+esc(x.minus.slice(0,2).join(', ')):''}</span></li>`).join('')}</ol></div><div class="panel info"><h3>Şimdi yap</h3><ul class="compact">${ap.now.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="panel info"><h3>Tedavi desteği</h3><ul class="compact">${treatmentPlan().tx.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${treatmentPlan().contraind.length?`<p><b>Dikkat:</b> ${esc(treatmentPlan().contraind.join(' | '))}</p>`:''}</div><div class="panel warn"><h3>Sonuç beklerken</h3><ul class="compact">${ap.wait.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="panel urgent"><h3>Yapma / dikkat</h3><ul class="compact">${ap.avoid.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>${reassessmentHTML()}<div class="panel neutral"><h3>Sonlandırma planı</h3><p><b>${esc(S.disposition||'Belirtilmedi')}</b></p><p>${esc(S.dispositionReason||'Gerekçe yazılmadı')}</p><p><b>Takip:</b> ${esc(S.followup||'Belirtilmedi')}</p></div>`}
 function nextStep(){collect();if(order()[currentStep]===0&&!S.age){alert('Lütfen yaşı girin.');return}if(currentStep<order().length-1)currentStep++;else saveCase();render();window.scrollTo({top:0,behavior:'smooth'})}
