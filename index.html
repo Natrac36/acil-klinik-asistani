@@ -44,7 +44,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v3.2.0 Beta • Akıllı tedavi güvenliği</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v3.3.0 Beta • Klinik muhakeme motoru 2.0</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -83,6 +83,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="compact-actions"><button class="primary" onclick="runTreatmentScenarioTests()">7 tedavi güvenliği senaryosunu çalıştır</button><button onclick="downloadTreatmentScenarioReport()">Raporu TXT indir</button></div>
  <div id="treatmentScenarioSummary" class="panel neutral">Henüz tedavi güvenliği testi çalıştırılmadı.</div>
  <div id="treatmentScenarioResults" class="safety-grid"></div>
+</details>
+<details class="card collapse-card no-print" id="reasoningScenarioCard">
+ <summary>Klinik muhakeme 2.0 doğrulama paneli <span class="phase-badge">v3.3</span></summary>
+ <p class="muted">Öncelikli hipotez, destekleyen/zayıflatan kanıt, belirsizlik, kaçırılmaması gereken tanı, kararı değiştirecek veri ve yanlış güven üretmeme davranışları otomatik sınanır.</p>
+ <div class="compact-actions"><button class="primary" onclick="runReasoningScenarioTests()">5 muhakeme senaryosunu çalıştır</button><button onclick="downloadReasoningScenarioReport()">Raporu TXT indir</button></div>
+ <div id="reasoningScenarioSummary" class="panel neutral">Henüz klinik muhakeme testi çalıştırılmadı.</div>
+ <div id="reasoningScenarioResults" class="safety-grid"></div>
 </details>
 </section>
 <aside>
@@ -599,7 +606,7 @@ function genericComplaintDx(){
  }
  else if(S.complaint==='Bilinç değişikliği'){
   d=[mk('Hipoglisemi / metabolik neden',18),mk('İnme / intrakraniyal olay',12),mk('Nöbet sonrası durum',11),mk('Enfeksiyon / sepsis',10),mk('Toksikolojik neden',10),mk('Hipoksi / hiperkapni',9)];
-  if(S.symptoms.includes('Glukoz riski'))add(d[0],28,'Glukoz riski'); if((S.symptoms.includes('Fokal nörolojik defisit')||S.symptoms.includes('Nörolojik defisit/nöbet')))add(d[1],34,'Fokal nörolojik defisit'); if(S.symptoms.includes('Nöbet'))add(d[2],30,'Nöbet bulgusu');
+  if(S.symptoms.includes('Glukoz riski'))add(d[0],28,'Glukoz riski'); if((S.symptoms.includes('Fokal nörolojik defisit')||S.symptoms.includes('Nörolojik defisit/nöbet')||S.strokeAlert==='Evet'||(S.strokeDeficit||[]).length||S.redFlags.includes('Yeni nörolojik defisit')||S.exam.includes('Yeni nörolojik defisit')))add(d[1],40,'Fokal nörolojik defisit/inme alarmı'); if(S.onset==='Ani')add(d[1],12,'Ani başlangıç'); if(S.symptoms.includes('Nöbet'))add(d[2],30,'Nöbet bulgusu');
   if(S.symptoms.includes('Enfeksiyon'))add(d[3],26,'Enfeksiyon bulgusu'); if(S.symptoms.includes('Toksik maruziyet'))add(d[4],30,'Toksik maruziyet'); if(n(S.spo2)!=null&&n(S.spo2)<90)add(d[5],30,'Hipoksemi');
  }
  else if(S.complaint==='Çarpıntı'){
@@ -1283,14 +1290,38 @@ function reasoningSnapshot(){
  if(!caveats.length)caveats.push('Klinik değişim ve seri değerlendirme, tek anlık skordan daha değerlidir.');
  return {top,ds,support,against,unresolved,confidence,cls,score,dataCompleteness,discriminator,caveats};
 }
+function reasoningV2Snapshot(){
+ const base=reasoningSnapshot(), r=integratedReasoning(), ds=diagnoses().slice(0,5), cr=criticals(), red=redFlagEngine();
+ const top=ds[0]||null, second=ds[1]||null;
+ const support=top?(top.plus||[]):[], against=top?(top.minus||[]):[];
+ const unknown=[...(r.missing||[]),...(base.unresolved||[])].filter((x,i,a)=>x&&a.indexOf(x)===i).slice(0,5);
+ const must=[...(r.mustNotMiss||[]),...red.map(x=>x.name)].filter((x,i,a)=>x&&a.indexOf(x)===i).slice(0,5);
+ const contradiction=[...(r.contradictions||[])];
+ if(top&&second&&Math.abs((top.score||0)-(second.score||0))<8) contradiction.push(`İlk iki hipotez birbirine yakın: ${top.name} ve ${second.name}.`);
+ if(top&&support.length===0) contradiction.push('Öncelikli hipotez için doğrudan destekleyici veri henüz girilmedi.');
+ if(base.dataCompleteness<50) contradiction.push('Temel veri tamamlığı düşük; sıralama kırılgandır.');
+ const unstable=Number(S.sbp)>0&&Number(S.sbp)<90 || Number(S.spo2)>0&&Number(S.spo2)<90 || S.mental==='Konfüze'||S.mental==='Somnolans'||S.mental==='Yanıtsız';
+ if(unstable&&cr.length===0) contradiction.push('İnstabil fizyoloji var ancak kritik uyarı listesi boş; ABC yeniden kontrol edilmeli.');
+ let confidence='Düşük', confidenceClass='confidence-low';
+ if(top&&base.dataCompleteness>=75&&support.length>=3&&!contradiction.length){confidence='Orta-yüksek';confidenceClass='confidence-high'}
+ else if(top&&base.dataCompleteness>=50&&support.length>=2){confidence='Orta';confidenceClass='confidence-mid'}
+ const managementPriority=cr.length?'Fizyolojik stabilizasyon ve zaman-kritik nedenin eşzamanlı yönetimi':(must.length?'Kaçırılmaması gereken tanıyı güvenle dışlayacak hedefli değerlendirme':'En olası hipotezi doğrulayacak hedefli veri toplama');
+ const discriminator=base.discriminator||'Hedefli öykü ve muayeneyi tamamla.';
+ const next=[...new Set([discriminator,...(r.next||[]),...(actionPlan().now||[])])].filter(Boolean).slice(0,5);
+ return {...base,top,ds,support,against,unknown,must,contradiction,confidence,confidenceClass,managementPriority,discriminator,next};
+}
 function renderReasoning(){
- const box=el('reasoningPanel');if(!box)return;const r=reasoningSnapshot();
- if(!r.top){box.innerHTML='<div class="muted">Öncelikli tanı oluşturmak için yaş, şikâyet ve vital bulguları gir.</div>';return}
- box.innerHTML=`<div class="reason-item"><b>Öncelikli hipotez</b><strong>${esc(r.top.name)}</strong> · <span class="${r.cls}">${esc(r.confidence)} güven</span><div class="reason-meter" title="Veri ve kanıt yeterliliği"><span style="width:${r.score}%"></span></div><div class="score-meta">Veri tamamlığı: %${r.dataCompleteness}. Bu oran hastalık olasılığı değildir.</div></div>
- <div class="evidence-columns"><div class="evidence-mini evidence-for"><b>Destekleyen</b><ul class="compact">${(r.support.length?r.support:['Henüz güçlü destekleyici veri yok']).slice(0,4).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="evidence-mini evidence-against"><b>Zayıflatan / belirsiz</b><ul class="compact">${(r.against.length?r.against:['Aleyhte veri girilmedi']).slice(0,4).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>
+ const box=el('reasoningPanel');if(!box)return;const r=reasoningV2Snapshot();
+ if(!r.top){box.innerHTML='<div class="muted">Öncelikli hipotez oluşturmak için yaş, şikâyet ve vital bulguları gir.</div>';return}
+ const differential=r.ds.slice(0,3).map((d,i)=>`<div class="reason-item"><b>${i+1}. ${esc(d.name)}</b><div><span class="pill">Göreli destek ${d.score}/100</span></div><div class="evidence-columns"><div class="evidence-mini evidence-for"><b>Destekleyen</b><ul class="compact">${((d.plus||[]).length?d.plus:['Doğrudan destekleyici veri yok']).slice(0,3).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="evidence-mini evidence-against"><b>Zayıflatan / eksik</b><ul class="compact">${((d.minus||[]).length?d.minus:['Belirgin aleyhte veri yok']).slice(0,3).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div></div>`).join('');
+ box.innerHTML=`<div class="reason-item"><b>Öncelikli hipotez</b><strong>${esc(r.top.name)}</strong> · <span class="${r.confidenceClass}">${esc(r.confidence)} güven</span><div class="reason-meter" title="Veri ve kanıt yeterliliği"><span style="width:${r.score}%"></span></div><div class="score-meta">Veri tamamlığı: %${r.dataCompleteness}. Bu değer hastalık olasılığı değildir.</div></div>
+ <div class="reason-item"><b>Yönetim önceliği</b>${esc(r.managementPriority)}</div>
  <div class="reason-item"><b>Kararı en çok değiştirecek sonraki veri</b>${esc(r.discriminator)}</div>
- <div class="reason-item"><b>Eksik kritik bilgi</b>${esc(r.unresolved[0]||'Belirgin kritik veri eksikliği saptanmadı.')}</div>
- <div class="reason-item"><b>Belirsizlik notu</b><ul class="compact">${r.caveats.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+ <div class="evidence-columns"><div class="evidence-mini evidence-for"><b>Kaçırılmaması gerekenler</b><ul class="compact">${(r.must.length?r.must:['Özel zaman-kritik sinyal oluşmadı']).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="evidence-mini evidence-against"><b>Eksik kritik bilgiler</b><ul class="compact">${(r.unknown.length?r.unknown:['Belirgin kritik veri eksikliği saptanmadı']).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>
+ <div class="reason-item"><b>Ayırıcı tanı kanıt dengesi</b>${differential}</div>
+ <div class="reason-item"><b>Çelişki ve belirsizlik</b><ul class="compact">${(r.contradiction.length?r.contradiction:['Belirgin veri çelişkisi saptanmadı; seri değerlendirme sürdürülmeli.']).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+ <div class="reason-item"><b>Sonraki en iyi adımlar</b><ol class="compact">${r.next.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div>
+ <div class="consultant-disclaimer">Kesin tanı veya yüzde olasılık üretmez. Girilen veriyi önceliklendirir; hekim değerlendirmesi ve güncel yerel protokol esastır.</div>`;
 }
 
 function immediateActionText(){
@@ -1680,5 +1711,57 @@ function runTreatmentScenarioTests(){
  const card=el('treatmentScenarioCard');if(card)card.open=true;return runs;
 }
 function downloadTreatmentScenarioReport(){if(!lastTreatmentScenarioReport)runTreatmentScenarioTests();const blob=new Blob([lastTreatmentScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-tedavi-guvenligi-v3.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);}
+
+
+let lastReasoningScenarioReport='';
+function reasoningScenarioDefinitions(){return [
+ {name:'Yüksek riskli AKS — ilk troponin normal',summary:'Normal ilk biyobelirtecin yanlış güven üretmemesi',data:{age:'72',sex:'Erkek',complaint:'Göğüs ağrısı',onset:'Ani',severity:'8',sbp:'88',dbp:'54',pulse:'110',spo2:'94',symptoms:['Soğuk terleme'],history:['Diyabet'],ecg:'Normal/nonspesifik',troponin:'Normal',repeatTroponin:'Bekleniyor',orderedTests:['EKG','Troponin'],disposition:'Taburculuk'},checks:[
+  {title:'AKS öncelikli ayırıcıda',critical:true,test:r=>r.ds.slice(0,3).some(x=>/koroner|STEMI|NSTEMI|anjina/i.test(x.name))},
+  {title:'Seri değerlendirme ayırt edici veri',critical:true,test:r=>/Seri|troponin|EKG/i.test(r.discriminator)},
+  {title:'Hipotansiyonda yüksek güven üretmiyor',critical:true,test:r=>r.confidence!=='Orta-yüksek'},
+  {title:'Taburculuğa rağmen güvenlik çelişkisi görünür',critical:true,test:r=>r.contradiction.length>0||dischargeBlockers().length>0}
+ ]},
+ {name:'Septik şok',summary:'Tek skora değil perfüzyon ve organ disfonksiyonuna ağırlık verme',data:{age:'67',complaint:'Ateş',sbp:'82',dbp:'48',pulse:'126',rr:'30',spo2:'91',temp:'39.2',mental:'Konfüze',sepsisSuspected:'Evet',lactate:'4.6',infectionSource:'Üriner',orderedTests:['Laktat','Kan kültürü'],disposition:'Taburculuk'},checks:[
+  {title:'Fizyolojik stabilizasyon yönetim önceliği',critical:true,test:r=>/stabilizasyon|zaman-kritik/i.test(r.managementPriority)},
+  {title:'Sepsis/şok kaçırma listesinde',critical:true,test:r=>r.must.some(x=>/sepsis|şok/i.test(x))},
+  {title:'Laktat/perfüzyon sonraki adımlarda',critical:true,test:r=>r.next.some(x=>/laktat|perfüzyon|kültür/i.test(x))},
+  {title:'Düşük güvenli taburculuk üretmiyor',critical:true,test:r=>dischargeBlockers().length>0}
+ ]},
+ {name:'Akut inme',summary:'Glukoz, görüntüleme ve reperfüzyon zaman penceresini görünür kılma',data:{age:'74',complaint:'Bilinç değişikliği',onset:'Ani',mental:'Konfüze',strokeAlert:'Evet',strokeDeficit:['Konuşma bozukluğu','Tek taraflı güçsüzlük'],strokeGlucose:'',brainCT:'Bekleniyor',ctaResult:'Bekleniyor',redFlags:['Yeni nörolojik defisit'],orderedTests:['Parmak ucu glukoz','Kontrastsız beyin BT','BT anjiyografi']},checks:[
+  {title:'İnme öncelikli ayırıcıda',critical:true,test:r=>r.ds.slice(0,3).some(x=>/nme|serebrovasküler/i.test(x.name))},
+  {title:'Glukoz veya beyin görüntüleme ayırt edici',critical:true,test:r=>/glukoz|BT|görüntüleme/i.test(r.discriminator+' '+r.next.join(' '))},
+  {title:'Zaman-kritik tanı görünür',critical:true,test:r=>r.must.some(x=>/inme|kanama|serebrovasküler/i.test(x))},
+  {title:'Eksik kritik bilgi bildiriliyor',critical:true,test:r=>r.unknown.length>0}
+ ]},
+ {name:'Düşük riskli gastroenterit',summary:'Stabil hastada gereksiz kritik alarm üretmeme',data:{age:'35',sex:'Erkek',complaint:'İshal',onset:'Kademeli',severity:'3',sbp:'122',dbp:'78',pulse:'82',rr:'16',spo2:'98',temp:'36.8',mental:'Normal',redFlags:[],symptoms:[],orderedTests:[],disposition:'Gözlem sürüyor'},checks:[
+  {title:'Kritik fizyoloji alarmı yok',critical:true,test:r=>criticals().length===0},
+  {title:'Orta-yüksek güven zorlanmıyor',critical:true,test:r=>r.confidence!=='Orta-yüksek'},
+  {title:'Veri tamamlığının olasılık olmadığı belirtiliyor',critical:true,test:r=>typeof r.dataCompleteness==='number'&&r.dataCompleteness<=100},
+  {title:'Sonraki hedefli değerlendirme mevcut',critical:true,test:r=>r.next.length>0}
+ ]},
+ {name:'PE — negatif PERC için uygunsuz bağlam',summary:'Yüksek klinik şüphede negatif skorun dışlama olarak kullanılmaması',data:{age:'68',complaint:'Nefes darlığı',onset:'Ani',sbp:'92',pulse:'118',rr:'28',spo2:'88',symptoms:['VTE bulgusu'],peRisk:['PE en olası tanı'],ddimer:'Bekleniyor',orderedTests:['D-dimer'],disposition:'Taburculuk'},checks:[
+  {title:'PE ayırıcı tanıda',critical:true,test:r=>r.ds.slice(0,3).some(x=>/pulmoner emboli/i.test(x.name))},
+  {title:'Hipoksemi/instabilite yönetim önceliğinde',critical:true,test:r=>/stabilizasyon|zaman-kritik/i.test(r.managementPriority)},
+  {title:'PE kaçırma listesinde',critical:true,test:r=>r.must.some(x=>/pulmoner emboli/i.test(x))},
+  {title:'Taburculuk engeli mevcut',critical:true,test:r=>dischargeBlockers().length>0}
+ ]}
+]}
+function runOneReasoningScenario(def){
+ S={...JSON.parse(JSON.stringify(clinicalScenarioBlank)),...JSON.parse(JSON.stringify(def.data))};
+ const r=reasoningV2Snapshot();
+ const checks=def.checks.map(c=>{let pass=false,detail='';try{pass=!!c.test(r);detail=pass?'Beklenen muhakeme davranışı doğrulandı.':'Beklenen muhakeme davranışı oluşmadı.'}catch(err){detail=String(err&&err.message||err)}return {...c,pass,detail}});
+ return {name:def.name,summary:def.summary,checks,passed:checks.filter(x=>x.pass).length,total:checks.length,criticalFailed:checks.some(x=>x.critical&&!x.pass)};
+}
+function runReasoningScenarioTests(){
+ collect();const original=JSON.parse(JSON.stringify(S));let runs=[],unexpected='';
+ try{runs=reasoningScenarioDefinitions().map(runOneReasoningScenario)}catch(err){unexpected=String(err&&err.message||err)}finally{S=original;render();updateAll();}
+ const checks=runs.flatMap(x=>x.checks),pass=checks.filter(x=>x.pass).length,fail=checks.length-pass,criticalFail=checks.filter(x=>!x.pass&&x.critical).length;
+ const summary=el('reasoningScenarioSummary');if(summary){summary.className=`panel ${criticalFail?'urgent':fail?'warn':'ok'}`;summary.innerHTML=unexpected?`<b>Muhakeme test motoru çalışırken hata oluştu</b><br>${esc(unexpected)}`:`<b>${criticalFail?'Kritik muhakeme kontrolü başarısız':'Klinik muhakeme doğrulaması tamamlandı'}</b><br>🧠 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${criticalFail} kritik hata · 🟠 ${fail-criticalFail} uyarı`;}
+ const box=el('reasoningScenarioResults');if(box)box.innerHTML=unexpected?`<div class="safety-alert safety-critical"><strong>🔴 JavaScript hatası</strong><div>${esc(unexpected)}</div></div>`:runs.map(r=>`<div class="scenario-suite"><div class="scenario-suite-head"><div><strong>${esc(r.name)}</strong><div class="muted">${esc(r.summary)}</div></div><span class="scenario-score ${r.criticalFailed?'scenario-fail':r.passed===r.total?'scenario-pass':'scenario-warn'}">${r.passed}/${r.total}</span></div>${r.checks.map(c=>`<div class="scenario-check ${c.pass?'scenario-check-pass':c.critical?'scenario-check-fail':'scenario-check-warn'}"><b>${c.pass?'✓':c.critical?'✕':'!'} ${esc(c.title)}</b><div>${esc(c.detail)}</div></div>`).join('')}</div>`).join('');
+ lastReasoningScenarioReport=[`ACİL KLİNİK ASİSTANI KLİNİK MUHAKEME 2.0 RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v3.3.0 Beta`,`Sonuç: ${runs.length} senaryo, ${pass}/${checks.length} kontrol geçti, ${criticalFail} kritik hata, ${fail-criticalFail} uyarı`,'',...runs.flatMap(r=>[`${r.name} — ${r.passed}/${r.total}`,...r.checks.map(c=>`${c.pass?'GEÇTİ':c.critical?'HATA':'UYARI'} | ${c.title} | ${c.detail}`),''])].join('\n');
+ const card=el('reasoningScenarioCard');if(card)card.open=true;return runs;
+}
+function downloadReasoningScenarioReport(){if(!lastReasoningScenarioReport)runReasoningScenarioTests();const blob=new Blob([lastReasoningScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-muhakeme-v3.3.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);}
+
 </script>
 </body></html>
