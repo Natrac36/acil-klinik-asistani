@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.4.0 Beta • İlaç Doz Hesaplama Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.5.0 Beta • EKG Karar Destek Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -72,6 +72,11 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div class="grid"><label>Kod veya tanı ara<input id="icdSearch" type="text" value="" placeholder="Örn. I21.4, göğüs ağrısı, pnömoni" oninput="S.icdSearch=this.value;renderIcdSuggestions()"></label><label>Seçilen ICD-10 kodu<select id="selectedIcd" onchange="S.selectedIcd=this.value;renderIcdSuggestions()"><option value="">Henüz seçilmedi</option></select></label></div>
  <div id="icdSuggestionPanel" style="margin-top:12px"></div>
 </div>
+<div class="card" id="ecgDecisionCard">
+ <div class="section-title"><h3>EKG karar destek motoru</h3><span class="phase-badge">v4.5</span></div>
+ <p class="muted">Girilen ritim, hız, QRS, QTc, ST-T bulguları ve klinik bağlamı birlikte değerlendirir. Otomatik EKG tanısı koymaz; doğrudan EKG incelemesinin yerini tutmaz.</p>
+ <div id="ecgDecisionPanel" class="safety-grid"><div class="muted">EKG ölçümleri ve bulguları girildikçe ritim, iskemi, iletim ve elektrolit uyarıları burada görünür.</div></div>
+</div>
 <div class="card" id="doseCalculatorCard">
  <div class="section-title"><h3>İlaç doz hesaplama motoru</h3><span class="phase-badge">v4.4</span></div>
  <p class="muted">Bu araç reçete veya ilaç emri oluşturmaz. Hekimin seçtiği mg/kg ya da sabit dozu; kilo, maksimum doz ve preparat konsantrasyonuna göre matematiksel olarak hesaplar.</p>
@@ -89,6 +94,13 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
  <div id="doseCalculatorResult" class="panel neutral" style="margin-top:12px">Kilo ve doz parametrelerini gir.</div>
  <p class="muted">Uygulama öncesi endikasyon, yol, preparat konsantrasyonu, maksimum doz, böbrek/karaciğer fonksiyonu, gebelik, alerji ve yerel protokol ayrıca doğrulanmalıdır.</p>
 </div>
+<details class="card collapse-card no-print" id="ecgScenarioCard">
+ <summary>EKG karar destek doğrulama paneli <span class="phase-badge">v4.5</span></summary>
+ <p class="muted">Ritim, STEMI/oklüzyon MI, geniş kompleks taşikardi, QT uzaması, iletim bozukluğu ve elektrolit ipuçlarının doğru önceliklendirilmesini sınar.</p>
+ <div class="compact-actions"><button class="primary" onclick="runEcgDecisionTests()">12 EKG senaryosunu çalıştır</button><button onclick="downloadEcgDecisionReport()">Raporu TXT indir</button></div>
+ <div id="ecgScenarioSummary" class="panel neutral">Henüz EKG karar destek testi çalıştırılmadı.</div>
+ <div id="ecgScenarioResults" class="safety-grid"></div>
+</details>
 <details class="card collapse-card no-print" id="doseScenarioCard">
  <summary>İlaç doz hesaplama doğrulama paneli <span class="phase-badge">v4.4</span></summary>
  <p class="muted">Kilo temelli doz, maksimum doz sınırı, konsantrasyondan hacim ve infüzyon hızının matematiksel doğruluğunu sınar.</p>
@@ -1046,22 +1058,52 @@ function labAnalysis(){
 function renderLabInterpretation(){const box=el('labInterpretation');if(!box)return;const r=labAnalysis();box.className='panel '+(r.urgent.length?'urgent':r.out.some(x=>x!=='Laboratuvar veya kan gazı sonucu henüz girilmedi.')?'warn':'neutral');box.innerHTML=`<h3>${r.urgent.length?'Kritik laboratuvar/kan gazı uyarısı':'Laboratuvar ve kan gazı özeti'}</h3>${r.urgent.length?`<ul class="compact">${r.urgent.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<ul class="compact">${r.out.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${r.calc.length?`<p><b>Hesaplamalar:</b></p><ul class="compact">${r.calc.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<p class="muted">Hesaplamalar yaklaşık klinik destek içindir; örnek türü, birim, laboratuvar referansı ve klinik bağlam doğrulanmalıdır.</p>`}
 
 function ecgStructuredInterpretation(){
- const out=[], urgent=[]; const rate=n(S.ecgRate), qrs=n(S.ecgQRS), qtc=n(S.ecgQTc);
- if(S.ecgRhythm!=='Seçilmedi')out.push('Ritim: '+S.ecgRhythm+(rate!==null?' ('+rate+'/dk)':''));
- if(rate!==null&&rate>150)urgent.push('Belirgin taşikardi'); if(rate!==null&&rate<40)urgent.push('Belirgin bradikardi');
- if(qrs!==null&&qrs>=120)out.push('Geniş QRS ('+qrs+' ms)');
- if(qtc!==null&&qtc>=500)urgent.push('QTc ≥500 ms: torsades riski açısından kritik'); else if(qtc!==null&&qtc>460)out.push('QTc uzamış olabilir ('+qtc+' ms)');
- const f=S.ecgFindings||[];
- if(f.includes('ST elevasyonu'))urgent.push('ST elevasyonu bildirildi; komşu derivasyonlar, karşılıklı değişiklikler ve klinikle STEMI/oklüzyon MI değerlendirmesi');
- ['De Winter paterni','Wellens paterni','Sgarbossa pozitif','Brugada paterni','Ventriküler taşikardi'].forEach(x=>{if(f.includes(x)||S.ecgRhythm===x)urgent.push(x)});
- if(f.includes('Yaygın sivri T'))urgent.push('Hiperkalemi olasılığı: potasyum ve klinik aciliyeti doğrula');
- if(f.includes('AV blok'))out.push('AV iletim bozukluğu bildirildi; dereceyi ve hemodinamik etkisini belirle');
- if(f.includes('Delta dalgası'))out.push('Preeksitasyon/WPW olasılığını değerlendir');
- if((S.ecgTerritory||[]).length)out.push('Bölge: '+S.ecgTerritory.join(', '));
+ const out=[],urgent=[],actions=[],cautions=[];
+ const rate=n(S.ecgRate),qrs=n(S.ecgQRS),qtc=n(S.ecgQTc),k=n(S.potassium),mg=n(S.magnesium);
+ const rhythm=String(S.ecgRhythm||'Seçilmedi');
+ const f=Array.isArray(S.ecgFindings)?S.ecgFindings:[];
+ const territory=Array.isArray(S.ecgTerritory)?S.ecgTerritory:[];
+ const has=x=>f.includes(x)||rhythm===x;
+ if(rhythm!=='Seçilmedi')out.push('Ritim: '+rhythm+(rate!==null?' ('+rate+'/dk)':''));
+ if(rate!==null){
+  if(rate>=150){urgent.push('Belirgin taşikardi ('+rate+'/dk)');actions.push('Hemodinamik stabiliteyi hemen değerlendir; monitörizasyon ve 12 derivasyonlu EKG sürekliliğini sağla.');}
+  else if(rate<40){urgent.push('Belirgin bradikardi ('+rate+'/dk)');actions.push('Perfüzyon bozukluğu, hipotansiyon, iskemi ve bilinç değişikliği açısından değerlendir.');}
+  else if(rate>100)out.push('Taşikardi'); else if(rate<60)out.push('Bradikardi');
+ }
+ if(has('Atriyal fibrilasyon')){out.push('Atriyal fibrilasyon paterni bildirildi');actions.push('Başlangıç zamanı, hemodinamik durum, tromboemboli ve kanama riskini değerlendir.');}
+ if(has('Atriyal flutter'))out.push('Atriyal flutter paterni bildirildi');
+ if(has('SVT')){urgent.push('Düzenli dar kompleks taşikardi/SVT olasılığı');actions.push('Stabiliteyi değerlendir; ritim düzenliliği ve QRS genişliğini doğrula.');}
+ if(has('Ventriküler taşikardi')||(qrs!==null&&qrs>=120&&rate!==null&&rate>=120&&/taşikardi/i.test(rhythm))){urgent.push('Geniş kompleks taşikardi: aksi kanıtlanana kadar VT kabul edilmelidir');actions.push('Defibrilatör hazır, sürekli monitörizasyon ve acil ileri yaşam desteği yaklaşımı.');}
+ if(qrs!==null){if(qrs>=160)urgent.push('Çok geniş QRS ('+qrs+' ms)');else if(qrs>=120)out.push('Geniş QRS ('+qrs+' ms)');}
+ if(qtc!==null){
+  if(qtc>=500){urgent.push('QTc ≥500 ms: torsades riski');actions.push('QT uzatan ilaçları, potasyum ve magnezyumu acilen gözden geçir.');}
+  else if(qtc>460)out.push('QTc uzamış olabilir ('+qtc+' ms)');
+ }
+ const stemi=has('ST elevasyonu')||S.ecg==='ST elevasyonu';
+ if(stemi){urgent.push('ST elevasyonu: akut koroner oklüzyon/STEMI açısından zaman kritik değerlendirme');actions.push('Komşu derivasyonlar, resiprok değişiklikler, semptom başlangıcı ve seri EKG ile doğrula; acil kardiyoloji/reperfüzyon yolunu değerlendir.');}
+ if(has('ST depresyonu')||/ST depresyonu/i.test(String(S.ecg||'')))out.push('ST depresyonu: iskemi veya resiprok değişiklik açısından değerlendir');
+ if(has('T dalga inversiyonu')||/T negatif/i.test(String(S.ecg||'')))out.push('T dalga inversiyonu bildirildi');
+ if(has('Wellens paterni')){urgent.push('Wellens paterni şüphesi: kritik proksimal LAD hastalığı olabilir');cautions.push('Stres testi uygunsuz olabilir; acil kardiyoloji değerlendirmesi gerekir.');}
+ if(has('De Winter paterni'))urgent.push('De Winter paterni: akut koroner oklüzyon eşdeğeri olabilir');
+ if(has('Sgarbossa pozitif'))urgent.push('Sgarbossa pozitifliği: LBBB/pacing ile akut oklüzyon olasılığı');
+ if(has('Brugada paterni')){urgent.push('Brugada paterni şüphesi');actions.push('Senkop, ateş, ailede ani ölüm ve proaritmik ilaçları değerlendir.');}
+ if(has('AV blok')){out.push('AV iletim bozukluğu bildirildi');if(rate!==null&&rate<50)urgent.push('Bradikardi ile AV blok: ileri derece blok olasılığı');actions.push('Blok derecesini, QRS genişliğini ve hemodinamik etkisini belirle.');}
+ if(has('Delta dalgası')){out.push('Preeksitasyon/WPW olasılığı');cautions.push('Düzensiz geniş kompleks taşikardide AV düğüm bloke edici ilaçlardan kaçın.');}
+ if(has('Yaygın sivri T')){urgent.push('Hiperkalemi ile uyumlu EKG bulgusu olabilir');actions.push('Potasyumu acilen doğrula ve hemoliz olasılığını değerlendir.');}
+ if(k!==null&&k>=6&&has('Yaygın sivri T'))urgent.push('Hiperkalemi + EKG değişikliği: zaman kritik tedavi değerlendirmesi');
+ if(k!==null&&k<3.2&&qtc!==null&&qtc>=480)urgent.push('Hipokalemi + QT uzaması: ventriküler aritmi riski');
+ if(mg!==null&&mg<1.6&&qtc!==null&&qtc>=480)urgent.push('Hipomagnezemi + QT uzaması: torsades riski');
+ if(territory.length)out.push('Etkilenen bölge/derivasyon grubu: '+territory.join(', '));
+ if(S.troponin==='Yüksek'&&!stemi){urgent.push('Troponin yüksekliği ve ST elevasyonu olmaması: NSTEMI/miyokard hasarı ayrımı gerekli');actions.push('Seri EKG-troponin, iskemi bulguları ve alternatif miyokard hasarı nedenlerini birlikte değerlendir.');}
  if(!out.length&&!urgent.length)out.push('Yapılandırılmış EKG bulgusu henüz girilmedi.');
- return {out:[...new Set(out)],urgent:[...new Set(urgent)]};
+ return {out:[...new Set(out)],urgent:[...new Set(urgent)],actions:[...new Set(actions)],cautions:[...new Set(cautions)]};
 }
-function renderEcgInterpretation(){const box=el('ecgInterpretation');if(!box)return;const r=ecgStructuredInterpretation();box.className='panel '+(r.urgent.length?'urgent':'neutral');box.innerHTML=`<h3>${r.urgent.length?'Kritik EKG kontrolü':'Yapılandırılmış EKG özeti'}</h3>${r.urgent.length?`<ul class="compact">${r.urgent.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<ul class="compact">${r.out.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p class="muted">Bu çıktı ölçüm ve işaretlemelere dayanır; EKG'nin hekim tarafından doğrudan görülmesinin yerini tutmaz.</p>`}
+function renderEcgInterpretation(){
+ const r=ecgStructuredInterpretation(),box=el('ecgInterpretation'),decision=el('ecgDecisionPanel');
+ const html=`${r.urgent.length?`<div class="safety-alert safety-critical"><strong>🔴 Zaman kritik EKG uyarıları</strong><ul class="compact">${r.urgent.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}${r.out.length?`<div class="safety-alert safety-info"><strong>Yapılandırılmış bulgular</strong><ul class="compact">${r.out.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}${r.actions.length?`<div class="safety-alert safety-warning"><strong>Önerilen sonraki adımlar</strong><ul class="compact">${r.actions.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}${r.cautions.length?`<div class="safety-alert safety-critical"><strong>Yapma / dikkat</strong><ul class="compact">${r.cautions.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}<p class="muted">Bu çıktı yalnız girilen ölçüm ve işaretlemelere dayanır; EKG'nin hekim tarafından doğrudan görülmesinin ve klinik bağlamın yerini tutmaz.</p>`;
+ if(box){box.className='panel '+(r.urgent.length?'urgent':'neutral');box.innerHTML=`<h3>${r.urgent.length?'Kritik EKG kontrolü':'Yapılandırılmış EKG özeti'}</h3>`+html;}
+ if(decision)decision.innerHTML=html;
+}
 function handleEcgImage(e){const f=e.target.files&&e.target.files[0];if(!f)return;if(f.size>8*1024*1024){alert('Fotoğraf 8 MB altında olmalıdır.');e.target.value='';return}const r=new FileReader();r.onload=()=>{S.ecgImageData=r.result;S.ecgImageName=f.name;render();updateAll()};r.readAsDataURL(f)}
 function requestEcgAI(){collect();if(!S.ecgImageData){alert('Önce EKG fotoğrafı yükleyin.');return}const missing=['Tüm 12 derivasyon görünür','Kalibrasyon görünür','Keskin/net','Dik açı','Kimlik gizli'].filter(x=>!S.ecgQuality.includes(x));if(missing.length){alert('Önce fotoğraf kalite kontrolünü tamamlayın: '+missing.join(', '));return}alert('Yapay zekâ görüntü servisi bu çevrimdışı sürüme henüz bağlı değil. Güvenli sunucu/API bağlantısı kurulduğunda fotoğraf analizi burada çalışacak; şu an doktor modu kullanılabilir.')}
 
@@ -2489,6 +2531,35 @@ function runDrugLibraryTests(){
  lastDrugLibraryReport=[`ACİL KLİNİK ASİSTANI AKILLI İLAÇ KARTLARI RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.2.0 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');const card=el('drugLibraryScenarioCard');if(card)card.open=true;return runs;
 }
 function downloadDrugLibraryReport(){if(!lastDrugLibraryReport)runDrugLibraryTests();const blob=new Blob([lastDrugLibraryReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-ilac-kartlari-v4.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
+
+let lastEcgDecisionReport='';
+function runEcgDecisionTests(){
+ const original=JSON.parse(JSON.stringify(S));
+ const defs=[
+  {name:'Normal sinüs ritmi',data:{ecgRhythm:'Sinüs ritmi',ecgRate:'72',ecgQRS:'90',ecgQTc:'420',ecgFindings:[],troponin:'Normal'},test:r=>!r.urgent.length&&r.out.some(x=>/Sinüs ritmi/.test(x))},
+  {name:'Sinüs taşikardisi',data:{ecgRhythm:'Sinüs ritmi',ecgRate:'125',ecgQRS:'90',ecgQTc:'430',ecgFindings:[]},test:r=>r.out.some(x=>x==='Taşikardi')&&!r.urgent.some(x=>/geniş kompleks/i.test(x))},
+  {name:'Atriyal fibrilasyon',data:{ecgRhythm:'Atriyal fibrilasyon',ecgRate:'135',ecgQRS:'95',ecgFindings:[]},test:r=>r.out.some(x=>/Atriyal fibrilasyon/.test(x))},
+  {name:'Atriyal flutter',data:{ecgRhythm:'Atriyal flutter',ecgRate:'150',ecgQRS:'90',ecgFindings:[]},test:r=>r.out.some(x=>/flutter/.test(x))},
+  {name:'SVT',data:{ecgRhythm:'SVT',ecgRate:'190',ecgQRS:'85',ecgFindings:[]},test:r=>r.urgent.some(x=>/SVT/.test(x))},
+  {name:'Monomorfik VT',data:{ecgRhythm:'Ventriküler taşikardi',ecgRate:'170',ecgQRS:'160',ecgFindings:['Ventriküler taşikardi']},test:r=>r.urgent.some(x=>/aksi kanıtlanana kadar VT/.test(x))},
+  {name:'STEMI',data:{ecgRhythm:'Sinüs ritmi',ecgRate:'88',ecgQRS:'95',ecgFindings:['ST elevasyonu'],ecgTerritory:['İnferior'],troponin:'Yüksek'},test:r=>r.urgent.some(x=>/ST elevasyonu/.test(x))&&r.actions.some(x=>/reperfüzyon/.test(x))},
+  {name:'NSTEMI',data:{ecgRhythm:'Sinüs ritmi',ecgRate:'90',ecgQRS:'90',ecgFindings:['ST depresyonu','T dalga inversiyonu'],troponin:'Yüksek'},test:r=>r.urgent.some(x=>/NSTEMI/.test(x))},
+  {name:'Hiperkalemi',data:{ecgRhythm:'Sinüs ritmi',ecgRate:'70',ecgQRS:'135',ecgFindings:['Yaygın sivri T'],potassium:'6.6'},test:r=>r.urgent.some(x=>/Hiperkalemi \+ EKG/.test(x))},
+  {name:'Uzamış QT',data:{ecgRhythm:'Sinüs ritmi',ecgRate:'70',ecgQRS:'90',ecgQTc:'520',ecgFindings:[]},test:r=>r.urgent.some(x=>/QTc ≥500/.test(x))},
+  {name:'İleri AV blok',data:{ecgRhythm:'Sinüs bradikardisi',ecgRate:'32',ecgQRS:'140',ecgFindings:['AV blok']},test:r=>r.urgent.some(x=>/AV blok/.test(x))},
+  {name:'Wellens paterni',data:{ecgRhythm:'Sinüs ritmi',ecgRate:'68',ecgQRS:'90',ecgFindings:['Wellens paterni']},test:r=>r.urgent.some(x=>/Wellens/.test(x))&&r.cautions.some(x=>/Stres testi/.test(x))}
+ ];
+ let runs=[],unexpected='';
+ try{runs=defs.map(d=>{S={...JSON.parse(JSON.stringify(original)),...d.data};const r=ecgStructuredInterpretation();let pass=false;try{pass=!!d.test(r)}catch(e){}return {name:d.name,pass,detail:pass?'Beklenen EKG davranışı doğrulandı.':'Beklenen uyarı veya sınıflandırma oluşmadı.'}})}catch(e){unexpected=String(e&&e.message||e)}finally{S=original}
+ const pass=runs.filter(x=>x.pass).length,fail=runs.length-pass,summary=el('ecgScenarioSummary'),box=el('ecgScenarioResults');
+ if(summary){summary.className='panel '+(unexpected||fail?'urgent':'ok');summary.innerHTML=unexpected?`<b>EKG test motoru hatası</b><br>${esc(unexpected)}`:`<b>${fail?'EKG karar destek kontrolü başarısız':'EKG karar destek doğrulaması tamamlandı'}</b><br>❤️ ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${fail} hata`;}
+ if(box)box.innerHTML=unexpected?`<div class="safety-alert safety-critical"><strong>JavaScript hatası</strong><div>${esc(unexpected)}</div></div>`:runs.map(r=>`<div class="scenario-check ${r.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${r.pass?'✓':'✕'} ${esc(r.name)}</b><div>${esc(r.detail)}</div></div>`).join('');
+ lastEcgDecisionReport=unexpected?`ACİL KLİNİK ASİSTANI EKG TEST HATASI
+${unexpected}`:[`ACİL KLİNİK ASİSTANI EKG KARAR DESTEK RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.5.0 Beta`,`Sonuç: ${pass}/${runs.length} kontrol geçti`,'',...runs.map(r=>`${r.pass?'GEÇTİ':'HATA'} | ${r.name} | ${r.detail}`)].join('\n');
+ const card=el('ecgScenarioCard');if(card)card.open=true;try{render();updateAll()}catch(e){console.error(e)}return runs;
+}
+function downloadEcgDecisionReport(){if(!lastEcgDecisionReport)runEcgDecisionTests();const blob=new Blob([lastEcgDecisionReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-ekg-v4.5.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 // Uygulamayı tüm kütüphaneler ve test motorları tanımlandıktan sonra başlat.
 load();
