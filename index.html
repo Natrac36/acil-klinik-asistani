@@ -89,7 +89,7 @@ body.module-view .layout aside{display:none!important}
 /* v6.7.1 Kullanılabilirlik ve mobil güvenlik */
 html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;height:auto}.card,.question,.panel,.workflow-summary-box{min-width:0;overflow-wrap:anywhere}.grid>* ,.grid3>* ,.choices>* ,.dashboard-grid>*{min-width:0}.dashboard-tile{touch-action:manipulation}.dashboard-tile:focus-visible,button:focus-visible{outline:3px solid rgba(45,212,191,.55);outline-offset:2px}.mobile-dock button{touch-action:manipulation}.module-heading{position:sticky;top:96px;z-index:9;background:rgba(238,245,248,.94);backdrop-filter:blur(10px);padding:7px 0}.usability-status{font-size:12px;margin-top:8px}.mobile-safe-table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:560px){body{padding-bottom:78px}.head{gap:7px}.head>div:first-child{min-width:0}.head h1{white-space:normal}.status{max-width:48%}.dashboard-grid{grid-template-columns:1fr}.dashboard-tile{min-height:88px}.dashboard-quick{display:grid;grid-template-columns:1fr 1fr}.dashboard-quick b{grid-column:1/-1}.dashboard-quick button{width:100%}.actions{position:static;margin-bottom:4px}.actions button{min-height:46px}.module-heading{top:88px}.card input,.card select,.card textarea{font-size:16px}.workflow-toolbar button{flex:1;min-width:130px}}
 
-/* v6.8.1 Stable • Akıllı Vaka Yapılandırma
+/* v6.8.2 Stable • Kayıt Sistemi Düzeltmesi
 /* v6.8.1 Akıllı vaka yapılandırma */
 .smart-case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
 .smart-case-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
@@ -107,7 +107,7 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.8.0 Stable • Doğal Dille Vaka Girişi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.8.2 Stable • Kayıt Sistemi Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -4084,8 +4084,16 @@ var APP_REGISTRY={
  testNames:{qaCard:'Genel kalite kontrolü',clinicalScoringScenarioCard:'Klinik skor testleri',medicationSafetyScenarioCard:'İlaç güvenliği testleri',testOrderScenarioCard:'Tetkik istem testleri',emergencyCoreScenarioCard:'Acil çekirdek testleri',laboratoryScenarioCard:'Laboratuvar testleri',guidelineScenarioCard:'Kılavuz testleri',radiologyScenarioCard:'Radyoloji testleri',aiClinicalScenarioCard:'Klinik asistan testleri',pediatricScenarioCard:'Pediatri testleri',ecgScenarioCard:'EKG testleri',doseScenarioCard:'Doz hesaplama testleri',prescriptionScenarioCard:'Reçete motoru testleri',clinicalScenarioCard:'Klinik senaryo testleri',treatmentScenarioCard:'Tedavi testleri',drugLibraryScenarioCard:'İlaç kütüphanesi testleri',icdScenarioCard:'ICD testleri',reasoningScenarioCard:'Gerekçelendirme testleri',imagingScenarioCard:'Görüntüleme testleri',consultDispositionScenarioCard:'Konsültasyon testleri',dischargeScenarioCard:'Taburculuk testleri',coreScenarioCard:'Ana çekirdek testleri',documentationScenarioCard:'Dokümantasyon testleri'},
  initErrors:[],runtimeErrors:[]
 };
-function safeCall(name,fn){try{return fn()}catch(e){APP_REGISTRY.initErrors.push(name+': '+(e&&e.message?e.message:e));console.error(name,e);return null}}
-function getGroup(group){return APP_REGISTRY.groups[String(group||'')]||null}
+window.APP_REGISTRY=APP_REGISTRY;
+function safeCall(name,fn){try{return fn()}catch(e){var registry=ensureAppRegistry();registry.initErrors.push(name+': '+(e&&e.message?e.message:e));console.error(name,e);return null}}
+function ensureAppRegistry(){
+ if(typeof APP_REGISTRY==='object'&&APP_REGISTRY&&APP_REGISTRY.groups)return APP_REGISTRY;
+ if(window.APP_REGISTRY&&window.APP_REGISTRY.groups)return window.APP_REGISTRY;
+ var fallback={groups:{case:{title:'Yeni vaka',ids:['naturalCaseEntryCard','caseEntryCard','clinicalNoteCard']},summary:{title:'Vaka özeti',ids:['workflowSummaryCard']},emergency:{title:'Acil değerlendirme',ids:['emergencyCoreCard']},diagnosis:{title:'Tanı desteği',ids:['aiClinicalAssistantCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard']},tests:{title:'Tetkik ve sonuç yorumlama',ids:['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard']},treatment:{title:'Tedavi ve order',ids:['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard']},prescription:{title:'Akıllı reçete',ids:['smartPrescriptionCard']},documents:{title:'Belge ve sonlandırma',ids:['professionalDocCard']},system:{title:'Sistem kontrolü',ids:['systemHubCard']}},testNames:{},initErrors:[],runtimeErrors:[]};
+ window.APP_REGISTRY=fallback;
+ return fallback;
+}
+function getGroup(group){var registry=ensureAppRegistry();return registry.groups[String(group||'')]||null}
 function allModuleElements(){return Array.from(document.querySelectorAll('.layout section > .card,.layout section > details'))}
 function setModuleVisible(el,visible){if(!el)return;el.hidden=!visible;el.classList.toggle('module-hidden',!visible);el.style.setProperty('display',visible?'block':'none','important')}
 function hideAllModules(){allModuleElements().forEach(function(el){setModuleVisible(el,false)})}
@@ -4107,7 +4115,7 @@ function openModuleGroup(group){
  }catch(err){console.error('Kategori açma hatası',err);alert('Bölüm açılırken hata oluştu: '+(err.message||err))}
 }
 function openSingleModule(id){try{enterModuleView();hideAllModules();var el=document.getElementById(id);if(!el)throw new Error('Araç bulunamadı: '+id);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;var titleEl=el.querySelector('h2,h3,summary');updateModuleHeading(titleEl?titleEl.textContent.trim():'Araç');setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}catch(err){console.error('Araç açma hatası',err);alert('Araç açılırken hata oluştu: '+(err.message||err))}}
-function buildSystemHub(){var box=document.getElementById('systemHubButtons'),entry=getGroup('system');if(!box||!entry)return;box.innerHTML=entry.ids.filter(function(id){return id!=='systemHubCard'&&document.getElementById(id)}).map(function(id){return '<button type="button" data-system-test="'+id+'">🧪 '+(APP_REGISTRY.testNames[id]||id)+'</button>'}).join('')}
+function buildSystemHub(){var box=document.getElementById('systemHubButtons'),entry=getGroup('system');if(!box||!entry)return;box.innerHTML=entry.ids.filter(function(id){return id!=='systemHubCard'&&document.getElementById(id)}).map(function(id){return '<button type="button" data-system-test="'+id+'">🧪 '+(ensureAppRegistry().testNames[id]||id)+'</button>'}).join('')}
 function openSystemTest(id){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(x){return x!=='systemHubCard'}).forEach(function(x){setModuleVisible(document.getElementById(x),false)});var el=document.getElementById(id);if(!el){alert('Test paneli bulunamadı: '+id);return}setModuleVisible(document.getElementById('systemHubCard'),true);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}
 function showAllSystemTests(){var entry=getGroup('system');if(entry)entry.ids.forEach(function(id){setModuleVisible(document.getElementById(id),true)})}
 function closeAllSystemTests(){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(id){return id!=='systemHubCard'}).forEach(function(id){var el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false)});setModuleVisible(document.getElementById('systemHubCard'),true)}
@@ -4123,7 +4131,7 @@ function runStabilityChecks(showDetails){
  add('Ana menü',!!document.getElementById('dashboardShell'));
  add('Vaka formu',!!document.getElementById('caseEntryCard'));
  add('Sistem kontrol merkezi',!!document.getElementById('systemHubCard'));
- Object.keys(APP_REGISTRY.groups).forEach(function(key){var g=APP_REGISTRY.groups[key];add('Kategori: '+g.title,g.ids.some(function(id){return !!document.getElementById(id)}),'Tanımlı kart: '+g.ids.length)});
+ var registry=ensureAppRegistry();Object.keys(registry.groups).forEach(function(key){var g=registry.groups[key];add('Kategori: '+g.title,g.ids.some(function(id){return !!document.getElementById(id)}),'Tanımlı kart: '+g.ids.length)});
  var ids=Array.from(document.querySelectorAll('[id]')).map(function(el){return el.id}),dups=ids.filter(function(id,i){return ids.indexOf(id)!==i});add('Benzersiz HTML kimlikleri',dups.length===0,dups.length?dups.join(', '):'Çakışma yok');
  ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
  add('Başlatma hatası',APP_REGISTRY.initErrors.length===0,APP_REGISTRY.initErrors.join(' | '));
@@ -4229,8 +4237,8 @@ function initAppStable(){
  safeCall('Kayıt yükleme',function(){if(typeof load==='function')load()});
  initializeClinicalModules();bindStableEvents();buildSystemHub();showDashboard();applyUsabilityGuards();setTimeout(applyUsabilityGuards,250);runStabilityChecks(false)
 }
-window.addEventListener('error',function(e){APP_REGISTRY.runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
-window.addEventListener('unhandledrejection',function(e){APP_REGISTRY.runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
+window.addEventListener('error',function(e){ensureAppRegistry().runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
+window.addEventListener('unhandledrejection',function(e){ensureAppRegistry().runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
 Object.assign(window,{renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
