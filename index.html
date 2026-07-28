@@ -71,7 +71,7 @@ body.module-view .layout aside{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.6.1 Stable • Mod ve Sağlık Kontrolü Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.6.3 Stable • Ayrıntılı Mod Görünürlük Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -3896,9 +3896,18 @@ function toggleModeSafe(){
   var nextOrder=typeof order==='function'?order():[];
   var found=nextOrder.indexOf(oldPage);
   currentStep=found>=0?found:0;
+  /* Mod değiştirildiğinde ana menüde kalma; vaka formunu görünür aç. */
+  if(typeof enterModuleView==='function')enterModuleView();
+  if(typeof hideAllModules==='function')hideAllModules();
+  if(typeof setModuleVisible==='function'){
+   setModuleVisible(document.getElementById('caseEntryCard'),true);
+   setModuleVisible(document.getElementById('clinicalNoteCard'),true);
+  }
+  if(typeof updateModuleHeading==='function')updateModuleHeading('case','Yeni vaka');
   if(typeof render==='function')render();
   var btn=document.getElementById('modeToggle');
   if(btn)btn.textContent=quickMode?'Ayrıntılı moda geç':'Hızlı moda dön';
+  setTimeout(function(){document.getElementById('caseEntryCard')?.scrollIntoView({behavior:'smooth',block:'start'})},30);
  }catch(err){
   console.error('Mod değiştirme hatası',err);
   var btn=document.getElementById('modeToggle');
