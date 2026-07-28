@@ -56,7 +56,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.2.0 Beta • Akıllı Tedavi ve Order Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.3.0 Beta • Senaryo Bazlı Tedavi Akışı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -245,7 +245,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 
 
 <div class="card" id="smartTreatmentOrderCard">
- <div class="section-title"><h3>Akıllı tedavi ve order motoru</h3><span class="phase-badge">v6.2</span></div>
+ <div class="section-title"><h3>Akıllı tedavi ve order motoru</h3><span class="phase-badge">v6.3</span></div>
  <p class="muted">Seçilen acil klinik senaryo için ilk saat yaklaşımını zaman önceliğine göre düzenleyen güvenli bir order taslağı oluşturur. Hekim değerlendirmesi, kontrendikasyon kontrolü ve yerel protokol zorunludur.</p>
  <div class="grid3">
   <label>Klinik senaryo<select id="trScenario" onchange="renderTreatmentEngine()"><option value="stemi">STEMI / OMI</option><option value="nstemi">NSTEMI / yüksek riskli AKS</option><option value="sepsis">Sepsis / septik şok</option><option value="anaphylaxis">Anafilaksi</option><option value="hyperkalemia">Hiperkalemi</option><option value="hypoglycemia">Hipoglisemi</option></select></label>
@@ -3562,30 +3562,72 @@ function downloadTestOrderEngineReport(){if(!lastTestOrderReport)runTestOrderEng
 document.addEventListener('DOMContentLoaded',()=>{try{renderTestOrderEngine()}catch(e){console.error('Test order init',e)}});
 
 
-// v6.2.0 Akıllı Tedavi ve Order Motoru — güvenli iskelet
+// v6.3.0 Akıllı Tedavi ve Order Motoru — senaryo bazlı güvenli akış
 function treatmentScenarioLabel(v){return ({stemi:'STEMI / OMI',nstemi:'NSTEMI / yüksek riskli AKS',sepsis:'Sepsis / septik şok',anaphylaxis:'Anafilaksi',hyperkalemia:'Hiperkalemi',hypoglycemia:'Hipoglisemi'})[v]||'Seçilmedi'}
+function treatmentScenarioOrders(scenario,d){
+ const common=[
+  {time:'0–5 dk',cls:'now',title:'ABCDE + monitörizasyon',detail:'Havayolu, solunum ve dolaşımı değerlendir; ritim, SpO₂, seri vital ve bilinç izlemini başlat.'},
+  {time:'0–5 dk',cls:'now',title:'Damar yolu + güvenlik kontrolü',detail:'Uygun damar yolu aç; kimlik, alerji, gebelik, kanama, böbrek işlevi ve kullanılan ilaçları doğrula.'}
+ ];
+ const map={
+  stemi:[
+   {time:'0–10 dk',cls:'now',title:'12 derivasyon EKG ve seri değerlendirme',detail:'İlk EKG’yi gecikmeden değerlendir; tanısal değilse klinik sürüyorsa seri EKG planla.'},
+   {time:'0–10 dk',cls:'now',title:'Reperfüzyon hattını etkinleştir',detail:'Primer PCI uygunluğunu ve transfer süresini değerlendir; kardiyoloji/PCI merkeziyle erken iletişim kur.'},
+   {time:'0–15 dk',cls:'early',title:'AKS ilaç güvenlik kontrolü',detail:'Antiplatelet, antikoagülan, nitrat ve analjezi gereksinimini kanama, hipotansiyon, alerji ve kontrendikasyonlara göre kurum protokolünden doğrula.'},
+   {time:'15–60 dk',cls:'hour',title:'Komplikasyon ve transfer izlemi',detail:'Aritmi, kalp yetersizliği, şok ve tekrar ağrı açısından izle; kesin reperfüzyon planını kaydet.'}
+  ],
+  nstemi:[
+   {time:'0–10 dk',cls:'now',title:'EKG + troponin yolu',detail:'İlk EKG ve uygun yüksek duyarlılıklı troponin algoritmasını başlat; seri ölçüm zamanını kaydet.'},
+   {time:'5–15 dk',cls:'early',title:'İskemik ve kanama riskini sınıflandır',detail:'Klinik risk, dinamik ST-T değişikliği, troponin ve kanama riskine göre erken invaziv strateji gereksinimini değerlendir.'},
+   {time:'5–15 dk',cls:'early',title:'AKS tedavi kontrol listesi',detail:'Antiplatelet/antikoagülan ve semptom kontrolünü aktif kanama, böbrek işlevi, hipotansiyon ve ilaç etkileşimleriyle birlikte doğrula.'},
+   {time:'15–60 dk',cls:'hour',title:'Kardiyoloji ve yatış planı',detail:'Yüksek risk bulgularında erken kardiyoloji değerlendirmesi; monitörlü yatış veya transfer planı oluştur.'}
+  ],
+  sepsis:[
+   {time:'0–10 dk',cls:'now',title:'Sepsis odağı ve perfüzyon değerlendirmesi',detail:'Laktat, kültürler ve odak araştırmasını başlat; antibiyotik öncesi kültür tedaviyi geciktirmemelidir.'},
+   {time:'0–60 dk',cls:'now',title:'Erken antimikrobiyal plan',detail:'Olası odak, direnç riski, alerji, gebelik ve böbrek/karaciğer işlevine göre kurum protokolünden uygun ampirik tedaviyi seç.'},
+   {time:'0–30 dk',cls:'early',title:'Sıvı yanıtını dinamik izle',detail:'Hipoperfüzyonda sıvı gereksinimini klinik yanıt, akciğer bulguları ve eşlik eden kalp/böbrek hastalığına göre bireyselleştir.'},
+   {time:'15–60 dk',cls:'hour',title:'Vazopressör ve kaynak kontrolü',detail:'Hipotansiyon sürüyorsa yoğun bakım/ileri destek ve vazopressör hazırlığını değerlendir; acil kaynak kontrolü gereksinimini belirle.'}
+  ],
+  anaphylaxis:[
+   {time:'Hemen',cls:'now',title:'İM adrenalin önceliği',detail:'Anafilaksi klinik olarak düşünülüyorsa gecikmeden kurum protokolündeki yaş/kilo ve preparat konsantrasyonuna uygun İM adrenalin uygula; gerekirse yanıtla yeniden değerlendir.'},
+   {time:'0–5 dk',cls:'now',title:'Pozisyon, oksijen ve sıvı desteği',detail:'Uygun pozisyon ver; hipoksemi/şokta oksijen ve dolaşım desteğini başlat. Ani ayağa kaldırmadan kaçın.'},
+   {time:'5–15 dk',cls:'early',title:'Dirençli olguda ileri destek',detail:'Tekrarlayan adrenalin gereksinimi, havayolu tehdidi veya şokta kıdemli destek, ileri havayolu ve infüzyon protokolünü değerlendir.'},
+   {time:'15–60 dk',cls:'hour',title:'Gözlem ve taburculuk güvenliği',detail:'Bifazik reaksiyon riski, tetikleyici, otoenjektör eğitimi ve alerji sevki dahil güvenli sonlandırma planı oluştur.'}
+  ],
+  hyperkalemia:[
+   {time:'0–5 dk',cls:'now',title:'EKG + tekrar doğrulama',detail:'EKG değişikliği ve örnek hemolizi açısından değerlendir; ciddi olguda tedaviyi laboratuvar tekrarını bekletmeden planla.'},
+   {time:'0–10 dk',cls:'now',title:'Miyokard stabilizasyonu',detail:'EKG değişikliği veya yaşamı tehdit eden hiperkalemide kurum protokolündeki IV kalsiyum seçeneğini ve tekrar gereksinimini doğrula.'},
+   {time:'5–15 dk',cls:'early',title:'Potasyumu hücre içine kaydır',detail:'İnsülin-glukoz ve uygun ek tedavileri glukoz izlemi, böbrek işlevi ve kontrendikasyonlarla birlikte protokolden uygula.'},
+   {time:'15–60 dk',cls:'hour',title:'Vücuttan uzaklaştırma + tekrar ölçüm',detail:'Diürez, bağlayıcı veya diyaliz gereksinimini nedene göre değerlendir; potasyum ve glukozu seri izle.'}
+  ],
+  hypoglycemia:[
+   {time:'Hemen',cls:'now',title:'Glukozu doğrula ve tedavi et',detail:'Bilinç ve yutma güvenliğine göre oral veya IV/IM kurtarma tedavisini kurum protokolünden seç; tedaviyi geciktirme.'},
+   {time:'5–15 dk',cls:'early',title:'Erken tekrar glukoz ölçümü',detail:'Klinik yanıt ve kan şekerini kısa aralıkta yeniden değerlendir; düzelmiyorsa tedaviyi yinele ve nedeni araştır.'},
+   {time:'15–60 dk',cls:'hour',title:'Uzamış etki ve nüks riski',detail:'Uzun etkili insülin/sülfonilüre, böbrek yetersizliği, sepsis veya alkol öyküsünde daha uzun gözlem ve tekrarlayan ölçüm planla.'},
+   {time:'15–60 dk',cls:'hour',title:'Güvenli beslenme ve sonlandırma',detail:'Bilinç ve yutma düzeldikten sonra uygun beslenmeyi sağla; ilaç düzeni ve takip planını netleştir.'}
+  ]
+ };
+ let arr=[...common,...(map[scenario]||[])];
+ if(d.unstable)arr.unshift({time:'Hemen',cls:'now',title:'Resüsitasyon alanına al',detail:'Şok/instabilite nedeniyle kıdemli hekim, resüsitasyon ekibi ve ileri destek hazırlığını gecikmeden etkinleştir.'});
+ if(d.hypoxia)arr.splice(1,0,{time:'Hemen',cls:'now',title:'Hedefe yönelik oksijen/ventilasyon',detail:'Hipoksemi ve solunum iş yüküne göre oksijen veya ventilasyon desteğini titrasyonla başlat.'});
+ return arr;
+}
 function renderTreatmentEngine(){
  const scenario=document.getElementById('trScenario')?.value||'stemi';
- const unstable=!!document.getElementById('trUnstable')?.checked,hypoxia=!!document.getElementById('trHypoxia')?.checked;
- const pregnancy=!!document.getElementById('trPregnancy')?.checked,renal=!!document.getElementById('trRenal')?.checked,bleeding=!!document.getElementById('trBleeding')?.checked,allergy=!!document.getElementById('trAllergy')?.checked;
- const base=[
-  {time:'0–5 dk',cls:'now',title:'ABCDE ve monitörizasyon',detail:'Havayolu, solunum ve dolaşımı değerlendir; sürekli ritim, SpO₂ ve seri vital izlemi başlat.'},
-  {time:'0–5 dk',cls:'now',title:'Damar yolu ve güvenlik kontrolü',detail:'Uygun damar yolu aç; kimlik, alerji, gebelik, kanama ve böbrek işlevi bilgisini doğrula.'},
-  {time:'5–15 dk',cls:'early',title:'Senaryoya özgü ilk yaklaşım',detail:'Tanı doğrulama, kontrendikasyon taraması ve ilgili acil protokolü başlat.'},
-  {time:'15–60 dk',cls:'hour',title:'Yanıtın yeniden değerlendirilmesi',detail:'Klinik yanıtı, vital trendini ve tetkik sonuçlarını değerlendir; yatış, sevk veya ileri girişim planını netleştir.'}
- ];
- const warns=[];
- if(unstable)warns.push('Hemodinamik instabilite: resüsitasyon alanı, kıdemli hekim ve erken ileri destek önceliklidir.');
- if(hypoxia)warns.push('Hipoksemi: hedefe yönelik oksijen/ventilasyon gereksinimini klinik duruma göre değerlendir.');
- if(pregnancy)warns.push('Gebelik olasılığı: ilaç ve görüntüleme seçimlerini obstetrik güvenlik açısından doğrula.');
- if(renal)warns.push('Böbrek işlev bozukluğu: sıvı, kontrast ve renally cleared ilaçlarda doz/uygunluk kontrolü yap.');
- if(bleeding)warns.push('Kanama riski: antitrombotik ve invaziv işlemler öncesi yarar–risk değerlendirmesi gerekir.');
- if(allergy)warns.push('İlaç alerjisi: uygulanacak her ilaç için etken madde ve çapraz reaksiyon kontrolü yap.');
+ const d={unstable:!!document.getElementById('trUnstable')?.checked,hypoxia:!!document.getElementById('trHypoxia')?.checked,pregnancy:!!document.getElementById('trPregnancy')?.checked,renal:!!document.getElementById('trRenal')?.checked,bleeding:!!document.getElementById('trBleeding')?.checked,allergy:!!document.getElementById('trAllergy')?.checked};
+ const orders=treatmentScenarioOrders(scenario,d),warns=[];
+ if(d.unstable)warns.push('Hemodinamik instabilite: resüsitasyon alanı, kıdemli hekim ve erken ileri destek önceliklidir.');
+ if(d.hypoxia)warns.push('Hipoksemi: hedefe yönelik oksijen/ventilasyon gereksinimini klinik duruma göre değerlendir.');
+ if(d.pregnancy)warns.push('Gebelik olasılığı: ilaç ve görüntüleme seçimlerini obstetrik güvenlik açısından doğrula.');
+ if(d.renal)warns.push('Böbrek işlev bozukluğu: sıvı, kontrast ve böbrekten atılan ilaçlarda doz/uygunluk kontrolü yap.');
+ if(d.bleeding)warns.push('Kanama riski: antitrombotik ve invaziv işlemler öncesi yarar–risk değerlendirmesi gerekir.');
+ if(d.allergy)warns.push('İlaç alerjisi: uygulanacak her ilaç için etken madde ve çapraz reaksiyon kontrolü yap.');
  const list=document.getElementById('treatmentOrderList'),timeline=document.getElementById('treatmentTimeline'),summary=document.getElementById('treatmentSummary'),warningBox=document.getElementById('treatmentWarnings');
- if(list)list.innerHTML=base.map(x=>`<div class="treatment-order-item"><b>${esc(x.title)} <span class="treatment-time ${x.cls}">${x.time}</span></b><div class="muted">${esc(x.detail)}</div></div>`).join('');
- if(timeline)timeline.innerHTML=['0–5 dk: stabilizasyon ve kritik güvenlik','5–15 dk: tanısal doğrulama ve protokol başlangıcı','15–60 dk: yanıt, konsültasyon ve sonlandırma'].map((x,i)=>`<div class="treatment-order-item"><b>${esc(x)}</b></div>`).join('');
- if(warningBox)warningBox.innerHTML=warns.length?`<div class="panel warn"><b>Güvenlik uyarıları</b><ul class="compact">${warns.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'<div class="panel info"><b>İskelet sürümü</b><br>Bu aşamada ilaç/doz algoritması henüz etkin değildir; yalnızca güvenli ilk saat iş akışı gösterilir.</div>';
- if(summary)summary.textContent=['AKILLI TEDAVİ VE ORDER MOTORU — v6.2.0','Senaryo: '+treatmentScenarioLabel(scenario),'','0–5 dk: ABCDE, monitörizasyon, damar yolu, güvenlik doğrulaması','5–15 dk: Senaryoya özgü değerlendirme ve protokol hazırlığı','15–60 dk: Klinik yanıt, konsültasyon ve sonlandırma planı',warns.length?'':'','Not: İlaç ve doz algoritması sonraki aşamada eklenecektir.',...(warns.length?['','Güvenlik uyarıları:',...warns.map(x=>'• '+x)]:[])].filter((x,i,a)=>!(x===''&&a[i-1]==='')).join('\n');
+ if(list)list.innerHTML=orders.map(x=>`<div class="treatment-order-item"><b>${esc(x.title)} <span class="treatment-time ${x.cls}">${x.time}</span></b><div class="muted">${esc(x.detail)}</div></div>`).join('');
+ const grouped=['Hemen / 0–5 dk','5–15 dk','15–60 dk'].map((label,i)=>{const match=orders.filter(x=>i===0?/(Hemen|0–5|0–10)/.test(x.time):i===1?/5–15/.test(x.time):/15–60|0–60|0–30/.test(x.time));return `<div class="treatment-order-item"><b>${label}</b><div class="muted">${match.length?match.map(x=>esc(x.title)).join(' • '):'Bu zaman dilimi için ek adım yok.'}</div></div>`}).join('');
+ if(timeline)timeline.innerHTML=grouped;
+ if(warningBox)warningBox.innerHTML=warns.length?`<div class="panel warn"><b>Güvenlik uyarıları</b><ul class="compact">${warns.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'<div class="panel info"><b>Senaryo bazlı taslak hazır</b><br>İlaç seçimi ve dozları kurum protokolü, preparat konsantrasyonu ve hasta özellikleriyle ayrıca doğrulanmalıdır.</div>';
+ if(summary)summary.textContent=['AKILLI TEDAVİ VE ORDER MOTORU — v6.3.0','Senaryo: '+treatmentScenarioLabel(scenario),'',...orders.map(x=>`${x.time} | ${x.title} — ${x.detail}`),...(warns.length?['','GÜVENLİK UYARILARI',...warns.map(x=>'• '+x)]:[]),'','Not: Bu çıktı klinik karar veya otomatik ilaç emri değildir; hekim doğrulaması ve yerel protokol zorunludur.'].join('\n');
 }
 function copyTreatmentSummary(){const t=document.getElementById('treatmentSummary')?.textContent||'';if(!t)return;copyText(t,'Tedavi/order özeti kopyalandı.')}
 function clearTreatmentInputs(){['trAge','trWeight'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['trUnstable','trHypoxia','trPregnancy','trRenal','trBleeding','trAllergy'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false});const s=document.getElementById('trScenario');if(s)s.value='stemi';renderTreatmentEngine()}
