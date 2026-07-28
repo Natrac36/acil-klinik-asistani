@@ -46,7 +46,7 @@ button{min-height:42px;border-radius:12px;border-color:#cbd5e1;transition:transf
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.0.1 Beta • Klinik Yol Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v4.0.2 Beta • Core Öncelik Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" onclick="toggleMode()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 <div class="layout">
 <section>
@@ -1518,16 +1518,16 @@ function clinicalCoreAnalysis(){
  const completeness=Math.max(0,Math.round((requiredBase.length-missing.filter(x=>requiredBase.some(y=>y[0]===x)).length)/requiredBase.length*100));
  const criticalBaseMissing=requiredBase.filter(x=>['Sistolik TA','Nabız','Solunum sayısı','SpO₂','Bilinç'].includes(x[0])&&(x[1]===undefined||x[1]===null||String(x[1]).trim()===''||x[1]==='Seçilmedi')).map(x=>x[0]);
  const stableGastroenteritis=['İshal','Bulantı-kusma / ishal'].includes(S.complaint)
-  && !cr.length
   && Number(S.sbp)>=100 && Number(S.pulse)>=50 && Number(S.pulse)<=100
   && Number(S.rr)>=10 && Number(S.rr)<=22 && Number(S.spo2)>=94
   && ['Normal','İyi/stabil'].includes(S.mental)
   && Number(S.severity||0)<=4
   && !(S.redFlags||[]).length;
- const severe=cr.length>0||consult.level==='critical';
- // Kritik vital veri eksikliği varsa, gerçek bir kırmızı bayrak yokken algoritma tanısal puanla yüksek risk ilan etmez.
+ // Alt motorların eksik boş vital değerlerini 0 kabul etmesinden doğan yapay 'kritik' sonuçları Core katmanında engelle.
+ // Stabil gastroenterit yolu da alt motorun gereksiz yüksek konsültasyon seviyesine üstün gelir.
+ const severe=cr.length>0||(!criticalBaseMissing.length&&!stableGastroenteritis&&consult.level==='critical');
  const high=!severe&&!criticalBaseMissing.length&&!stableGastroenteritis&&(consult.level==='high'||dx.some(x=>x.score>=65));
- let priority=severe?'Kırmızı — zaman kritik':criticalBaseMissing.length?'Sarı — kritik veriyi tamamla':high?'Turuncu — yüksek risk':stableGastroenteritis?'Yeşil — düşük riskli destek tedavisi':missing.length?'Sarı — veri tamamla':'Yeşil — yeniden değerlendir';
+ let priority=severe?'Kırmızı — zaman kritik':criticalBaseMissing.length?'Sarı — kritik veriyi tamamla':stableGastroenteritis?'Yeşil — düşük riskli destek tedavisi':high?'Turuncu — yüksek risk':missing.length?'Sarı — veri tamamla':'Yeşil — yeniden değerlendir';
  let level=severe?'critical':criticalBaseMissing.length?'medium':high?'high':missing.length?'medium':'low';
  const next=[];
  if(cr.length)next.push('ABC yaklaşımı, monitörizasyon ve kritik bulguyu eşzamanlı yönet');
@@ -1570,10 +1570,10 @@ function runCoreScenarioTests(){
  const checks=runs.flatMap(x=>x.checks),pass=checks.filter(x=>x.pass).length,fail=checks.length-pass,criticalFail=checks.filter(x=>!x.pass&&x.critical).length;
  const summary=el('coreScenarioSummary');if(summary){summary.className=`panel ${criticalFail?'urgent':fail?'warn':'ok'}`;summary.innerHTML=unexpected?`<b>Test motoru çalışırken hata oluştu</b><br>${esc(unexpected)}`:`<b>${criticalFail?'Klinik Asistan Core kontrolü başarısız':'Klinik Asistan Core doğrulaması tamamlandı'}</b><br>🧭 ${runs.length} senaryo · 🟢 ${pass} geçti · 🔴 ${criticalFail} kritik hata`}
  const box=el('coreScenarioResults');if(box)box.innerHTML=unexpected?`<div class="safety-alert safety-critical"><strong>🔴 JavaScript hatası</strong><div>${esc(unexpected)}</div></div>`:runs.map(r=>`<div class="scenario-suite"><div class="scenario-suite-head"><strong>${esc(r.name)}</strong><span class="scenario-score ${r.criticalFailed?'scenario-fail':'scenario-pass'}">${r.passed}/${r.total}</span></div>${r.checks.map(c=>`<div class="scenario-check ${c.pass?'scenario-check-pass':'scenario-check-fail'}"><b>${c.pass?'✓':'✕'} ${esc(c.title)}</b><div>${esc(c.detail)}</div></div>`).join('')}</div>`).join('');
- lastCoreScenarioReport=[`ACİL KLİNİK ASİSTANI CORE RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.0.1 Beta`,`Sonuç: ${runs.length} senaryo, ${pass}/${checks.length} kontrol geçti, ${criticalFail} kritik hata`,'',...runs.flatMap(r=>[`${r.name} — ${r.passed}/${r.total}`,...r.checks.map(c=>`${c.pass?'GEÇTİ':'HATA'} | ${c.title} | ${c.detail}`),''])].join('\n');
+ lastCoreScenarioReport=[`ACİL KLİNİK ASİSTANI CORE RAPORU`,`Tarih: ${new Date().toLocaleString('tr-TR')}`,`Sürüm: v4.0.2 Beta`,`Sonuç: ${runs.length} senaryo, ${pass}/${checks.length} kontrol geçti, ${criticalFail} kritik hata`,'',...runs.flatMap(r=>[`${r.name} — ${r.passed}/${r.total}`,...r.checks.map(c=>`${c.pass?'GEÇTİ':'HATA'} | ${c.title} | ${c.detail}`),''])].join('\n');
  const card=el('coreScenarioCard');if(card)card.open=true;return runs;
 }
-function downloadCoreScenarioReport(){if(!lastCoreScenarioReport)runCoreScenarioTests();const blob=new Blob([lastCoreScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-core-v4.0.1.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function downloadCoreScenarioReport(){if(!lastCoreScenarioReport)runCoreScenarioTests();const blob=new Blob([lastCoreScenarioReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-core-v4.0.2.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 
 function renderProfessionalDocs(){
  const box=el('professionalDoc');if(!box)return;
