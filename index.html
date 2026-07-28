@@ -89,25 +89,24 @@ body.module-view .layout aside{display:none!important}
 /* v6.7.1 Kullanılabilirlik ve mobil güvenlik */
 html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;height:auto}.card,.question,.panel,.workflow-summary-box{min-width:0;overflow-wrap:anywhere}.grid>* ,.grid3>* ,.choices>* ,.dashboard-grid>*{min-width:0}.dashboard-tile{touch-action:manipulation}.dashboard-tile:focus-visible,button:focus-visible{outline:3px solid rgba(45,212,191,.55);outline-offset:2px}.mobile-dock button{touch-action:manipulation}.module-heading{position:sticky;top:96px;z-index:9;background:rgba(238,245,248,.94);backdrop-filter:blur(10px);padding:7px 0}.usability-status{font-size:12px;margin-top:8px}.mobile-safe-table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:560px){body{padding-bottom:78px}.head{gap:7px}.head>div:first-child{min-width:0}.head h1{white-space:normal}.status{max-width:48%}.dashboard-grid{grid-template-columns:1fr}.dashboard-tile{min-height:88px}.dashboard-quick{display:grid;grid-template-columns:1fr 1fr}.dashboard-quick b{grid-column:1/-1}.dashboard-quick button{width:100%}.actions{position:static;margin-bottom:4px}.actions button{min-height:46px}.module-heading{top:88px}.card input,.card select,.card textarea{font-size:16px}.workflow-toolbar button{flex:1;min-width:130px}}
 
-/* v6.8.3 Stable • Vaka Formu ve Mod Düzeltmesi
-/* v6.8.1 Akıllı vaka yapılandırma */
-.smart-case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.smart-case-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
-.smart-case-card h3{margin:0 0 8px;font-size:15px;color:#0f766e}
-.smart-case-card ul{margin:6px 0 0;padding-left:19px}
-.smart-case-card li{margin:5px 0}
-.smart-case-critical{grid-column:1/-1;border-color:#ef4444;background:#fff1f2}
-.smart-case-critical h3{color:#b91c1c}
-.smart-case-warning{border-color:#f59e0b;background:#fffbeb}
-.smart-case-ok{border-color:#10b981;background:#ecfdf5}
-.smart-case-note{font-size:12px;color:var(--muted);margin-top:8px}
-.smart-case-badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#fee2e2;color:#991b1b;font-weight:800;margin:3px 5px 3px 0}
-@media(max-width:560px){.smart-case-grid{grid-template-columns:1fr}.smart-case-critical{grid-column:auto}}
+/* v6.8.4 Stable • Akıllı Eksik Soru Motoru
+/* v6.8.4 Akıllı eksik soru motoru */
+.smart-question-engine{margin-top:14px;border:1px solid #99f6e4;border-radius:16px;padding:14px;background:#f0fdfa}
+.smart-question-engine h3{margin:0 0 6px;color:#0f766e}
+.smart-question-engine .sq-intro{margin:0 0 12px;color:var(--muted)}
+.smart-question-list{display:grid;gap:10px}
+.smart-question{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}
+.smart-question label{display:block;font-weight:750;margin-bottom:7px}
+.smart-question select,.smart-question input{width:100%}
+.smart-question-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.smart-question-progress{font-size:13px;font-weight:750;color:#0f766e;margin:8px 0}
+.smart-question-complete{border-color:#10b981;background:#ecfdf5}
+@media(max-width:560px){.smart-question-actions button{flex:1 1 100%}}
 
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.8.3 Stable • Vaka Formu ve Mod Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.8.4 Stable • Vaka Formu ve Mod Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -146,6 +145,7 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
  <label>Vaka anlatımı<textarea id="naturalCaseText" placeholder="Örn. 62 yaş erkek, 2 saattir baskı tarzında göğüs ağrısı, sol kola yayılıyor, terleme ve bulantı var. TA 95/60, nabız 108, SpO₂ 94."></textarea></label>
  <div class="compact-actions no-print"><button class="primary" type="button" onclick="analyzeNaturalCase()">Vakayı yapılandır</button><button type="button" onclick="applyNaturalCaseToForm()">Forma aktar</button><button type="button" onclick="clearNaturalCase()">Temizle</button></div>
  <div id="naturalCaseResult" class="nl-case-results"><div class="nl-case-box"><h3>Hazır</h3><p class="muted">Vaka metnini yazıp “Vakayı yapılandır” düğmesine basın.</p></div></div>
+<div id="smartQuestionEngine"></div>
 </div>
 <div class="card" id="caseEntryCard">
  <div class="section-title"><h2 id="mainTitle">Hasta bilgisi</h2><button class="no-print" onclick="newCase()">Yeni vaka</button></div>
@@ -1309,6 +1309,123 @@ function renderSmartClinicalAssessment(data){
  return a;
 }
 
+
+var NATURAL_CASE_ANSWERS={};
+
+function smartQuestionDefinitions(d){
+ var raw=normalizeClinicalText((d&&d.raw)||'');
+ var complaint=normalizeClinicalText((d&&d.complaint)||raw);
+ var q=[];
+ function add(id,label,type,options,map){q.push({id:id,label:label,type:type||'select',options:options||[],map:map||null})}
+ if(!(d&&d.onset))add('onset','Şikâyet ani mi, kademeli mi başladı?','select',['','Ani','Kademeli','Belirsiz'],'onset');
+ if(!(d&&d.duration))add('duration','Şikâyet ne kadar süredir var?','text',[],'duration');
+ if(!(d&&d.mental))add('mental','Bilinç durumu nasıl?','select',['','Normal','Konfüze','Somnolans','Yanıtsız'],'mental');
+
+ var chest=/gogus agrisi|goguste baski|gogus baskisi/.test(complaint+' '+raw);
+ var dyspnea=/nefes darligi|dispne/.test(complaint+' '+raw);
+ var abdomen=/karin agrisi/.test(complaint+' '+raw);
+ var headache=/bas agrisi/.test(complaint+' '+raw);
+
+ if(chest){
+  if(!/efor/.test(raw))add('exertional','Ağrı eforla artıyor mu?','select',['','Evet','Hayır','Belirsiz'],'exertional');
+  if(!/nefesle|plevrit/.test(raw))add('pleuritic','Derin nefes veya öksürükle artıyor mu?','select',['','Evet','Hayır','Belirsiz'],'pleuritic');
+  if(!/sirta yay|ceneye yay|kola yay|sol kol/.test(raw))add('radiation','Ağrı kola, çeneye veya sırta yayılıyor mu?','select',['','Yok','Sol kol/omuz','Çene','Sırt','Birden fazla'],'radiation');
+  if(!/senkop|bayil/.test(raw))add('syncope','Senkop veya presenkop oldu mu?','select',['','Hayır','Evet','Belirsiz'],'symptom');
+  if(!/koroner|kalp krizi|kah|stent/.test(raw))add('cadHistory','Bilinen koroner arter hastalığı, geçirilmiş MI veya stent var mı?','select',['','Hayır','Evet','Bilinmiyor'],'history');
+  if(!/diyabet|dm|hipertansiyon|ht|sigara/.test(raw))add('riskFactors','DM, HT veya aktif sigara kullanımı var mı?','select',['','Yok','Bir tanesi','İki veya daha fazla','Bilinmiyor'],'history');
+  if(!/ekg/.test(raw))add('ecg','EKG sonucu nedir?','select',['','Bekleniyor','Normal/noniskemik','Nonspesifik ST-T','ST depresyonu/T inversiyonu','ST elevasyonu'],'ecg');
+  if(!/troponin/.test(raw))add('troponin','İlk troponin sonucu nedir?','select',['','Bekleniyor','Normal','Üst sınırın 1–3 katı','Üst sınırın >3 katı'],'troponin');
+ }
+ if(dyspnea){
+  add('orthopnea','Ortopne veya paroksismal gece dispnesi var mı?','select',['','Hayır','Evet','Belirsiz'],'symptom');
+  add('wheeze','Hırıltı veya bilinen astım/KOAH var mı?','select',['','Hayır','Evet','Belirsiz'],'symptom');
+  add('vte','Hemoptizi, tek taraflı bacak şişliği veya VTE öyküsü var mı?','select',['','Hayır','Evet','Belirsiz'],'redFlag');
+ }
+ if(abdomen){
+  add('abdLocation','Ağrının en belirgin olduğu bölge neresi?','select',['','Yaygın','Sağ alt kadran','Sağ üst kadran','Epigastrik','Suprapubik'],'painType');
+  add('vomiting','Kusma veya oral alamama var mı?','select',['','Hayır','Evet','Belirsiz'],'symptom');
+  add('pregnancy','Gebelik olasılığı var mı?','select',['','Uygulanamaz','Hayır','Evet','Bilinmiyor'],'symptom');
+ }
+ if(headache){
+  add('thunderclap','Ağrı saniyeler-dakikalar içinde en şiddetli düzeye ulaştı mı?','select',['','Hayır','Evet','Belirsiz'],'redFlag');
+  add('neuroDeficit','Yeni fokal nörolojik bulgu veya nöbet var mı?','select',['','Hayır','Evet','Belirsiz'],'redFlag');
+  add('meningism','Ateş veya ense sertliği var mı?','select',['','Hayır','Evet','Belirsiz'],'redFlag');
+ }
+ return q.slice(0,8);
+}
+
+function renderSmartQuestions(d){
+ var host=document.getElementById('smartQuestionEngine');
+ if(!host)return;
+ var questions=smartQuestionDefinitions(d||NATURAL_CASE_DRAFT||{});
+ if(!questions.length){
+  host.innerHTML='<div class="smart-question-engine smart-question-complete"><h3>✅ Kritik bilgiler tamamlandı</h3><p class="sq-intro">Bu vaka için temel soru setinde açık eksik görünmüyor. Klinik doğrulama yapın.</p></div>';
+  return;
+ }
+ var answered=questions.filter(function(q){return String(NATURAL_CASE_ANSWERS[q.id]||'').trim()}).length;
+ host.innerHTML='<div class="smart-question-engine"><h3>❓ Akıllı eksik sorular</h3>'+
+  '<p class="sq-intro">Vaka örüntüsüne göre öncelikli eksik sorular gösteriliyor. Yanıtlar değerlendirmeyi ve formu günceller.</p>'+
+  '<div class="smart-question-progress">'+answered+'/'+questions.length+' soru yanıtlandı</div>'+
+  '<div class="smart-question-list">'+questions.map(function(q){
+    var value=NATURAL_CASE_ANSWERS[q.id]||'';
+    if(q.type==='text')return '<div class="smart-question"><label for="sq_'+q.id+'">'+esc(q.label)+'</label><input id="sq_'+q.id+'" data-smart-question="'+q.id+'" type="text" value="'+esc(value)+'" placeholder="Yanıtı yazın"></div>';
+    return '<div class="smart-question"><label for="sq_'+q.id+'">'+esc(q.label)+'</label><select id="sq_'+q.id+'" data-smart-question="'+q.id+'">'+
+      q.options.map(function(o){return '<option value="'+esc(o)+'"'+(o===value?' selected':'')+'>'+esc(o||'Seçiniz')+'</option>'}).join('')+'</select></div>';
+  }).join('')+'</div>'+
+  '<div class="smart-question-actions"><button class="primary" type="button" onclick="applySmartQuestionAnswers()">Yanıtları uygula</button><button type="button" onclick="clearSmartQuestionAnswers()">Yanıtları temizle</button></div></div>';
+}
+
+function applySmartQuestionAnswers(){
+ var d=NATURAL_CASE_DRAFT||analyzeNaturalCase();
+ if(!d)return;
+ document.querySelectorAll('[data-smart-question]').forEach(function(elm){
+  NATURAL_CASE_ANSWERS[elm.getAttribute('data-smart-question')]=elm.value||'';
+ });
+ var qs=smartQuestionDefinitions(d);
+ d.smartAnswers=Object.assign({},NATURAL_CASE_ANSWERS);
+ qs.forEach(function(q){
+  var v=NATURAL_CASE_ANSWERS[q.id];if(!v)return;
+  if(q.map==='onset')d.onset=v;
+  else if(q.map==='duration')d.duration=v;
+  else if(q.map==='mental')d.mental=v;
+  else if(q.map==='painType')d.painType=v;
+  else if(q.map==='ecg')d.ecg=v;
+  else if(q.map==='troponin')d.troponin=v;
+  else if(q.map==='exertional')d.exertional=v;
+  else if(q.map==='pleuritic')d.pleuritic=v;
+  else if(q.map==='radiation'&&v!=='Yok')d.symptoms=uniqueClinical((d.symptoms||[]).concat('Yayılım: '+v));
+  else if(q.map==='symptom'&&v==='Evet'){
+    var labels={syncope:'Senkop/presenkop',orthopnea:'Ortopne/PND',wheeze:'Hırıltı',vomiting:'Kusma/oral alamama',pregnancy:'Gebelik olasılığı'};
+    d.symptoms=uniqueClinical((d.symptoms||[]).concat(labels[q.id]||q.label));
+  } else if(q.map==='redFlag'&&v==='Evet'){
+    var reds={vte:'VTE düşündüren bulgu',thunderclap:'Ani gök gürültüsü tarzında başlangıç',neuroDeficit:'Yeni fokal nörolojik defisit/nöbet',meningism:'Ateş/ense sertliği'};
+    d.redFlags=uniqueClinical((d.redFlags||[]).concat(reds[q.id]||q.label));
+  } else if(q.map==='history'&&(v==='Evet'||v==='Bir tanesi'||v==='İki veya daha fazla')){
+    var hs={cadHistory:'Koroner arter hastalığı/MI/stent',riskFactors:'Kardiyovasküler risk faktörü'};
+    d.history=uniqueClinical((d.history||[]).concat(hs[q.id]||q.label));
+  }
+ });
+ d.missing=(d.missing||[]).filter(function(x){
+  var n=normalizeClinicalText(x);
+  if(d.onset&&n.includes('baslangic'))return false;
+  if(d.duration&&n.includes('sure'))return false;
+  if(d.mental&&n.includes('bilinc'))return false;
+  return true;
+ });
+ NATURAL_CASE_DRAFT=d;
+ renderSmartQuestions(d);
+ renderSmartClinicalAssessment({rawText:d.raw,complaint:d.complaint,sbp:d.sbp,dbp:d.dbp,pulse:d.pulse,rr:d.rr,spo2:d.spo2,temp:d.temp,mental:d.mental});
+ var result=document.getElementById('naturalCaseResult');
+ if(result){
+  var old=result.querySelector('.smart-answer-ok');if(old)old.remove();
+  result.insertAdjacentHTML('afterbegin','<div class="panel ok smart-answer-ok" style="grid-column:1/-1"><b>Yanıtlar uygulandı.</b> Vaka taslağı ve klinik değerlendirme güncellendi.</div>');
+ }
+}
+function clearSmartQuestionAnswers(){
+ NATURAL_CASE_ANSWERS={};
+ renderSmartQuestions(NATURAL_CASE_DRAFT||{});
+}
+
 function analyzeNaturalCase(){
  var box=document.getElementById('naturalCaseText'),panel=document.getElementById('naturalCaseResult');if(!box||!panel)return null;
  var parsed=parseNaturalCase(box.value);
@@ -1321,6 +1438,7 @@ function analyzeNaturalCase(){
  '<div class="nl-case-box"><h3>Belirti ve uyarılar</h3>'+workflowList(d.symptoms.concat(d.redFlags), 'Belirti veya kırmızı bayrak algılanmadı')+'</div>'+ 
  '<div class="nl-case-box"><h3>Sonraki adım</h3><p>Bilgileri kontrol edip <b>Forma aktar</b> düğmesine basın. Ardından eksik alanları vaka formunda tamamlayın.</p></div>';
  renderSmartClinicalAssessment({rawText:d.raw,complaint:d.complaint,sbp:d.sbp,dbp:d.dbp,pulse:d.pulse,rr:d.rr,spo2:d.spo2,temp:d.temp,mental:d.mental});
+ renderSmartQuestions(d);
  return d;
 }
 function applyNaturalCaseToForm(){
@@ -1329,6 +1447,8 @@ function applyNaturalCaseToForm(){
   ['age','sex','complaint','duration','onset','painType','severity','sbp','dbp','pulse','rr','spo2','temp','mental'].forEach(function(k){if(d[k]!==''&&d[k]!=null)S[k]=String(d[k])});
   S.symptoms=Array.from(new Set((S.symptoms||[]).concat(d.symptoms||[])));
   S.redFlags=Array.from(new Set((S.redFlags||[]).concat(d.redFlags||[])));
+  S.history=Array.from(new Set((S.history||[]).concat(d.history||[])));
+  ['ecg','troponin','exertional','pleuritic'].forEach(function(k){if(d[k])S[k]=d[k]});
   S.notes=[S.notes,d.raw].filter(Boolean).join('\n');
   try{localStorage.setItem('acilCase',JSON.stringify(S))}catch(e){}
   quickMode=false;currentStep=0;
@@ -1342,7 +1462,7 @@ function applyNaturalCaseToForm(){
   setTimeout(function(){var card=document.getElementById('caseEntryCard');if(card)card.scrollIntoView({behavior:'smooth',block:'start'})},30);
  }catch(err){console.error('Forma aktarma hatası',err);alert('Forma aktarılırken hata oluştu: '+(err.message||err))}
 }
-function clearNaturalCase(){var x=document.getElementById('naturalCaseText'),p=document.getElementById('naturalCaseResult');if(x)x.value='';NATURAL_CASE_DRAFT=null;if(p)p.innerHTML='<div class="nl-case-box"><h3>Hazır</h3><p class="muted">Vaka metnini yazıp “Vakayı yapılandır” düğmesine basın.</p></div>'}
+function clearNaturalCase(){var x=document.getElementById('naturalCaseText'),p=document.getElementById('naturalCaseResult'),q=document.getElementById('smartQuestionEngine'),s=document.getElementById('smartClinicalAssessment');if(x)x.value='';NATURAL_CASE_DRAFT=null;NATURAL_CASE_ANSWERS={};if(p)p.innerHTML='<div class="nl-case-box"><h3>Hazır</h3><p class="muted">Vaka metnini yazıp “Vakayı yapılandır” düğmesine basın.</p></div>';if(q)q.innerHTML='';if(s)s.innerHTML=''}
 
 function collect(){
  const ids=['age','sex','complaint','severity','notes','sbp','dbp','pulse','rr','spo2','temp','mental','onset','duration','painType','exertional','pleuritic','positional','palpation','smoking','substance','meds','allergy','surgery','ecg','troponin','repeatTroponin','ddimer','cxr','hb','creatinine','reSbp','reDbp','rePulse','reRr','reSpo2','reTemp','reMental','response','rePain','reBreathing','reNeuro','reGeneral','consultStatus','clinicalCourse','disposition','dispositionReason','followup','prescriptionStatus','transportStatus','homeSupport','ecgRate','ecgRhythm','ecgAxis','ecgPR','ecgQRS','ecgQTc','ecgDoctorNote','wbc','platelet','sodium','potassium','chloride','glucose','urea','egfr','calcium','albumin','magnesium','crp','procalcitonin','lactate','ast','alt','bilirubin','lipase','ph','pco2','hco3','po2','baseExcess','ketone','pregnancyTest','weight','drugScenario','drugRoute','selectedDrug','drugNotes','doseCalcDrug','doseMgKg','doseFixedMg','doseMaxMg','doseConcentrationMgMl','doseRepeatCount','doseInfusionVolumeMl','doseInfusionMinutes','sepsisSuspected','infectionSource','cultureStatus','antibioticStatus','antibioticTime','fluidGiven','capRefill','urineOutput','mapTarget','vasopressor','sourceControl','sepsisNotes','strokeAlert','lastKnownWell','symptomDiscovery','anticoagulantType','lastAnticoagulantDose','baselineMRS','gcsEye','gcsVerbal','gcsMotor','nihssLOC','nihssQuestions','nihssCommands','nihssGaze','nihssVisual','nihssFacial','nihssArmL','nihssArmR','nihssLegL','nihssLegR','nihssAtaxia','nihssSensory','nihssLanguage','nihssDysarthria','nihssExtinction','strokeGlucose','brainCT','ctaResult','perfusionImaging','strokeBPPlan','dysphagiaScreen','seizureOngoing','seizureDuration','seizureRescueGiven','neuroNotes','clinicianHypothesis','clinicalQuestion','heartHistory','heartRiskCount','newsOxygen'];ids.forEach(id=>{if(el(id))S[id]=val(id)});if(!pregnancyRelevant()){S.pregnancyTest='İstenmedi';S.symptoms=S.symptoms.filter(x=>x!=='Gebelik olasılığı');S.treatmentSafety=S.treatmentSafety.filter(x=>x!=='Gebelik olasılığı');}
@@ -4142,7 +4262,7 @@ function runStabilityChecks(showDetails){
  add('Sistem kontrol merkezi',!!document.getElementById('systemHubCard'));
  var registry=ensureAppRegistry();Object.keys(registry.groups).forEach(function(key){var g=registry.groups[key];add('Kategori: '+g.title,g.ids.some(function(id){return !!document.getElementById(id)}),'Tanımlı kart: '+g.ids.length)});
  var ids=Array.from(document.querySelectorAll('[id]')).map(function(el){return el.id}),dups=ids.filter(function(id,i){return ids.indexOf(id)!==i});add('Benzersiz HTML kimlikleri',dups.length===0,dups.length?dups.join(', '):'Çakışma yok');
- ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
+ ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm','renderSmartQuestions','applySmartQuestionAnswers'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
  var stableRegistry=ensureAppRegistry();add('Başlatma hatası',stableRegistry.initErrors.length===0,stableRegistry.initErrors.join(' | '));
  add('Çalışma zamanı hatası',stableRegistry.runtimeErrors.length===0,stableRegistry.runtimeErrors.slice(-5).join(' | '));
  var ux=typeof runUsabilityChecks==='function'?runUsabilityChecks():null;if(ux)ux.checks.forEach(function(c){checks.push({name:'Kullanılabilirlik: '+c.name,ok:c.ok,detail:c.detail})});var passed=checks.filter(function(c){return c.ok}).length,total=checks.length,box=document.getElementById('stabilitySummary');
@@ -4243,7 +4363,7 @@ function initAppStable(){
 }
 window.addEventListener('error',function(e){ensureAppRegistry().runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){ensureAppRegistry().runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
+Object.assign(window,{renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
 
