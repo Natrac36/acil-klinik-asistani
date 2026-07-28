@@ -89,16 +89,20 @@ body.module-view .layout aside{display:none!important}
 /* v6.7.1 Kullanılabilirlik ve mobil güvenlik */
 html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;height:auto}.card,.question,.panel,.workflow-summary-box{min-width:0;overflow-wrap:anywhere}.grid>* ,.grid3>* ,.choices>* ,.dashboard-grid>*{min-width:0}.dashboard-tile{touch-action:manipulation}.dashboard-tile:focus-visible,button:focus-visible{outline:3px solid rgba(45,212,191,.55);outline-offset:2px}.mobile-dock button{touch-action:manipulation}.module-heading{position:sticky;top:96px;z-index:9;background:rgba(238,245,248,.94);backdrop-filter:blur(10px);padding:7px 0}.usability-status{font-size:12px;margin-top:8px}.mobile-safe-table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}@media(max-width:560px){body{padding-bottom:78px}.head{gap:7px}.head>div:first-child{min-width:0}.head h1{white-space:normal}.status{max-width:48%}.dashboard-grid{grid-template-columns:1fr}.dashboard-tile{min-height:88px}.dashboard-quick{display:grid;grid-template-columns:1fr 1fr}.dashboard-quick b{grid-column:1/-1}.dashboard-quick button{width:100%}.actions{position:static;margin-bottom:4px}.actions button{min-height:46px}.module-heading{top:88px}.card input,.card select,.card textarea{font-size:16px}.workflow-toolbar button{flex:1;min-width:130px}}
 
-/* v6.8.0 Doğal dille vaka girişi */
-.nl-case-card{border:2px solid #0f766e;background:linear-gradient(180deg,#f0fdfa,#fff)}
-.nl-case-card textarea{min-height:110px}
-.nl-case-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.nl-case-box{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
-.nl-case-box h3{margin:0 0 7px;font-size:14px;color:#0f766e}
-.nl-case-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
-.nl-case-tag{display:inline-flex;padding:5px 8px;border-radius:999px;background:#e6fffb;font-size:12px;font-weight:700}
-.nl-case-missing{background:#fff7ed;border-color:#fdba74}
-@media(max-width:560px){.nl-case-results{grid-template-columns:1fr}}
+/* v6.8.1 Stable • Akıllı Vaka Yapılandırma
+/* v6.8.1 Akıllı vaka yapılandırma */
+.smart-case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.smart-case-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+.smart-case-card h3{margin:0 0 8px;font-size:15px;color:#0f766e}
+.smart-case-card ul{margin:6px 0 0;padding-left:19px}
+.smart-case-card li{margin:5px 0}
+.smart-case-critical{grid-column:1/-1;border-color:#ef4444;background:#fff1f2}
+.smart-case-critical h3{color:#b91c1c}
+.smart-case-warning{border-color:#f59e0b;background:#fffbeb}
+.smart-case-ok{border-color:#10b981;background:#ecfdf5}
+.smart-case-note{font-size:12px;color:var(--muted);margin-top:8px}
+.smart-case-badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#fee2e2;color:#991b1b;font-weight:800;margin:3px 5px 3px 0}
+@media(max-width:560px){.smart-case-grid{grid-template-columns:1fr}.smart-case-critical{grid-column:auto}}
 
 </style>
 </head>
@@ -148,6 +152,7 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
  <div id="stepContent"></div>
  <div class="actions"><button id="backBtn" onclick="prevStep()">Geri</button><button id="nextBtn" class="primary" onclick="nextStep()">Devam et</button><button onclick="saveCase()">Kaydet</button><button onclick="window.print()">Yazdır / PDF</button></div>
 </div>
+<div id="smartClinicalAssessment"></div>
 <div class="card" id="clinicalNoteCard">
  <h3>Klinik not taslağı</h3><textarea id="clinicalNote" rows="12" placeholder="Girilen bilgilerle otomatik oluşur..."></textarea>
 </div>
@@ -703,7 +708,7 @@ let currentStep=0;
 function order(){return quickMode?quickOrder:detailedOrder}
 function stepTitle(){return fullSteps[order()[currentStep]]}
 function toggleMode(){collect();const oldPage=order()[currentStep];quickMode=!quickMode;localStorage.setItem('acilQuickMode',String(quickMode));const nextOrder=order();currentStep=Math.max(0,nextOrder.indexOf(oldPage));if(currentStep<0)currentStep=0;render()}
-let S={qIndex:0,chatLog:[],age:'',sex:'',complaint:'Göğüs ağrısı',onset:'',duration:'',painType:'',radiation:[],severity:'',exertional:'',pleuritic:'',positional:'',palpation:'',symptoms:[],history:[],meds:'',allergy:'',surgery:'',smoking:'',substance:'',sbp:'',dbp:'',pulse:'',rr:'',spo2:'',temp:'',mental:'Normal',redFlags:[],exam:[],ecg:'Bekleniyor',troponin:'Bekleniyor',repeatTroponin:'Bekleniyor',hb:'',creatinine:'',ddimer:'Bekleniyor',cxr:'Bekleniyor',consult:[],treatmentSafety:[],notes:'',reSbp:'',reDbp:'',rePulse:'',reRr:'',reSpo2:'',reTemp:'',reMental:'Normal',response:'Değerlendirilmedi',clinicalCourse:'',disposition:'Gözlem sürüyor',dispositionReason:'',followup:'',returnPrecautions:[],prescriptionStatus:'Değerlendirilmedi',transportStatus:'Değerlendirilmedi',homeSupport:'Değerlendirilmedi',rePain:'Değerlendirilmedi',reBreathing:'Değerlendirilmedi',reNeuro:'Değerlendirilmedi',reGeneral:'Değerlendirilmedi',serialChecks:[],dischargeChecklist:[],consultStatus:'Değerlendirilmedi',ecgRate:'',ecgRhythm:'Seçilmedi',ecgAxis:'Seçilmedi',ecgPR:'',ecgQRS:'',ecgQTc:'',ecgFindings:[],ecgTerritory:[],ecgQuality:[],ecgDoctorNote:'',ecgImageName:'',ecgImageData:'',wbc:'',platelet:'',sodium:'',potassium:'',chloride:'',glucose:'',urea:'',egfr:'',calcium:'',albumin:'',magnesium:'',crp:'',procalcitonin:'',lactate:'',ast:'',alt:'',bilirubin:'',lipase:'',ph:'',pco2:'',hco3:'',po2:'',baseExcess:'',ketone:'Bekleniyor',pregnancyTest:'Bekleniyor',weight:'',drugScenario:'Seçilmedi',drugRoute:'Seçilmedi',selectedDrug:'Adrenalin (anafilaksi)',drugNotes:'',administeredMeds:[],renalDoseChecked:false,allergyChecked:false,pregnancyChecked:false,interactionChecked:false,sepsisSuspected:'Hayır',infectionSource:'Belirsiz',cultureStatus:'Bekleniyor',antibioticStatus:'Başlanmadı',antibioticTime:'',fluidGiven:'',capRefill:'',urineOutput:'',mapTarget:'65',vasopressor:'Başlanmadı',sourceControl:'Değerlendirilmedi',sepsisNotes:'',strokeAlert:'Hayır',lastKnownWell:'',symptomDiscovery:'',strokeDeficit:[],anticoagulantType:'Yok/bilinmiyor',lastAnticoagulantDose:'',baselineMRS:'0',gcsEye:'4',gcsVerbal:'5',gcsMotor:'6',nihssLOC:'0',nihssQuestions:'0',nihssCommands:'0',nihssGaze:'0',nihssVisual:'0',nihssFacial:'0',nihssArmL:'0',nihssArmR:'0',nihssLegL:'0',nihssLegR:'0',nihssAtaxia:'0',nihssSensory:'0',nihssLanguage:'0',nihssDysarthria:'0',nihssExtinction:'0',strokeGlucose:'',brainCT:'Bekleniyor',ctaResult:'Bekleniyor',perfusionImaging:'Yapılmadı',thrombolysisChecklist:[],thrombectomyChecklist:[],strokeBPPlan:'',dysphagiaScreen:'Yapılmadı',seizureOngoing:'Hayır',seizureDuration:'',seizureRescueGiven:'Hayır',neuroNotes:'',clinicianHypothesis:'',clinicalQuestion:'',heartHistory:'',heartRiskCount:'',selectedIcd:'',icdSearch:'',doseCalcDrug:'Adrenalin (anafilaksi)',doseMgKg:'0.01',doseFixedMg:'',doseMaxMg:'0.5',doseConcentrationMgMl:'1',doseRepeatCount:'1',doseInfusionVolumeMl:'',doseInfusionMinutes:'',newsOxygen:'Hayır',peRisk:[],orderedTests:[]};
+let S={qIndex:0,chatLog:[],age:'',sex:'',complaint:'Göğüs ağrısı',onset:'',duration:'',painType:'',radiation:[],severity:'',exertional:'',pleuritic:'',positional:'',palpation:'',symptoms:[],history:[],meds:'',allergy:'',surgery:'',smoking:'',substance:'',sbp:'',dbp:'',pulse:'',rr:'',spo2:(robustSpo2||''),temp:'',mental:(robustMental||'Normal'),redFlags:[],exam:[],ecg:'Bekleniyor',troponin:'Bekleniyor',repeatTroponin:'Bekleniyor',hb:'',creatinine:'',ddimer:'Bekleniyor',cxr:'Bekleniyor',consult:[],treatmentSafety:[],notes:'',reSbp:'',reDbp:'',rePulse:'',reRr:'',reSpo2:'',reTemp:'',reMental:'Normal',response:'Değerlendirilmedi',clinicalCourse:'',disposition:'Gözlem sürüyor',dispositionReason:'',followup:'',returnPrecautions:[],prescriptionStatus:'Değerlendirilmedi',transportStatus:'Değerlendirilmedi',homeSupport:'Değerlendirilmedi',rePain:'Değerlendirilmedi',reBreathing:'Değerlendirilmedi',reNeuro:'Değerlendirilmedi',reGeneral:'Değerlendirilmedi',serialChecks:[],dischargeChecklist:[],consultStatus:'Değerlendirilmedi',ecgRate:'',ecgRhythm:'Seçilmedi',ecgAxis:'Seçilmedi',ecgPR:'',ecgQRS:'',ecgQTc:'',ecgFindings:[],ecgTerritory:[],ecgQuality:[],ecgDoctorNote:'',ecgImageName:'',ecgImageData:'',wbc:'',platelet:'',sodium:'',potassium:'',chloride:'',glucose:'',urea:'',egfr:'',calcium:'',albumin:'',magnesium:'',crp:'',procalcitonin:'',lactate:'',ast:'',alt:'',bilirubin:'',lipase:'',ph:'',pco2:'',hco3:'',po2:'',baseExcess:'',ketone:'Bekleniyor',pregnancyTest:'Bekleniyor',weight:'',drugScenario:'Seçilmedi',drugRoute:'Seçilmedi',selectedDrug:'Adrenalin (anafilaksi)',drugNotes:'',administeredMeds:[],renalDoseChecked:false,allergyChecked:false,pregnancyChecked:false,interactionChecked:false,sepsisSuspected:'Hayır',infectionSource:'Belirsiz',cultureStatus:'Bekleniyor',antibioticStatus:'Başlanmadı',antibioticTime:'',fluidGiven:'',capRefill:'',urineOutput:'',mapTarget:'65',vasopressor:'Başlanmadı',sourceControl:'Değerlendirilmedi',sepsisNotes:'',strokeAlert:'Hayır',lastKnownWell:'',symptomDiscovery:'',strokeDeficit:[],anticoagulantType:'Yok/bilinmiyor',lastAnticoagulantDose:'',baselineMRS:'0',gcsEye:'4',gcsVerbal:'5',gcsMotor:'6',nihssLOC:'0',nihssQuestions:'0',nihssCommands:'0',nihssGaze:'0',nihssVisual:'0',nihssFacial:'0',nihssArmL:'0',nihssArmR:'0',nihssLegL:'0',nihssLegR:'0',nihssAtaxia:'0',nihssSensory:'0',nihssLanguage:'0',nihssDysarthria:'0',nihssExtinction:'0',strokeGlucose:'',brainCT:'Bekleniyor',ctaResult:'Bekleniyor',perfusionImaging:'Yapılmadı',thrombolysisChecklist:[],thrombectomyChecklist:[],strokeBPPlan:'',dysphagiaScreen:'Yapılmadı',seizureOngoing:'Hayır',seizureDuration:'',seizureRescueGiven:'Hayır',neuroNotes:'',clinicianHypothesis:'',clinicalQuestion:'',heartHistory:'',heartRiskCount:'',selectedIcd:'',icdSearch:'',doseCalcDrug:'Adrenalin (anafilaksi)',doseMgKg:'0.01',doseFixedMg:'',doseMaxMg:'0.5',doseConcentrationMgMl:'1',doseRepeatCount:'1',doseInfusionVolumeMl:'',doseInfusionMinutes:'',newsOxygen:'Hayır',peRisk:[],orderedTests:[]};
 const el=id=>document.getElementById(id);
 function pregnancyRelevant(){const a=parseInt(S.age,10);return S.sex==='Kadın'&&(!Number.isFinite(a)||(a>=10&&a<=55));}
 function pregnancyFieldHTML(){return pregnancyRelevant()?select('Gebelik testi','pregnancyTest',['Bekleniyor','İstenmedi','Negatif','Pozitif']):'';}
@@ -1188,6 +1193,122 @@ function parseNaturalCase(text){
  if(!d.duration)d.missing.push('Şikâyet süresi');if(!d.mental)d.missing.push('Bilinç durumu');
  return d;
 }
+
+function normalizeClinicalText(text){
+ return String(text||'')
+  .toLocaleLowerCase('tr-TR')
+  .replace(/ı/g,'i')
+  .replace(/ö/g,'o')
+  .replace(/ü/g,'u')
+  .replace(/ş/g,'s')
+  .replace(/ç/g,'c')
+  .replace(/ğ/g,'g')
+  .replace(/[₂₀]/g,function(ch){return ch==='₂'?'2':'0'});
+}
+function extractSpo2FromText(text){
+ var n=normalizeClinicalText(text);
+ var patterns=[
+  /(?:spo\s*2|spo2|saturasyon|oksijen\s*saturasyonu|sat)\s*[:=%]?\s*(\d{2,3})/,
+  /%?\s*(\d{2,3})\s*(?:spo\s*2|spo2|saturasyon)/
+ ];
+ for(var i=0;i<patterns.length;i++){
+  var m=n.match(patterns[i]);
+  if(m){
+   var v=Number(m[1]);
+   if(v>=50&&v<=100)return v;
+  }
+ }
+ return null;
+}
+function extractMentalStatusFromText(text){
+ var n=normalizeClinicalText(text);
+ if(/(?:bilinc|bilinc durumu|mental durum)\s*[:=-]?\s*(acik|alert|normal)/.test(n))return 'Normal';
+ if(/\b(gks|glasgow)\s*[:=-]?\s*15\b/.test(n))return 'Normal';
+ if(/\b(oryante|koopere|oryante koopere|uyanık|uyanik)\b/.test(n))return 'Normal';
+ if(/\b(konfuze|konfuzyon|dezoryante)\b/.test(n))return 'Konfüze';
+ if(/\b(somnolan|uykuya meyilli)\b/.test(n))return 'Somnolans';
+ if(/\b(stupor|stuporoz)\b/.test(n))return 'Stupor';
+ if(/\b(koma|komada)\b/.test(n))return 'Koma';
+ return null;
+}
+function uniqueClinical(arr){
+ return Array.from(new Set((arr||[]).filter(Boolean)));
+}
+function buildSmartClinicalAssessment(data){
+ data=data||{};
+ var complaint=normalizeClinicalText(data.complaint||data.rawText||'');
+ var raw=normalizeClinicalText(data.rawText||'');
+ var sbp=Number(data.sbp||0), dbp=Number(data.dbp||0), pulse=Number(data.pulse||0);
+ var spo2=Number(data.spo2||0), rr=Number(data.rr||0), temp=Number(data.temp||0);
+ var flags=[], diagnoses=[], tests=[], actions=[], consults=[], icds=[], disposition=[];
+ var chestPain=/gogus agrisi|goguste agrı|goguste baski|gogus baskisi/.test(complaint+' '+raw);
+ var radiation=/sol kola yay|kola yay|ceneye yay|sirta yay/.test(raw);
+ var diaphoresis=/terleme|soguk ter/.test(raw);
+ var nausea=/bulanti|kusma/.test(raw);
+ var pressure=/baski|sikisma|ezilme/.test(raw);
+ if(sbp&&sbp<90)flags.push('Hipotansiyon');
+ else if(sbp&&sbp<100)flags.push('Sınırda hipotansiyon');
+ if(pulse>100)flags.push('Taşikardi');
+ if(spo2&&spo2<94)flags.push('Düşük oksijen satürasyonu');
+ if(rr>20)flags.push('Takipne');
+ if(temp>=38)flags.push('Ateş');
+ if(data.mental&&data.mental!=='Normal')flags.push('Bilinç değişikliği');
+ if(chestPain&&(pressure||radiation||diaphoresis||nausea)){
+  diagnoses.push('Akut koroner sendrom (STEMI/NSTEMI/unstabil anjina)');
+  diagnoses.push('Aort diseksiyonu');
+  diagnoses.push('Pulmoner emboli');
+  diagnoses.push('Perikardit / miyokardit');
+  tests.push('12 derivasyonlu EKG — ilk 10 dakika içinde');
+  tests.push('Seri yüksek duyarlılıklı troponin');
+  tests.push('Monitörizasyon ve ritim takibi');
+  tests.push('Hemogram, elektrolitler, glukoz, kreatinin');
+  tests.push('Akciğer grafisi');
+  actions.push('ABCDE yaklaşımı ve damar yolu');
+  actions.push('Sürekli kardiyak monitörizasyon');
+  actions.push('Oksijen yalnızca hipoksemi varsa');
+  actions.push('AKS tedavisi kontrendikasyonlar dışlandıktan sonra hekim kararıyla');
+  consults.push('Acil kardiyoloji değerlendirmesi');
+  icds.push('R07.4 — Göğüs ağrısı, tanımlanmamış');
+  icds.push('I24.9 — Akut iskemik kalp hastalığı, tanımlanmamış');
+  disposition.push('Gözlem/yatış; seri EKG ve troponin tamamlanmadan taburculuk önerilmez');
+  if((sbp&&sbp<100)||pulse>100||diaphoresis||radiation){
+   flags.unshift('Yüksek riskli akut koroner sendrom olasılığı');
+  }
+ }
+ if(flags.length>=2) disposition.unshift('Kritik hasta alanında değerlendirme');
+ return {
+  flags:uniqueClinical(flags),
+  diagnoses:uniqueClinical(diagnoses),
+  tests:uniqueClinical(tests),
+  actions:uniqueClinical(actions),
+  consults:uniqueClinical(consults),
+  icds:uniqueClinical(icds),
+  disposition:uniqueClinical(disposition)
+ };
+}
+function renderSmartClinicalAssessment(data){
+ var host=document.getElementById('smartClinicalAssessment');
+ if(!host)return;
+ var a=buildSmartClinicalAssessment(data);
+ function list(items,empty){
+  if(!items.length)return '<p class="workflow-empty">'+empty+'</p>';
+  return '<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
+ }
+ var critical=a.flags.length?
+  '<div class="smart-case-card smart-case-critical"><h3>🔴 Kritik uyarı</h3>'+
+  a.flags.map(function(x){return '<span class="smart-case-badge">'+esc(x)+'</span>'}).join('')+
+  '<p class="smart-case-note">Bu uyarılar çevrimdışı kural tabanlıdır; klinik karar yerine geçmez.</p></div>':'';
+ host.innerHTML='<div class="smart-case-grid">'+critical+
+  '<div class="smart-case-card"><h3>🩺 Ön tanılar</h3>'+list(a.diagnoses,'Henüz yeterli klinik örüntü yok.')+'</div>'+
+  '<div class="smart-case-card"><h3>🧪 Öncelikli tetkikler</h3>'+list(a.tests,'Tetkik önerisi oluşmadı.')+'</div>'+
+  '<div class="smart-case-card"><h3>💉 İlk yaklaşım</h3>'+list(a.actions,'İlk yaklaşım önerisi oluşmadı.')+'</div>'+
+  '<div class="smart-case-card"><h3>📞 Konsültasyon</h3>'+list(a.consults,'Konsültasyon önerisi oluşmadı.')+'</div>'+
+  '<div class="smart-case-card"><h3>📋 ICD önerileri</h3>'+list(a.icds,'ICD önerisi oluşmadı.')+'</div>'+
+  '<div class="smart-case-card"><h3>🏥 Sonlandırma</h3>'+list(a.disposition,'Sonlandırma önerisi oluşmadı.')+'</div>'+
+  '</div>';
+ return a;
+}
+
 function analyzeNaturalCase(){
  var box=document.getElementById('naturalCaseText'),panel=document.getElementById('naturalCaseResult');if(!box||!panel)return;
  NATURAL_CASE_DRAFT=parseNaturalCase(box.value);
@@ -3992,7 +4113,9 @@ function showAllSystemTests(){var entry=getGroup('system');if(entry)entry.ids.fo
 function closeAllSystemTests(){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(id){return id!=='systemHubCard'}).forEach(function(id){var el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false)});setModuleVisible(document.getElementById('systemHubCard'),true)}
 function showDashboard(){document.body.classList.remove('module-view');document.body.classList.add('dashboard-home');hideAllModules();var layout=document.querySelector('.layout');if(layout)layout.style.removeProperty('display');if(typeof setDockActive==='function')setDockActive('dockHomeBtn');window.scrollTo({top:0,behavior:'smooth'})}
 function showDashboardHome(){showDashboard()}
-function filterDashboard(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim(),found=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(function(btn){var text=(btn.textContent+' '+(btn.dataset.search||'')).toLocaleLowerCase('tr-TR'),visible=!q||text.includes(q);btn.style.display=visible?'':'none';if(visible)found++});document.getElementById('searchNoResult')?.classList.toggle('show',!!q&&!found)}
+function filterDashboard(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim(),found=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(function(btn){var text=(btn.textContent+' '+(btn.dataset.search||'')).toLocaleLowerCase('tr-TR'),visible=!q||text.includes(q);
+ var robustSpo2=extractSpo2FromText(text);
+ var robustMental=extractMentalStatusFromText(text);btn.style.display=visible?'':'none';if(visible)found++});document.getElementById('searchNoResult')?.classList.toggle('show',!!q&&!found)}
 function runModuleSearch(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;var map=[['sistem','system'],['test','system'],['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']],hit=map.find(function(x){return q.includes(x[0])});if(hit){hit[1]==='system'?openModuleGroup('system'):openSingleModule(hit[1])}else{var first=Array.from(document.querySelectorAll('#dashboardGrid .dashboard-tile')).find(function(b){return b.style.display!=='none'});if(first)first.click()}}
 function runStabilityChecks(showDetails){
  var checks=[],add=function(name,ok,detail){checks.push({name:name,ok:!!ok,detail:detail||''})};
@@ -4108,8 +4231,39 @@ function initAppStable(){
 }
 window.addEventListener('error',function(e){APP_REGISTRY.runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){APP_REGISTRY.runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
+Object.assign(window,{renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
+
+
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button');
+ if(!b)return;
+ var t=(b.textContent||'').trim().toLocaleLowerCase('tr-TR');
+ if(t==='vakayı yapılandır'||t==='vakayi yapilandir'){
+  setTimeout(function(){
+   var ta=document.querySelector('textarea');
+   if(!ta)return;
+   var text=ta.value||'';
+   var data={
+    rawText:text,
+    complaint:(text.match(/(?:yaş|yas)\s*(?:erkek|kadın|kadin)?[,.\s-]*(.*?)(?:\.|ta\s|tansiyon|nabız|nabiz|spo)/i)||[])[1]||text,
+    sbp:Number((text.match(/(?:ta|tansiyon)\s*[:=-]?\s*(\d{2,3})\s*\/\s*(\d{2,3})/i)||[])[1]||0),
+    dbp:Number((text.match(/(?:ta|tansiyon)\s*[:=-]?\s*(\d{2,3})\s*\/\s*(\d{2,3})/i)||[])[2]||0),
+    pulse:Number((normalizeClinicalText(text).match(/(?:nabiz|pulse)\s*[:=-]?\s*(\d{2,3})/)||[])[1]||0),
+    rr:Number((normalizeClinicalText(text).match(/(?:solunum sayisi|ss|rr)\s*[:=-]?\s*(\d{1,2})/)||[])[1]||0),
+    temp:Number((normalizeClinicalText(text).match(/(?:ates|temp)\s*[:=-]?\s*(\d{2}(?:[.,]\d)?)/)||[])[1]?.replace(',','.')||0),
+    spo2:extractSpo2FromText(text),
+    mental:extractMentalStatusFromText(text)
+   };
+   renderSmartClinicalAssessment(data);
+   var missing=document.querySelectorAll('#naturalCaseMissing li,#nlpMissing li,.missing-critical li');
+   missing.forEach(function(li){
+    var tx=normalizeClinicalText(li.textContent);
+    if((data.spo2&&tx.includes('spo2'))||(data.mental&&tx.includes('bilinc')))li.remove();
+   });
+  },40);
+ }
+});
 
 </script>
 </body></html>
