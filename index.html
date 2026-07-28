@@ -2031,7 +2031,25 @@ function downloadProfessionalDoc(){
 function printProfessionalDoc(){
  renderProfessionalDocs();const text=el('professionalDoc').value;const w=window.open('','_blank');w.document.write(`<html><head><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111} @media print{body{padding:0}}
 
-</style></head><body>${esc(text)}</body></html>`);w.document.close();w.focus();w.print();
+</style></head><body>${esc(text)}<!-- v6.2 Smart Order Engine -->
+<section id="smart-order-engine"><h2>🩺 v6.2 Akıllı Tedavi ve Order Motoru</h2>
+<select id="orderDiagnosis"><option>STEMI</option><option>NSTEMI</option><option>Sepsis</option><option>Anafilaksi</option><option>Hiperkalemi</option><option>Hipoglisemi</option></select>
+<button onclick="generateSmartOrder()">Order Oluştur</button><pre id="smartOrderOutput"></pre></section>
+<script>
+function generateSmartOrder(){
+const d=document.getElementById('orderDiagnosis').value;
+const m={
+'STEMI':['Monitörizasyon','2 damar yolu','12 derivasyon EKG','Seri troponin','Kardiyoloji konsültasyonu'],
+'NSTEMI':['Monitörizasyon','Seri troponin','Risk skoru','Kardiyoloji konsültasyonu'],
+'Sepsis':['Kan kültürü','Laktat','İlk saat antibiyotik','Sıvı tedavisi'],
+'Anafilaksi':['IM adrenalin','Oksijen','IV erişim','Yakın gözlem'],
+'Hiperkalemi':['EKG','IV kalsiyum (endikasyona göre)','İnsülin+dekstroz (endikasyona göre)'],
+'Hipoglisemi':['Glukoz doğrulama','IV/oral glukoz','15 dk sonra tekrar glukoz']
+};
+document.getElementById('smartOrderOutput').textContent='İLK SAAT ORDER\n\n'+m[d].map(x=>'✓ '+x).join('\n');
+}
+</script>
+</body></html>`);w.document.close();w.focus();w.print();
 }
 
 const CLINICAL_VALIDATION_KEY='acil_klinik_validation_v4_1';
@@ -3532,5 +3550,23 @@ function runTestOrderEngineTests(){
 function downloadTestOrderEngineReport(){if(!lastTestOrderReport)runTestOrderEngineTests();const blob=new Blob([lastTestOrderReport],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-tetkik-motoru-v6.1.0.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 document.addEventListener('DOMContentLoaded',()=>{try{renderTestOrderEngine()}catch(e){console.error('Test order init',e)}});
 
+</script>
+<!-- v6.2 Smart Order Engine -->
+<section id="smart-order-engine"><h2>🩺 v6.2 Akıllı Tedavi ve Order Motoru</h2>
+<select id="orderDiagnosis"><option>STEMI</option><option>NSTEMI</option><option>Sepsis</option><option>Anafilaksi</option><option>Hiperkalemi</option><option>Hipoglisemi</option></select>
+<button onclick="generateSmartOrder()">Order Oluştur</button><pre id="smartOrderOutput"></pre></section>
+<script>
+function generateSmartOrder(){
+const d=document.getElementById('orderDiagnosis').value;
+const m={
+'STEMI':['Monitörizasyon','2 damar yolu','12 derivasyon EKG','Seri troponin','Kardiyoloji konsültasyonu'],
+'NSTEMI':['Monitörizasyon','Seri troponin','Risk skoru','Kardiyoloji konsültasyonu'],
+'Sepsis':['Kan kültürü','Laktat','İlk saat antibiyotik','Sıvı tedavisi'],
+'Anafilaksi':['IM adrenalin','Oksijen','IV erişim','Yakın gözlem'],
+'Hiperkalemi':['EKG','IV kalsiyum (endikasyona göre)','İnsülin+dekstroz (endikasyona göre)'],
+'Hipoglisemi':['Glukoz doğrulama','IV/oral glukoz','15 dk sonra tekrar glukoz']
+};
+document.getElementById('smartOrderOutput').textContent='İLK SAAT ORDER\n\n'+m[d].map(x=>'✓ '+x).join('\n');
+}
 </script>
 </body></html>
