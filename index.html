@@ -425,9 +425,22 @@ body:not(.dashboard-home) #commercialDashboard{display:none!important}
 @media(max-width:560px){.professional-home-panel{margin-bottom:8px}.professional-identity-card{padding:13px}.professional-identity-card .commercial-brand h2{font-size:18px}.professional-identity-card .commercial-logo{width:43px;height:43px;border-radius:13px}.professional-identity-card .plan-chip{font-size:9px;padding:5px 7px}.professional-status-strip{grid-template-columns:1.4fr 1fr 1fr;gap:5px}.professional-status-strip>div{padding:7px}.professional-status-strip small{font-size:8px}.professional-stats{gap:5px}.professional-stats .commercial-stat{padding:7px}.professional-profile-card{padding:12px}.professional-profile-actions{grid-template-columns:1fr 1fr 1fr}.professional-workspace-card{padding:11px;margin-top:8px}.professional-workspace-card .commercial-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.professional-workspace-card .commercial-tabs button{padding:7px 4px;font-size:9.5px}.professional-shortcuts{grid-template-columns:1fr 1fr}.professional-shortcuts .module-shortcut{min-height:56px}}
 
 </style>
+
+<style id="aca-v862-home-tools-separation">
+/* v8.6.2 — Ana sayfa ve gelişmiş araçların kesin ayrımı */
+body.dashboard-home .layout{display:none!important}
+body.dashboard-home #moduleHeading,body.dashboard-home .dashboard-back{display:none!important}
+body.dashboard-home #evidenceGuidelineEngineCard,
+body.dashboard-home #guidelineCurrencyAuditCard,
+body.dashboard-home #dynamicRuleEngineCard,
+body.dashboard-home #decisionTransparencyCard,
+body.dashboard-home #clinicalConsistencyCard{display:none!important}
+body.module-view #dashboardShell{display:none!important}
+body.module-view .layout{display:grid!important}
+</style>
 </head>
-<body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.6.1 • Profesyonel Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<body class="dashboard-home">
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.6.2 • Profesyonel Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell professional-home-panel no-print">
@@ -484,7 +497,7 @@ body:not(.dashboard-home) #commercialDashboard{display:none!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.6.1 · Profesyonel ana sayfa</span>
+    <span class="dashboard-version">v8.6.2 · Profesyonel ana sayfa</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -6228,7 +6241,7 @@ function buildSystemHub(){
 function openSystemTest(id){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(x){return x!=='systemHubCard'}).forEach(function(x){setModuleVisible(document.getElementById(x),false)});var el=document.getElementById(id);if(!el){alert('Test paneli bulunamadı: '+id);return}setModuleVisible(document.getElementById('systemHubCard'),true);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}
 function showAllSystemTests(){var entry=getGroup('system');if(entry)entry.ids.forEach(function(id){setModuleVisible(document.getElementById(id),true)})}
 function closeAllSystemTests(){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(id){return id!=='systemHubCard'}).forEach(function(id){var el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false)});setModuleVisible(document.getElementById('systemHubCard'),true)}
-function showDashboard(){document.body.classList.remove('module-view');document.body.classList.add('dashboard-home');hideAllModules();var layout=document.querySelector('.layout');if(layout)layout.style.removeProperty('display');if(typeof setDockActive==='function')setDockActive('dockHomeBtn');window.scrollTo({top:0,behavior:'smooth'})}
+function showDashboard(){document.body.classList.remove('module-view');document.body.classList.add('dashboard-home');hideAllModules();var layout=document.querySelector('.layout');if(layout)layout.style.setProperty('display','none','important');['evidenceGuidelineEngineCard','guidelineCurrencyAuditCard','dynamicRuleEngineCard','decisionTransparencyCard','clinicalConsistencyCard'].forEach(function(id){var el=document.getElementById(id);if(el)setModuleVisible(el,false)});if(typeof setDockActive==='function')setDockActive('dockHomeBtn');window.scrollTo({top:0,behavior:'smooth'})}
 function showDashboardHome(){showDashboard()}
 function filterDashboard(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim(),found=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(function(btn){var text=(btn.textContent+' '+(btn.dataset.search||'')).toLocaleLowerCase('tr-TR'),visible=!q||text.includes(q);btn.style.display=visible?'':'none';if(visible)found++});document.getElementById('searchNoResult')?.classList.toggle('show',!!q&&!found)}
 function runModuleSearch(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;var map=[['eğitim','education'],['egitim','education'],['simülasyon','education'],['simulasyon','education'],['vaka bankası','education'],['vaka puanlama','education'],['sistem','system'],['test','system'],['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['konsültasyon','multiSpecialistConsultCard'],['konsultasyon','multiSpecialistConsultCard'],['uzman konseyi','multiSpecialistConsultCard'],['uzlaşma','aiClinicalReconciliationCard'],['guvenlik merkezi','aiClinicalReconciliationCard'],['güvenlik merkezi','aiClinicalReconciliationCard'],['ai klinik kural','aiClinicalReconciliationCard'],['yapay zeka bağlantı','aiConnectionCard'],['ai bağlantı','aiConnectionCard'],['api bağlantı','aiConnectionCard'],['yapay zeka uyum','aiCompatibilityCard'],['ai uyum','aiCompatibilityCard'],['json vaka','aiCompatibilityCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']],hit=map.find(function(x){return q.includes(x[0])});if(hit){(hit[1]==='system'||hit[1]==='education')?openModuleGroup(hit[1]):openSingleModule(hit[1])}else{var first=Array.from(document.querySelectorAll('#dashboardGrid .dashboard-tile')).find(function(b){return b.style.display!=='none'});if(first)first.click()}}
