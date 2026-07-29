@@ -391,50 +391,100 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 <style>
 .license-center-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.license-panel{border:1px solid var(--line);border-radius:14px;padding:12px;background:#f8fafc}.license-panel h3{margin:0 0 8px;font-size:15px}.license-kv{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.license-kv div{padding:8px;border-radius:10px;background:#fff;border:1px solid var(--line)}.license-kv b{display:block;color:#0f172a}.license-kv span{color:var(--muted);word-break:break-word}.license-status-box{padding:10px;border-radius:12px;font-weight:800;margin:10px 0}.license-status-box.ok{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}.license-status-box.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}.license-status-box.bad{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}.package-table{width:100%;border-collapse:collapse;font-size:11px}.package-table th,.package-table td{padding:7px;border:1px solid var(--line);text-align:center}.package-table th:first-child,.package-table td:first-child{text-align:left}.license-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}.license-note{font-size:11px;color:var(--muted);margin-top:8px}.license-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.license-actions button{font-size:12px}.feature-lock{opacity:.55;filter:grayscale(.2)}
 @media(max-width:650px){.license-center-grid{grid-template-columns:1fr}.license-kv{grid-template-columns:1fr 1fr}}
+
+
+/* v8.6.0 Profesyonel ana sayfa */
+body:not(.dashboard-home) #commercialDashboard{display:none!important}
+.professional-home-panel{max-width:1000px;margin:0 auto 12px}
+.professional-home-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,.75fr);gap:12px}
+.professional-identity-card,.professional-profile-card,.professional-workspace-card{margin-bottom:0}
+.professional-identity-card{padding:18px;background:linear-gradient(135deg,#07111f 0%,#12345a 58%,#0f766e 125%)}
+.professional-eyebrow{display:block;color:#99f6e4;font-size:9px;font-weight:900;letter-spacing:.12em;margin-bottom:3px}
+.professional-status-strip{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:7px;margin-top:14px}
+.professional-status-strip>div{padding:9px 10px;border-radius:12px;background:#ffffff10;border:1px solid #ffffff1d;min-width:0}
+.professional-status-strip b{display:block;font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.professional-status-strip small{display:block;color:#cbd5e1;font-size:9.5px;margin-top:2px}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}.status-dot.online{background:#34d399;box-shadow:0 0 0 4px #34d39922}
+.professional-stats{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:8px}
+.professional-stats .commercial-stat{padding:9px 10px}.professional-stats .commercial-stat b{font-size:16px}
+.professional-profile-card{padding:15px;display:flex;flex-direction:column;gap:11px}
+.professional-profile-facts{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.professional-profile-facts>div{border:1px solid var(--line);background:#f8fafc;border-radius:11px;padding:8px;min-width:0}
+.professional-profile-facts small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:800}
+.professional-profile-facts b{display:block;font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.professional-profile-actions{display:grid;grid-template-columns:1.25fr .75fr .75fr;gap:6px}
+.professional-profile-actions button{padding:8px 7px;min-height:38px;font-size:10.5px}
+.professional-privacy{margin-top:auto;padding-top:7px;border-top:1px dashed var(--line)}
+.professional-workspace-card{margin-top:12px;padding:14px}
+.professional-workspace-card .dashboard-title p{margin:2px 0 0}
+.professional-workspace-card .commercial-tabs{margin:9px 0}
+.professional-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.professional-shortcuts .module-shortcut{min-height:62px;padding:9px}
+.professional-shortcuts .module-shortcut strong{font-size:11.5px}.professional-shortcuts .module-shortcut small{font-size:9.5px}
+@media(max-width:800px){.professional-home-grid{grid-template-columns:1fr}.professional-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.professional-home-panel{margin-bottom:8px}.professional-identity-card{padding:13px}.professional-identity-card .commercial-brand h2{font-size:18px}.professional-identity-card .commercial-logo{width:43px;height:43px;border-radius:13px}.professional-identity-card .plan-chip{font-size:9px;padding:5px 7px}.professional-status-strip{grid-template-columns:1.4fr 1fr 1fr;gap:5px}.professional-status-strip>div{padding:7px}.professional-status-strip small{font-size:8px}.professional-stats{gap:5px}.professional-stats .commercial-stat{padding:7px}.professional-profile-card{padding:12px}.professional-profile-actions{grid-template-columns:1fr 1fr 1fr}.professional-workspace-card{padding:11px;margin-top:8px}.professional-workspace-card .commercial-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.professional-workspace-card .commercial-tabs button{padding:7px 4px;font-size:9.5px}.professional-shortcuts{grid-template-columns:1fr 1fr}.professional-shortcuts .module-shortcut{min-height:56px}}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.5.1 • Sade Ana Sayfa</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.6.0 • Profesyonel Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
-<section id="commercialDashboard" class="commercial-shell">
-  <div class="card commercial-hero">
-    <div class="commercial-top">
-      <div class="commercial-brand"><div class="commercial-logo">✚</div><div><h2 id="commercialGreeting">Acil Klinik Asistanı Pro</h2><p id="commercialSubline">Kişisel klinik çalışma alanınız</p></div></div>
-      <div><span id="commercialPlanChip" class="plan-chip">● Demo paket</span></div>
+<section id="commercialDashboard" class="commercial-shell professional-home-panel no-print">
+  <div class="professional-home-grid">
+    <div class="card commercial-hero professional-identity-card">
+      <div class="commercial-top">
+        <div class="commercial-brand">
+          <div class="commercial-logo">✚</div>
+          <div><span class="professional-eyebrow">KİŞİSEL KLİNİK ÇALIŞMA ALANI</span><h2 id="commercialGreeting">Acil Klinik Asistanı Pro</h2><p id="commercialSubline">Güvenli, hızlı ve kişiselleştirilmiş karar desteği</p></div>
+        </div>
+        <span id="commercialPlanChip" class="plan-chip">● Demo paket</span>
+      </div>
+      <div class="professional-status-strip">
+        <div><span class="status-dot online"></span><b>Sistem hazır</b><small>Yerel çalışma etkin</small></div>
+        <div><b id="commercialOfflineState">Hazır</b><small>Çevrimdışı durum</small></div>
+        <div><b>v8.6.0</b><small>Güncel sürüm</small></div>
+      </div>
+      <div class="commercial-stats professional-stats">
+        <div class="commercial-stat"><b id="commercialTodayCount">0</b><span>Bugünkü vaka</span></div>
+        <div class="commercial-stat"><b id="commercialFavoriteCount">0</b><span>Favori araç</span></div>
+        <div class="commercial-stat"><b id="commercialRecentCount">0</b><span>Son kullanılan</span></div>
+      </div>
     </div>
-    <div class="feature-ribbon"><span>Çevrimdışı çalışma</span><span>Akıllı yönlendirme</span><span>Klinik karar desteği</span><span>Kişisel profil</span></div>
-    <div class="commercial-stats">
-      <div class="commercial-stat"><b id="commercialTodayCount">0</b><span>Bugünkü vaka</span></div>
-      <div class="commercial-stat"><b id="commercialFavoriteCount">0</b><span>Favori modül</span></div>
-      <div class="commercial-stat"><b id="commercialRecentCount">0</b><span>Son kullanılan</span></div>
-      <div class="commercial-stat"><b id="commercialOfflineState">Hazır</b><span>Çevrimdışı durum</span></div>
+
+    <div class="card profile-card professional-profile-card">
+      <div class="profile-head">
+        <div class="profile-id"><div class="avatar" id="commercialAvatar">DR</div><div><div class="profile-name" id="commercialProfileName">Demo Hekim</div><div class="profile-meta" id="commercialProfileMeta">Hekim • Kişisel çalışma alanı</div></div></div>
+        <span id="commercialUserBadge" class="commercial-badge demo">DEMO</span>
+      </div>
+      <div class="professional-profile-facts">
+        <div><small>Uzmanlık</small><b id="commercialSpecialty">Belirtilmedi</b></div>
+        <div><small>Kurum</small><b id="commercialInstitution">Belirtilmedi</b></div>
+        <div><small>Paket</small><b id="commercialPackage">Demo</b></div>
+        <div><small>Lisans</small><b id="commercialLicenseStatus">Yerel demo</b></div>
+      </div>
+      <div class="professional-profile-actions">
+        <button type="button" class="primary" onclick="acaOpenCommercialProfile()">Profili düzenle</button>
+        <button type="button" onclick="acaOpenLicenseCenter()">Lisans</button>
+        <button type="button" onclick="acaCommercialLock()">🔒 Kilitle</button>
+      </div>
+      <label class="privacy-toggle professional-privacy"><input id="commercialPrivacyMode" type="checkbox" onchange="acaCommercialPrivacyChanged()"> Mahremiyet modu</label>
     </div>
   </div>
-  <div class="commercial-grid">
-    <div class="card workspace-card">
-      <div class="dashboard-title"><h2>Çalışma alanı</h2><span class="commercial-badge" id="commercialWorkspaceBadge">Kişisel</span></div>
-      <div class="commercial-tabs"><button type="button" id="tabFavorites" class="active" onclick="acaCommercialTab('favorites')">Favoriler</button><button type="button" id="tabRecent" onclick="acaCommercialTab('recent')">Son kullanılanlar</button><button type="button" id="tabSuggested" onclick="acaCommercialTab('suggested')">Önerilenler</button></div>
-      <div id="commercialWorkspace" class="module-shortcuts"></div>
-      <div class="commercial-actions"><button type="button" class="primary" onclick="acaOpenCommercialProfile()">Profili düzenle</button><button type="button" onclick="acaCommercialLock()">Ekranı kilitle</button><button type="button" onclick="acaOpenLicenseCenter()">Lisans merkezi</button></div>
-    </div>
-    <div class="card profile-card">
-      <div class="profile-head"><div class="profile-id"><div class="avatar" id="commercialAvatar">DR</div><div><div class="profile-name" id="commercialProfileName">Demo Hekim</div><div class="profile-meta" id="commercialProfileMeta">Hekim • Kişisel çalışma alanı</div></div></div><span id="commercialUserBadge" class="commercial-badge demo">DEMO</span></div>
-      <div class="license-row"><div><b>Paket</b><span id="commercialPackage">Demo</span></div><div><b>Lisans durumu</b><span id="commercialLicenseStatus">Yerel demo</span></div></div>
-      <div class="license-row"><div><b>Uzmanlık</b><span id="commercialSpecialty">Belirtilmedi</span></div><div><b>Kurum</b><span id="commercialInstitution">Belirtilmedi</span></div></div>
-      <label class="privacy-toggle" style="margin-top:12px"><input id="commercialPrivacyMode" type="checkbox" onchange="acaCommercialPrivacyChanged()"> Hasta verilerini ekranda gizle</label>
-      <div class="commercial-warning"><b>Teknik not:</b> Bu sürüm yerel lisans ve paket kontrolünü etkinleştirir. Kaynak kodu açık bir GitHub Pages uygulamasında tam güvenli ticari doğrulama mümkün değildir; gerçek satış için sunucu doğrulaması gerekir.</div>
-    </div>
+
+  <div class="card workspace-card professional-workspace-card">
+    <div class="dashboard-title"><div><h2>Akıllı çalışma alanı</h2><p class="muted">Sık kullandığınız modüller ve son işlemler</p></div><span class="commercial-badge" id="commercialWorkspaceBadge">Kişisel</span></div>
+    <div class="commercial-tabs"><button type="button" id="tabFavorites" class="active" onclick="acaCommercialTab('favorites')">⭐ Favoriler</button><button type="button" id="tabRecent" onclick="acaCommercialTab('recent')">🕘 Son kullanılanlar</button><button type="button" id="tabSuggested" onclick="acaCommercialTab('suggested')">✨ Önerilenler</button></div>
+    <div id="commercialWorkspace" class="module-shortcuts professional-shortcuts"></div>
   </div>
 </section>
-
 
 
 <div id="dashboardShell" class="dashboard-shell dashboard-v840 no-print">
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.4.0 · Sade ana sayfa</span>
+    <span class="dashboard-version">v8.6.0 · Profesyonel ana sayfa</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
