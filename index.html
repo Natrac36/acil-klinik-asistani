@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.7.3</title>
+<title>Acil Klinik Asistanı v8.7.4</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -462,7 +462,7 @@ body.module-view .layout{display:grid!important}
       <div class="professional-status-strip">
         <div><span class="status-dot online"></span><b>Sistem hazır</b><small>Yerel çalışma etkin</small></div>
         <div><b id="commercialOfflineState">Hazır</b><small>Çevrimdışı durum</small></div>
-        <div><b>v8.7.3</b><small>Güncel sürüm</small></div>
+        <div><b>v8.7.4</b><small>Güncel sürüm</small></div>
       </div>
       <div class="commercial-stats professional-stats">
         <div class="commercial-stat"><b id="commercialTodayCount">0</b><span>Bugünkü vaka</span></div>
@@ -503,7 +503,7 @@ body.module-view .layout{display:grid!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.7.3 · Kompakt Vaka Merkezi</span>
+    <span class="dashboard-version">v8.7.4 · Açılır Vaka Merkezi</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -650,8 +650,13 @@ body.module-view .layout{display:grid!important}
 
 
 
+
+<style id="aca-v874-case-center-fix">
+.case-center-confirm{margin:10px 0 12px!important;font-size:.9rem}.case-center-card details.case-center-section{display:block!important}.case-center-card details.case-center-section:not([open])>.case-center-body{display:none!important}.case-center-card details.case-center-section[open]>.case-center-body{display:block!important}.case-center-card>details.case-center-section>summary{background:rgba(248,250,252,.86);min-height:58px}.case-center-card>details.case-center-section[open]>summary{background:rgba(13,148,136,.08)}
+</style>
 <div class="card case-center-card" id="caseCenterCard">
- <div class="section-title"><div><h3>🗃️ Vaka Merkezi</h3><p class="muted">Aktif vakalar, yerel kayıtlar, arşiv ve senkronizasyon işlemleri.</p></div><span class="phase-badge">v8.7.3</span></div>
+ <div class="section-title"><div><h3>🗃️ Vaka Merkezi</h3><p class="muted">Aşağıdaki başlıklara dokunarak yalnızca ihtiyacınız olan bölümü açın.</p></div><span class="phase-badge">v8.7.4</span></div>
+ <div class="panel neutral case-center-confirm"><b>YENİ DÜZEN:</b> Dört bölüm artık açılır menüdür.</div>
  <div class="case-center-status"><span><b id="acaCaseCenterActiveCount">0</b> aktif vaka</span><span><b id="acaCaseCenterArchiveCount">0</b> arşiv kaydı</span></div>
  <details class="case-center-section" id="activeCasesCard">
   <summary><span>🗂️ Aktif Vakalar</span><small>Birden fazla açık vaka arasında geçiş yapın</small></summary>
@@ -7172,5 +7177,9 @@ function init(){index=build();drawRecent()}if(document.readyState==='loading')do
 
 <script id="aca-v873-case-center-js">
 (function(){function syncCaseCenterCounts(){try{var a=document.getElementById('acaActiveCaseCount'),t=document.getElementById('acaCaseTotal'),ao=document.getElementById('acaCaseCenterActiveCount'),to=document.getElementById('acaCaseCenterArchiveCount');if(ao&&a)ao.textContent=(a.textContent||'0').trim();if(to&&t)to.textContent=(t.textContent||'0').trim()}catch(e){}}document.addEventListener('DOMContentLoaded',function(){syncCaseCenterCounts();setInterval(syncCaseCenterCounts,1200)});window.addEventListener('load',syncCaseCenterCounts)})();
+</script>
+
+<script id="aca-v874-force-collapsed">
+(function(){function closeCasePanels(){var root=document.getElementById('caseCenterCard');if(!root)return;root.querySelectorAll('details.case-center-section').forEach(function(d){d.open=false;});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',closeCasePanels);else closeCasePanels();window.addEventListener('load',function(){setTimeout(closeCasePanels,120);});})();
 </script>
 </body></html>
