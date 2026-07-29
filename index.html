@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.5.1</title>
+<title>Acil Klinik Asistanı v8.7.0</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -438,6 +438,7 @@ body.dashboard-home #clinicalConsistencyCard{display:none!important}
 body.module-view #dashboardShell{display:none!important}
 body.module-view .layout{display:grid!important}
 </style>
+<style id="aca-v870-universal-search-css">.universal-search-wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center}.universal-search-clear{width:38px;min-width:38px;padding:8px;font-size:21px;background:#ffffff22;color:#fff;border-color:#ffffff44}.universal-search-panel{margin-top:9px;background:#fff;color:#172033;border:1px solid #cbd5e1;border-radius:15px;box-shadow:0 18px 45px #02061738;overflow:hidden;max-height:420px;overflow-y:auto}.universal-search-head{display:flex;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;color:#64748b}.universal-search-result{width:100%;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:11px 12px;border:0;border-bottom:1px solid #eef2f7;border-radius:0;background:#fff;color:#172033}.universal-search-result:hover,.universal-search-result.active{background:#ecfdf5}.universal-search-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:#e6fffb;font-size:18px}.universal-search-copy{min-width:0}.universal-search-copy b,.universal-search-copy small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.universal-search-copy small{color:#64748b;font-size:10.5px}.universal-search-type{font-size:9px;font-weight:900;padding:4px 6px;border-radius:999px;background:#e2e8f0;color:#475569}.universal-recent-searches{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.universal-recent-searches:empty{display:none}.universal-recent-searches span{font-size:10px;color:#dbeafe}.universal-recent-searches button{padding:5px 8px;min-height:29px;font-size:10px;background:#ffffff14;color:#fff;border-color:#ffffff2f}.universal-search-empty{padding:15px;text-align:center;color:#64748b;font-size:12px}@media(max-width:560px){.universal-search-wrap{grid-template-columns:minmax(0,1fr) auto}.universal-search-wrap .primary{grid-column:1/-1}.universal-search-clear{position:absolute;right:6px;top:6px;background:transparent;color:#64748b;border:0}.universal-search-result{grid-template-columns:34px minmax(0,1fr)}.universal-search-type{display:none}}</style>
 </head>
 <body class="dashboard-home">
 <header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.6.2 • Profesyonel Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
@@ -497,17 +498,20 @@ body.module-view .layout{display:grid!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.6.2 · Profesyonel ana sayfa</span>
+    <span class="dashboard-version">v8.7.0 · Evrensel Akıllı Arama</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
    <button class="dashboard-new-case dashboard-new-case-main" onclick="openModuleGroup('case')"><span>＋</span> Yeni vaka başlat</button>
   </div>
-  <div class="dashboard-search dashboard-search-compact">
-   <input id="moduleSearch" type="search" placeholder="Ara: HEART, EKG, troponin, sepsis..." oninput="filterDashboard(this.value)">
+  <div class="dashboard-search dashboard-search-compact universal-search-wrap">
+   <input id="moduleSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Semptom, tanı, ICD, ilaç, tetkik veya araç ara…" oninput="acaUniversalSearch(this.value)" onkeydown="acaUniversalSearchKey(event)">
    <button class="primary" onclick="runModuleSearch()">Ara</button>
+   <button class="universal-search-clear" type="button" onclick="acaClearUniversalSearch()" aria-label="Aramayı temizle">×</button>
   </div>
-  <div id="searchNoResult" class="panel warn search-no-result">Eşleşen ana bölüm bulunamadı. Arama düğmesine basarak araçlarda arayabilirsiniz.</div>
+  <div id="universalSearchPanel" class="universal-search-panel hidden" aria-live="polite"></div>
+  <div id="universalRecentSearches" class="universal-recent-searches"></div>
+  <div id="searchNoResult" class="panel warn search-no-result">Sonuç bulunamadı. Farklı bir klinik terim veya eş anlamlı deneyin.</div>
  </div>
 
  <section class="dashboard-main-section" aria-labelledby="clinicalMenuTitle">
@@ -7061,4 +7065,25 @@ function init(){render();window.addEventListener('storage',render);setInterval(r
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
+<script id="aca-v870-universal-search-js">
+(function(){'use strict';
+var KEY='aca_universal_recent_v1',results=[],active=-1,index=[];
+var alias={'kalp krizi':'miyokart infarktüsü stemi nstemi göğüs ağrısı ekg troponin heart','gogus agrisi':'göğüs ağrısı akut koroner sendrom stemi nstemi heart ekg troponin','carpinti':'çarpıntı aritmi atriyal fibrilasyon af ekg','nefes darligi':'nefes darlığı dispne hipoksi solunum','alerji':'anafilaksi adrenalin ürtiker','tansiyon':'hipertansiyon hipotansiyon şok','seker':'glukoz diyabet hipoglisemi hiperglisemi dka','kan sulandirici':'antikoagülan antiagregan','bobrek':'böbrek kreatinin egfr renal','karaciger':'karaciğer hepatik ast alt bilirubin','cocuk':'çocuk pediatri pediatrik doz','ates':'ateş enfeksiyon sepsis','zehirlenme':'toksikoloji antidot','inme':'stroke serebrovasküler olay'};
+function n(v){return String(v||'').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i').replace(/[^a-z0-9çğıöşü\s.-]/g,' ').replace(/\s+/g,' ').trim()}
+function e(v){return String(v||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function type(id,t){id=n(id);t=n(t);if(id.includes('icd')||t.includes('icd'))return'ICD';if(id.includes('prescription')||t.includes('reçete'))return'Reçete';if(id.includes('laboratory')||id.includes('radiology')||t.includes('tetkik'))return'Tetkik';if(id.includes('score')||id.includes('scoring')||t.includes('skor'))return'Hesaplayıcı';if(id.includes('guideline')||t.includes('kılavuz'))return'Kılavuz';if(id.includes('treatment')||t.includes('tedavi'))return'Tedavi';if(id.includes('ecg')||t.includes('ekg'))return'EKG';if(id.includes('document')||t.includes('epikriz')||t.includes('belge'))return'Belge';return'Klinik araç'}
+function icon(t){return({'ICD':'🏷️','Reçete':'💊','Tetkik':'🧪','Hesaplayıcı':'📊','Kılavuz':'📚','Tedavi':'💉','EKG':'🫀','Belge':'📄','Bölüm':'📁','Klinik araç':'🩺'})[t]||'🔎'}
+function build(){var a=[],seen={};document.querySelectorAll('#dashboardGrid .dashboard-tile,.dashboard-more-grid button,.favorite-chip-grid button').forEach(function(x){var oc=x.getAttribute('onclick')||'',m=oc.match(/openModuleGroup\('([^']+)'\)|openSingleModule\('([^']+)'\)/);if(!m)return;var target=m[1]||m[2],group=oc.includes('openModuleGroup'),k=(group?'g:':'m:')+target;if(seen[k])return;seen[k]=1;var h=x.querySelector('b,strong'),s=x.querySelector('small'),title=(h||x).textContent.trim(),sub=s?s.textContent.trim():'';a.push({k:k,title:title,sub:sub,t:group?'Bölüm':type(target,title+' '+sub),target:target,group:group,words:[title,sub,x.dataset.search||'',target].join(' ')})});document.querySelectorAll('.layout [id].card,.layout details[id]').forEach(function(x){var id=x.id,k='m:'+id;if(!id||seen[k])return;var h=x.querySelector('h2,h3,summary');if(!h)return;var title=h.textContent.replace(/[＋−]/g,'').trim();if(!title||title.length>120)return;var txt=(x.textContent||'').replace(/\s+/g,' ').trim().slice(0,700);seen[k]=1;a.push({k:k,title:title,sub:type(id,title+' '+txt)+' modülünü aç',t:type(id,title+' '+txt),target:id,group:false,words:title+' '+id+' '+txt})});return a}
+function expand(q){var z=n(q);Object.keys(alias).forEach(function(k){if(z.includes(n(k)))z+=' '+n(alias[k])});return z}
+function search(q){var z=expand(q),w=z.split(' ').filter(Boolean);return index.map(function(x){var title=n(x.title),sub=n(x.sub),all=n(x.words),s=title===z?120:title.startsWith(z)?70:title.includes(z)?55:all.includes(z)?35:0;w.forEach(function(y){if(y.length>1){if(title.includes(y))s+=16;if(sub.includes(y))s+=7;if(all.includes(y))s+=3}});return{x:x,s:s}}).filter(function(o){return o.s>3}).sort(function(a,b){return b.s-a.s||a.x.title.localeCompare(b.x.title,'tr')}).slice(0,12).map(function(o){return o.x})}
+function recent(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(_){return[]}}
+function save(q){q=String(q||'').trim();if(!q)return;var a=recent().filter(function(x){return n(x)!==n(q)});a.unshift(q);try{localStorage.setItem(KEY,JSON.stringify(a.slice(0,6)))}catch(_){}drawRecent()}
+function drawRecent(){var b=document.getElementById('universalRecentSearches');if(!b)return;var a=recent();b.innerHTML=a.length?'<span>Son aramalar:</span>'+a.map(function(q){return'<button type="button" data-q="'+e(q)+'">'+e(q)+'</button>'}).join(''):'';b.querySelectorAll('[data-q]').forEach(function(x){x.onclick=function(){var q=x.dataset.q,i=document.getElementById('moduleSearch');i.value=q;acaUniversalSearch(q);i.focus()}})}
+function draw(q){var p=document.getElementById('universalSearchPanel'),no=document.getElementById('searchNoResult');active=-1;results=search(q);if(!n(q)){p.classList.add('hidden');p.innerHTML='';if(no)no.classList.remove('show');return}p.classList.remove('hidden');if(no)no.classList.toggle('show',!results.length);if(!results.length){p.innerHTML='<div class="universal-search-empty">“'+e(q)+'” için sonuç bulunamadı.</div>';return}p.innerHTML='<div class="universal-search-head"><b>'+results.length+' sonuç</b><span>Enter ile aç</span></div>'+results.map(function(x,i){return'<button type="button" class="universal-search-result" data-i="'+i+'"><span class="universal-search-icon">'+icon(x.t)+'</span><span class="universal-search-copy"><b>'+e(x.title)+'</b><small>'+e(x.sub||x.t)+'</small></span><span class="universal-search-type">'+e(x.t)+'</span></button>'}).join('');p.querySelectorAll('[data-i]').forEach(function(b){b.onclick=function(){open(+b.dataset.i,q)}})}
+function open(i,q){var x=results[i];if(!x)return;save(q);acaClearUniversalSearch(false);if(x.group)openModuleGroup(x.target);else openSingleModule(x.target)}
+window.acaUniversalSearch=draw;window.filterDashboard=draw;window.runModuleSearch=function(){var i=document.getElementById('moduleSearch'),q=i?i.value:'';results=search(q);if(results.length)open(0,q);else draw(q)};window.acaUniversalSearchKey=function(ev){if(ev.key==='Escape'){acaClearUniversalSearch();return}if(!results.length)return;var b=[].slice.call(document.querySelectorAll('.universal-search-result'));if(ev.key==='ArrowDown'){ev.preventDefault();active=(active+1)%b.length}else if(ev.key==='ArrowUp'){ev.preventDefault();active=(active-1+b.length)%b.length}else if(ev.key==='Enter'){ev.preventDefault();open(active<0?0:active,ev.target.value);return}else return;b.forEach(function(x,i){x.classList.toggle('active',i===active)});if(b[active])b[active].scrollIntoView({block:'nearest'})};window.acaClearUniversalSearch=function(clear){if(clear!==false){var i=document.getElementById('moduleSearch');if(i){i.value='';i.focus()}}results=[];active=-1;var p=document.getElementById('universalSearchPanel');if(p){p.classList.add('hidden');p.innerHTML=''}var no=document.getElementById('searchNoResult');if(no)no.classList.remove('show')};
+function init(){index=build();drawRecent()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
 </body></html>
