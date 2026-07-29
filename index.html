@@ -509,13 +509,16 @@ body.module-view .layout{display:grid!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version"><span data-app-version>v9.3.2</span> · <span data-update-name>Görüntü Analiz Yönlendirme Düzeltmesi</span></span>
+    <span class="dashboard-version"><span data-app-version>v9.5.3</span> · <span data-update-name>Görünür AI Durumu ve Geliştirici Modu</span></span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
    <button class="dashboard-new-case dashboard-new-case-main" onclick="openNewCaseWorkspace()"><span>＋</span> Yeni vaka başlat</button>
   </div>
   <div class="universal-search-banner"><span>YENİ</span><b> Evrensel Akıllı Arama</b><small> Semptom, tanı, ICD, ilaç, tetkik ve araçları tek noktadan bulun.</small></div>
+  <button id="acaAIHomeStatus" class="aca-ai-home-status" type="button" onclick="openSingleModule('aiCommandCenterCard')">
+   <span class="aca-ai-status-icon">🔒</span><span><b>AI Servisi</b><small id="acaAIHomeStatusText">Satış sonrası etkinleştirilecek</small></span><strong>Detaylar ›</strong>
+  </button>
   <div class="dashboard-search dashboard-search-compact universal-search-wrap">
    <input id="moduleSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Semptom, tanı, ICD, ilaç, tetkik veya araç ara…" oninput="acaUniversalSearch(this.value)" onkeydown="acaUniversalSearchKey(event)">
    <button class="primary" onclick="runModuleSearch()">Ara</button>
@@ -959,6 +962,7 @@ body.module-view .layout{display:grid!important}
 
 <div class="card ai-command-card" id="aiCommandCenterCard">
  <div class="section-title"><div><h2>🧠 Yapay Zekâ Merkezi</h2><p class="muted">Vaka paketini denetleyin, uygun görevi seçin ve güvenli aracıya gönderin.</p></div></div>
+ <div id="acaAICommandServiceStatus" class="aca-ai-service-banner locked"><span>🔒</span><div><b>AI servisi satış sonrası etkinleştirilecek</b><small>Çevrimdışı klinik araçlar kullanılabilir. EKG, röntgen ve vaka AI ikinci görüşü merkezi aktivasyon sonrasında açılacaktır.</small></div></div>
  <div class="ai-command-grid">
   <div class="ai-command-box"><h3>1. Gönderim öncesi denetim</h3><div id="aiCommandPreflight" class="ai-command-list"></div><div class="compact-actions"><button type="button" onclick="acaAICommandRefresh()">Denetimi yenile</button><button type="button" onclick="acaAICommandOpenPacket()">Vaka paketini gör</button></div></div>
   <div class="ai-command-box"><h3>2. Yapay zekâ görevi</h3><label>İstenen değerlendirme<select id="aiCommandAction"><option value="clinical_decision_support">Tam klinik karar desteği</option><option value="safety_review">Kritik güvenlik ve kırmızı bayrak taraması</option><option value="differential_diagnosis">Ayırıcı tanı desteği</option><option value="missing_data_review">Eksik kritik veri kontrolü</option><option value="case_summary">Yapılandırılmış vaka özeti</option></select></label><label style="margin-top:8px">Hekim notu<textarea id="aiCommandNote" rows="3" placeholder="Örn. Özellikle AKS ve aort diseksiyonu açısından değerlendir."></textarea></label><div class="compact-actions"><button class="primary" type="button" onclick="acaAICommandSend()">Güvenli gönder</button><button type="button" onclick="cancelSecureAIRequest()">İsteği durdur</button></div></div>
@@ -987,6 +991,12 @@ body.module-view .layout{display:grid!important}
  <div class="section-title"><h3>Güvenli Yapay Zekâ Bağlantısı</h3><span class="phase-badge">Satışa hazır · Pasif</span></div>
  <p class="muted">AI altyapısı satış sonrası merkezi olarak etkinleştirilmeye hazırdır. Şimdilik servis kapalıdır; çevrimdışı klinik araçlar normal çalışmaya devam eder. API anahtarı ve sağlayıcı gizli bilgileri bu HTML dosyasına yazılmaz.</p>
  <div id="acaAICommercialStatus" class="panel warn"><b>AI servisi satış öncesi kapalı.</b><br>Ürün satışa çıktıktan sonra sunucudaki tek bir ayarla etkinleştirilecek; kullanıcıların yeni HTML indirmesi gerekmeyecek.</div>
+ <details class="aca-ai-developer-panel">
+  <summary>🧪 Geliştirici modu</summary>
+  <p class="muted">Yalnızca uygulama sahibi tarafından bağlantı ve arayüz testi için kullanılır. Yerel açma işlemi, sunucudaki kapalı AI servisini veya API anahtarı gereksinimini geçersiz kılmaz.</p>
+  <label class="privacy-toggle"><input id="acaAIDeveloperToggle" type="checkbox" onchange="acaSetAIDeveloperMode(this.checked)"> Bu cihazda geliştirici test modunu aç</label>
+  <div id="acaAIDeveloperStatus" class="panel neutral" style="margin-top:8px">Geliştirici modu kapalı.</div>
+ </details>
  <div class="ai-security-note"><b>Güvenlik modeli:</b> Tarayıcı → HTTPS aracınız → seçilen yapay zekâ sağlayıcısı. Gizli API anahtarı yalnızca sunucuda tutulmalıdır; GitHub Pages veya <code>index.html</code> içine eklenmemelidir.</div>
  <div class="ai-connection-grid" style="margin-top:10px">
   <div class="ai-connection-box">
@@ -7414,7 +7424,7 @@ function log(action,ok,detail){var h=read(HISTORY_KEY,[]);h.unshift({time:new Da
 window.acaAICommandRefresh=render;
 window.acaAICommandOpenPacket=function(){if(typeof openSingleModule==='function')openSingleModule('aiCompatibilityCard')};
 window.acaAICommandClearHistory=function(){if(confirm('Yapay zekâ işlem geçmişi temizlensin mi?')){write(HISTORY_KEY,[]);render()}};
-window.acaAICommandSend=async function(){var p=render(),action=(el('aiCommandAction')||{}).value||'clinical_decision_support',note=(el('aiCommandNote')||{}).value||'';if(!p.packet||!p.privacy||!p.caseData){setStatus('Vaka paketi eksik veya kimlik ayıklama denetimi başarısız.','bad');return}if(!p.https||!p.enabled||!p.online){setStatus('Güvenli AI bağlantısı hazır değil. Bağlantı ayarlarını kontrol edin.','bad');return}if(!p.quota){setStatus('Günlük paket kotası doldu.','bad');return}setStatus('Anonim vaka paketi gönderiliyor…','busy');try{var packet=buildAICompatibilityPacket();packet.clinician_request={action:action,note:note.slice(0,500)};var settings=acaAIConnectionReadSettings(),controller=new AbortController(),timer=setTimeout(function(){controller.abort()},settings.timeout||30000);var response=await fetch(settings.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:action,provider:settings.provider,packet:packet,response_schema:ACA_AI_RESPONSE_SCHEMA,client:{application:'Acil Klinik Asistanı',version:(window.ACA_APP_VERSION||'v9.5.2'),update_name:(window.ACA_UPDATE_NAME||'Satışa Hazır AI Aktivasyon Altyapısı')}}),signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'});clearTimeout(timer);var body=await response.json().catch(function(){throw new Error('Sunucu geçerli JSON döndürmedi.')});if(!response.ok)throw new Error((body&&body.message)||('HTTP '+response.status));var data=typeof acaExtractAIResponse==='function'?acaExtractAIResponse(body):body,valid=typeof validateAIResponseContract==='function'?validateAIResponseContract(data):{ok:true,errors:[]};if(action==='clinical_decision_support'&&!valid.ok)throw new Error('Klinik yanıt şeması uyumsuz: '+valid.errors.join('; '));var u=todayUsage();u.count++;write(USAGE_KEY,u);window.ACA_AI_LAST_RESPONSE=data;var out=el('aiSecureResponsePreview');if(out)out.textContent=JSON.stringify(data,null,2);setStatus('Yanıt alındı. Hekim onayı olmadan order veya reçete uygulanmadı.','ok');log(action,true,'Yanıt alındı ve kaydedildi.')}catch(err){setStatus('Gönderim başarısız: '+err.message,'bad');log(action,false,err.message)}};
+window.acaAICommandSend=async function(){var p=render(),action=(el('aiCommandAction')||{}).value||'clinical_decision_support',note=(el('aiCommandNote')||{}).value||'';if(!p.packet||!p.privacy||!p.caseData){setStatus('Vaka paketi eksik veya kimlik ayıklama denetimi başarısız.','bad');return}if(!p.https||!p.enabled||!p.online){setStatus('Güvenli AI bağlantısı hazır değil. Bağlantı ayarlarını kontrol edin.','bad');return}if(!p.quota){setStatus('Günlük paket kotası doldu.','bad');return}setStatus('Anonim vaka paketi gönderiliyor…','busy');try{var packet=buildAICompatibilityPacket();packet.clinician_request={action:action,note:note.slice(0,500)};var settings=acaAIConnectionReadSettings(),controller=new AbortController(),timer=setTimeout(function(){controller.abort()},settings.timeout||30000);var response=await fetch(settings.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:action,provider:settings.provider,packet:packet,response_schema:ACA_AI_RESPONSE_SCHEMA,client:{application:'Acil Klinik Asistanı',version:(window.ACA_APP_VERSION||'v9.5.3'),update_name:(window.ACA_UPDATE_NAME||'Görünür AI Durumu ve Geliştirici Modu')}}),signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'});clearTimeout(timer);var body=await response.json().catch(function(){throw new Error('Sunucu geçerli JSON döndürmedi.')});if(!response.ok)throw new Error((body&&body.message)||('HTTP '+response.status));var data=typeof acaExtractAIResponse==='function'?acaExtractAIResponse(body):body,valid=typeof validateAIResponseContract==='function'?validateAIResponseContract(data):{ok:true,errors:[]};if(action==='clinical_decision_support'&&!valid.ok)throw new Error('Klinik yanıt şeması uyumsuz: '+valid.errors.join('; '));var u=todayUsage();u.count++;write(USAGE_KEY,u);window.ACA_AI_LAST_RESPONSE=data;var out=el('aiSecureResponsePreview');if(out)out.textContent=JSON.stringify(data,null,2);setStatus('Yanıt alındı. Hekim onayı olmadan order veya reçete uygulanmadı.','ok');log(action,true,'Yanıt alındı ve kaydedildi.')}catch(err){setStatus('Gönderim başarısız: '+err.message,'bad');log(action,false,err.message)}};
 function init(){render();window.addEventListener('online',render);window.addEventListener('offline',render);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.groups&&r.groups.diagnosis&&r.groups.diagnosis.ids.indexOf('aiCommandCenterCard')<0)r.groups.diagnosis.ids.unshift('aiCommandCenterCard');if(r&&r.testNames)r.testNames.aiCommandCenterCard='Yapay Zekâ Merkezi ve Güvenli Vaka Gönderimi'}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
@@ -7479,7 +7489,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="aca-v920-version-and-ecg-photo-js">
 (function(){'use strict';
-window.ACA_APP_VERSION='v9.5.2';window.ACA_UPDATE_NAME='Satışa Hazır AI Aktivasyon Altyapısı';
+window.ACA_APP_VERSION='v9.5.3';window.ACA_UPDATE_NAME='Görünür AI Durumu ve Geliştirici Modu';
 function el(id){return document.getElementById(id)}
 function applyVersion(){document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}
 var selectedUrl='';function revoke(){if(selectedUrl){URL.revokeObjectURL(selectedUrl);selectedUrl=''}}
@@ -7622,19 +7632,30 @@ body.module-view .layout{display:grid!important}
 <style id="aca-v952-ai-commercial-css">
 #acaAICommercialStatus{margin:10px 0}.aca-ai-locked{opacity:.58;cursor:not-allowed!important;filter:saturate(.55)}
 .aca-ai-launch-note{font-size:.86rem;margin-top:7px;color:var(--muted)}
+.aca-ai-home-status{width:100%;display:flex;align-items:center;gap:10px;text-align:left;margin:10px 0 2px;padding:11px 13px;border:1px solid #f0c36a;border-radius:14px;background:#fff8e8;color:#6e4b00;box-shadow:none}
+.aca-ai-home-status:hover{transform:none}.aca-ai-home-status span:nth-child(2){display:flex;flex-direction:column;gap:2px;flex:1}.aca-ai-home-status small{font-weight:600;color:#856521}.aca-ai-home-status strong{font-size:12px;white-space:nowrap}.aca-ai-status-icon{font-size:20px}
+.aca-ai-home-status.enabled{border-color:#86efac;background:#effcf5;color:#087443}.aca-ai-home-status.enabled small{color:#227252}
+.aca-ai-service-banner{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:14px;margin:10px 0 14px;border:1px solid #f0c36a;background:#fff8e8;color:#6e4b00}.aca-ai-service-banner>span{font-size:22px}.aca-ai-service-banner div{display:flex;flex-direction:column;gap:4px}.aca-ai-service-banner small{line-height:1.45;color:#856521}.aca-ai-service-banner.enabled{border-color:#86efac;background:#effcf5;color:#087443}.aca-ai-service-banner.enabled small{color:#227252}
+.aca-ai-developer-panel{margin:10px 0;border:1px solid #d8e1e8;border-radius:13px;padding:10px 12px;background:#f8fafc}.aca-ai-developer-panel summary{cursor:pointer;font-weight:800}
+@media(max-width:620px){.aca-ai-home-status strong{display:none}.aca-ai-home-status{padding:10px 11px}}
 </style>
 <script id="aca-v952-ai-commercial-js">
 (function(){'use strict';
- var STATE={enabled:false,source:'default',message:'AI servisi satış sonrası etkinleştirilecektir.',checked:false,plans:{demo:false,pro:false,proplus:false,institution:false}};
+ var DEV_KEY='acaAIDeveloperModeV953',STATE={enabled:false,serverEnabled:false,developer:false,source:'default',message:'AI servisi satış sonrası etkinleştirilecektir.',checked:false,plans:{demo:false,pro:false,proplus:false,institution:false}};
  function el(id){return document.getElementById(id)}
  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
  function endpoint(){try{return (window.acaAIConnectionReadSettings?acaAIConnectionReadSettings().endpoint:'').trim()}catch(_){return''}}
  function configUrl(url){return url.replace(/\/+$/,'').replace(/\/analyze$/,'')+'/config'}
  window.acaAIServiceIsEnabled=function(){return STATE.enabled===true};
+ window.acaSetAIDeveloperMode=function(on){if(on){var code=prompt('Geliştirici modunu açmak için GELISTIRICI yazın:');if(code!=='GELISTIRICI'){var t=el('acaAIDeveloperToggle');if(t)t.checked=false;alert('Geliştirici modu açılmadı.');return}}STATE.developer=!!on;try{localStorage.setItem(DEV_KEY,STATE.developer?'1':'0')}catch(_){}STATE.enabled=STATE.serverEnabled||STATE.developer;render()};
  window.acaAIServiceState=function(){return Object.assign({},STATE)};
  function render(){
   var box=el('acaAICommercialStatus');
-  if(box){box.className='panel '+(STATE.enabled?'ok':'warn');box.innerHTML=STATE.enabled?'<b>AI servisi etkin.</b><br>'+esc(STATE.message||'Güvenli ikinci görüş kullanıma hazır.'):'<b>AI servisi satış öncesi kapalı.</b><br>'+esc(STATE.message||'Satış sonrası merkezi olarak etkinleştirilecek.');}
+  var effectiveMessage=STATE.developer&&!STATE.serverEnabled?'Geliştirici test modu açık. Gerçek analiz için çalışan backend ve API anahtarı yine gereklidir.':STATE.message;
+  if(box){box.className='panel '+(STATE.enabled?'ok':'warn');box.innerHTML=STATE.enabled?'<b>'+(STATE.developer&&!STATE.serverEnabled?'Geliştirici test modu açık.':'AI servisi etkin.')+'</b><br>'+esc(effectiveMessage||'Güvenli ikinci görüş kullanıma hazır.'):'<b>AI servisi satış öncesi kapalı.</b><br>'+esc(STATE.message||'Satış sonrası merkezi olarak etkinleştirilecek.');}
+  var home=el('acaAIHomeStatus'),homeText=el('acaAIHomeStatusText');if(home){home.classList.toggle('enabled',STATE.enabled);var icon=home.querySelector('.aca-ai-status-icon');if(icon)icon.textContent=STATE.enabled?'✅':'🔒'}if(homeText)homeText.textContent=STATE.enabled?(STATE.developer&&!STATE.serverEnabled?'Geliştirici test modu açık':'Servis etkin'):'Satış sonrası etkinleştirilecek';
+  var banner=el('acaAICommandServiceStatus');if(banner){banner.classList.toggle('enabled',STATE.enabled);banner.innerHTML=STATE.enabled?'<span>✅</span><div><b>'+(STATE.developer&&!STATE.serverEnabled?'Geliştirici test modu açık':'AI servisi etkin')+'</b><small>'+esc(effectiveMessage||'Güvenli ikinci görüş kullanıma hazır.')+'</small></div>':'<span>🔒</span><div><b>AI servisi satış sonrası etkinleştirilecek</b><small>Çevrimdışı klinik araçlar kullanılabilir. EKG, röntgen ve vaka AI ikinci görüşü merkezi aktivasyon sonrasında açılacaktır.</small></div>'}
+  var dt=el('acaAIDeveloperToggle'),ds=el('acaAIDeveloperStatus');if(dt)dt.checked=STATE.developer;if(ds){ds.className='panel '+(STATE.developer?'warn':'neutral');ds.textContent=STATE.developer?'Geliştirici test modu açık. Sunucu kapalıysa gerçek AI yanıtı alınmaz.':'Geliştirici modu kapalı.'}
   var health=el('acaBackendHealthStatus');
   if(health&&!STATE.enabled&&STATE.checked){health.className='panel warn';health.innerHTML='<b>Backend bağlantısı hazır, AI kullanımı kapalı.</b><br>Satış sonrası sunucu ayarıyla etkinleştirilecek.'}
   var calls=['sendCaseToSecureAI','acaAICommandSend','acaEcgPhotoSendAI','acaXrayPhotoSendAI'];
@@ -7643,11 +7664,11 @@ body.module-view .layout{display:grid!important}
  }
  window.acaRefreshAIServiceState=async function(){
   var url=endpoint();STATE.checked=true;
-  if(!url||!/^https:\/\//i.test(url)){STATE.enabled=false;STATE.source='default';STATE.message='Güvenli backend adresi hazır olduğunda merkezi durum buradan alınacak.';render();return STATE}
-  try{var c=new AbortController(),t=setTimeout(function(){c.abort()},10000),r=await fetch(configUrl(url),{headers:{Accept:'application/json'},signal:c.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});clearTimeout(t);var b=await r.json();if(!r.ok||!b.ok)throw new Error(b.message||('HTTP '+r.status));STATE.enabled=b.ai_enabled===true;STATE.source='server';STATE.message=b.public_message|| (STATE.enabled?'AI servisi etkin.':'AI servisi satış sonrası etkinleştirilecektir.');STATE.plans=b.plans||STATE.plans;render();return STATE}catch(e){STATE.enabled=false;STATE.source='error';STATE.message='Merkezi AI durumu doğrulanamadı; güvenlik nedeniyle servis kapalı tutuldu.';render();return STATE}
+  if(!url||!/^https:\/\//i.test(url)){STATE.serverEnabled=false;STATE.enabled=STATE.developer;STATE.source='default';STATE.message='Güvenli backend adresi hazır olduğunda merkezi durum buradan alınacak.';render();return STATE}
+  try{var c=new AbortController(),t=setTimeout(function(){c.abort()},10000),r=await fetch(configUrl(url),{headers:{Accept:'application/json'},signal:c.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});clearTimeout(t);var b=await r.json();if(!r.ok||!b.ok)throw new Error(b.message||('HTTP '+r.status));STATE.serverEnabled=b.ai_enabled===true;STATE.enabled=STATE.serverEnabled||STATE.developer;STATE.source='server';STATE.message=b.public_message|| (STATE.enabled?'AI servisi etkin.':'AI servisi satış sonrası etkinleştirilecektir.');STATE.plans=b.plans||STATE.plans;render();return STATE}catch(e){STATE.serverEnabled=false;STATE.enabled=STATE.developer;STATE.source='error';STATE.message='Merkezi AI durumu doğrulanamadı; güvenlik nedeniyle servis kapalı tutuldu.';render();return STATE}
  };
  function guard(name,statusId){var original=window[name];if(typeof original!=='function'||original.__acaCommercialGuard)return;var wrapped=async function(){if(!STATE.enabled){var s=statusId&&el(statusId);if(s){s.textContent='AI servisi satış sonrası etkinleştirilecektir.';s.className=(s.className||'')+' bad'}else alert('AI servisi satış sonrası etkinleştirilecektir.');return}return original.apply(this,arguments)};wrapped.__acaCommercialGuard=true;window[name]=wrapped}
- function install(){guard('sendCaseToSecureAI');guard('acaAICommandSend','aiCommandStatus');guard('acaEcgPhotoSendAI','ecgPhotoStatus');guard('acaXrayPhotoSendAI','xrayPhotoStatus');render();setTimeout(window.acaRefreshAIServiceState,400)}
+ function install(){try{STATE.developer=localStorage.getItem(DEV_KEY)==='1'}catch(_){}STATE.enabled=STATE.serverEnabled||STATE.developer;guard('sendCaseToSecureAI');guard('acaAICommandSend','aiCommandStatus');guard('acaEcgPhotoSendAI','ecgPhotoStatus');guard('acaXrayPhotoSendAI','xrayPhotoStatus');render();setTimeout(window.acaRefreshAIServiceState,400)}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
