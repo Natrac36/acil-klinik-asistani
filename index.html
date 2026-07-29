@@ -118,10 +118,23 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
 .dashboard-tile[data-search*="simülasyon"]{border-color:#c4b5fd;background:#faf5ff}
 .dashboard-tile[data-search*="simülasyon"]:hover{border-color:#8b5cf6;background:#f5f3ff}
 
+
+/* v6.9.3 görünür tekrarları azaltan araç merkezi */
+.module-collection-hub{border:2px solid #bfdbfe;background:linear-gradient(180deg,#eff6ff,#fff)}
+.module-collection-hub h2{color:#1d4ed8}
+.module-collection-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.module-collection-grid button{text-align:left;min-height:62px}
+.module-collection-grid button.active{border-color:#2563eb;background:#dbeafe;font-weight:850}
+.clinical-flow-note{border-left:5px solid #0ea5e9;background:#f0f9ff;border-radius:12px;padding:11px;margin:10px 0 14px}
+.system-advanced-tests{margin-top:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.system-advanced-tests summary{cursor:pointer;padding:12px;font-weight:800}
+.system-advanced-tests .system-hub-grid{padding:0 12px 12px}
+@media(max-width:560px){.module-collection-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.9.2 Stable • Düzenli Klinik ve Eğitim Modları</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.9.3 Stable • Sade Klinik Akış</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -152,12 +165,18 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
  <p class="muted">Kontrol etmek istediğiniz motoru seçin. Seçilen test paneli hemen aşağıda açılır.</p>
  <div id="stabilitySummary" class="panel neutral" style="margin:10px 0">Sistem sağlık kontrolü başlatılmadı.</div>
  <div class="compact-actions"><button id="stabilityCheckBtn" class="primary" type="button" onclick="runStabilityChecksSafe()">Sistem sağlık kontrolünü çalıştır</button></div>
- <div class="system-hub-grid" id="systemHubButtons"></div>
- <div class="compact-actions"><button class="primary" onclick="showAllSystemTests()">Tüm test panellerini göster</button><button onclick="closeAllSystemTests()">Panelleri kapat</button></div>
+ <details class="system-advanced-tests">
+  <summary>Gelişmiş teknik testler (isteğe bağlı)</summary>
+  <p class="muted" style="padding:0 12px">Günlük kullanımda gerekli değildir. Motor bazlı hata ayıklama ve geliştirme testlerini içerir.</p>
+  <div class="system-hub-grid" id="systemHubButtons"></div>
+  <div class="compact-actions" style="padding:0 12px 12px"><button onclick="closeAllSystemTests()">Açık test panelini kapat</button></div>
+ </details>
 </div>
 <div class="card nl-case-card" id="naturalCaseEntryCard">
  <div class="section-title"><h2>Doğal dille yeni vaka</h2><span class="phase-badge">v6.8</span></div>
  <p class="muted">Vakayı kısa bir cümleyle yazın. Sistem temel bilgileri forma aktarır ve eksik kritik verileri gösterir. Çevrimdışı kural tabanlıdır; hekim doğrulaması gerekir.</p>
+<div class="clinical-flow-note"><b>Önerilen ana akış:</b> Vaka metni → eksik sorular → triyaj → klinik öneriler → forma aktar → vaka özeti. Ayrıntılı Tanı, Tetkik ve Tedavi araçları yalnızca gerektiğinde ana menüden açılır.</div>
+
  <label>Vaka anlatımı<textarea id="naturalCaseText" placeholder="Örn. 62 yaş erkek, 2 saattir baskı tarzında göğüs ağrısı, sol kola yayılıyor, terleme ve bulantı var. TA 95/60, nabız 108, SpO₂ 94."></textarea></label>
  <div class="compact-actions no-print"><button class="primary" type="button" onclick="analyzeNaturalCase()">Vakayı yapılandır</button><button type="button" onclick="applyNaturalCaseToForm()">Forma aktar</button><button type="button" onclick="clearNaturalCase()">Temizle</button></div>
  <div id="naturalCaseResult" class="nl-case-results"><div class="nl-case-box"><h3>Hazır</h3><p class="muted">Vaka metnini yazıp “Vakayı yapılandır” düğmesine basın.</p></div></div>
@@ -197,6 +216,13 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
   <div class="workflow-summary-box workflow-summary-hero"><h3>Vaka henüz oluşturulmadı</h3><p>Vaka formuna hasta bilgilerini ve klinik verileri girin.</p></div>
  </div>
 </div>
+
+<div class="card module-collection-hub" id="moduleCollectionHub">
+ <div class="section-title"><h2 id="moduleCollectionTitle">İleri araçlar</h2><span class="phase-badge">sade görünüm</span></div>
+ <p id="moduleCollectionDescription" class="muted">İhtiyacınız olan aracı seçin. Aynı anda yalnızca seçilen araç açılır.</p>
+ <div class="module-collection-grid" id="moduleCollectionButtons"></div>
+</div>
+
 <div class="card" id="aiClinicalAssistantCard">
  <div class="section-title"><h3>Yapay zekâ klinik asistanı</h3><span class="phase-badge">v5.0.2</span></div>
  <p class="muted">Serbest metin ve mevcut vaka verilerini birlikte yapılandırır; kritik olasılıkları, eksik soruları, muayene ve tetkik önceliklerini açık gerekçelerle gösterir. Çevrimdışı kural tabanlı karar desteğidir; kesin tanı veya tedavi emri oluşturmaz.</p>
@@ -1575,8 +1601,8 @@ function loadRandomEmergencyCase(){
 /* v6.9.2 yalnızca görünüm düzenlemesi:
    Mevcut localStorage anahtarları ve kayıtlı vaka yapısı değiştirilmez. */
 try{
- if(!localStorage.getItem('aca_layout_version'))localStorage.setItem('aca_layout_version','6.9.2');
- else localStorage.setItem('aca_layout_version','6.9.2');
+ if(!localStorage.getItem('aca_layout_version'))localStorage.setItem('aca_layout_version','6.9.3');
+ else localStorage.setItem('aca_layout_version','6.9.3');
 }catch(e){}
 
 var ACTIVE_TEST_CASE=null;
@@ -4521,6 +4547,80 @@ function setModuleVisible(el,visible){if(!el)return;el.hidden=!visible;el.classL
 function hideAllModules(){allModuleElements().forEach(function(el){setModuleVisible(el,false)})}
 function updateModuleHeading(title){var h=document.getElementById('moduleHeadingText');if(h)h.textContent=title||'Araçlar'}
 function enterModuleView(){document.body.classList.remove('dashboard-home');document.body.classList.add('module-view');var layout=document.querySelector('.layout');if(layout)layout.style.setProperty('display','grid','important')}
+
+var COMPACT_COLLECTIONS={
+ diagnosis:{
+  title:'İleri tanı araçları',
+  description:'Yeni vaka ekranındaki otomatik önerilerin ötesinde ayrıntılı inceleme gerektiğinde bir araç seçin.',
+  labels:{
+   aiClinicalAssistantCard:'Klinik asistan',
+   guidelineEngineCard:'Kılavuz motoru',
+   clinicalScoringCard:'Klinik skorlar',
+   icdCard:'ICD desteği',
+   ecgDecisionCard:'EKG karar desteği',
+   pediatricEmergencyCard:'Pediatrik acil'
+  }
+ },
+ tests:{
+  title:'İleri tetkik araçları',
+  description:'Ayrıntılı laboratuvar, radyoloji veya kapsamlı tetkik istem desteğini tek tek açın.',
+  labels:{
+   laboratoryEngineCard:'Laboratuvar',
+   radiologyEngineCard:'Radyoloji',
+   smartTestOrderCard:'Akıllı tetkik istemi'
+  }
+ },
+ treatment:{
+  title:'İleri tedavi araçları',
+  description:'Tedavi planı, ilaç güvenliği veya doz hesabı için ihtiyacınız olan aracı seçin.',
+  labels:{
+   smartTreatmentOrderCard:'Tedavi / Order',
+   medicationSafetyCard:'İlaç güvenliği',
+   doseCalculatorCard:'Doz hesaplama'
+  }
+ }
+};
+var ACTIVE_COLLECTION_GROUP='';
+
+function collectionToolTitle(id){
+ var cfg=COMPACT_COLLECTIONS[ACTIVE_COLLECTION_GROUP]||{};
+ if(cfg.labels&&cfg.labels[id])return cfg.labels[id];
+ var el=document.getElementById(id),h=el&&el.querySelector('h2,h3,summary');
+ return h?h.textContent.trim():id;
+}
+function renderModuleCollection(group){
+ var entry=getGroup(group),cfg=COMPACT_COLLECTIONS[group];
+ if(!entry||!cfg)return;
+ ACTIVE_COLLECTION_GROUP=group;
+ var hub=document.getElementById('moduleCollectionHub');
+ var title=document.getElementById('moduleCollectionTitle');
+ var desc=document.getElementById('moduleCollectionDescription');
+ var buttons=document.getElementById('moduleCollectionButtons');
+ if(!hub||!buttons)return;
+ setModuleVisible(hub,true);
+ if(title)title.textContent=cfg.title;
+ if(desc)desc.textContent=cfg.description;
+ buttons.innerHTML=entry.ids.filter(function(id){return document.getElementById(id)}).map(function(id,index){
+  return '<button type="button" data-collection-tool="'+id+'" class="'+(index===0?'active':'')+'"><b>'+esc(collectionToolTitle(id))+'</b><br><small>Aracı aç</small></button>';
+ }).join('');
+ buttons.querySelectorAll('[data-collection-tool]').forEach(function(btn){
+  btn.addEventListener('click',function(){openCollectionTool(btn.getAttribute('data-collection-tool'))});
+ });
+ var first=entry.ids.find(function(id){return document.getElementById(id)});
+ if(first)openCollectionTool(first,false);
+}
+function openCollectionTool(id,scroll){
+ var entry=getGroup(ACTIVE_COLLECTION_GROUP);
+ if(!entry)return;
+ entry.ids.forEach(function(x){setModuleVisible(document.getElementById(x),x===id)});
+ document.querySelectorAll('#moduleCollectionButtons [data-collection-tool]').forEach(function(btn){
+  btn.classList.toggle('active',btn.getAttribute('data-collection-tool')===id);
+ });
+ var el=document.getElementById(id);
+ if(el&&el.tagName==='DETAILS')el.open=true;
+ if(scroll!==false&&el)setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20);
+}
+
 function openModuleGroup(group){
  try{
   var entry=getGroup(group);if(!entry)throw new Error('Kategori bulunamadı: '+group);
@@ -4535,13 +4635,15 @@ function openModuleGroup(group){
    entry.ids.forEach(function(id){setModuleVisible(document.getElementById(id),true)});
    if(typeof renderTestCasePanel==='function')renderTestCasePanel();
    if(typeof renderCaseScorePanel==='function')renderCaseScorePanel();
+  }else if(COMPACT_COLLECTIONS[group]){
+   renderModuleCollection(group);
   }else entry.ids.forEach(function(id){setModuleVisible(document.getElementById(id),true)});
   updateModuleHeading(entry.title);
-  var target=group==='system'?'systemHubCard':entry.ids[0];setTimeout(function(){var el=document.getElementById(target);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},20)
+  var target=group==='system'?'systemHubCard':(COMPACT_COLLECTIONS[group]?'moduleCollectionHub':entry.ids[0]);setTimeout(function(){var el=document.getElementById(target);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},20)
  }catch(err){console.error('Kategori açma hatası',err);alert('Bölüm açılırken hata oluştu: '+(err.message||err))}
 }
 function openSingleModule(id){try{enterModuleView();hideAllModules();var el=document.getElementById(id);if(!el)throw new Error('Araç bulunamadı: '+id);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;var titleEl=el.querySelector('h2,h3,summary');updateModuleHeading(titleEl?titleEl.textContent.trim():'Araç');setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}catch(err){console.error('Araç açma hatası',err);alert('Araç açılırken hata oluştu: '+(err.message||err))}}
-function buildSystemHub(){var box=document.getElementById('systemHubButtons'),entry=getGroup('system');if(!box||!entry)return;box.innerHTML=entry.ids.filter(function(id){return id!=='systemHubCard'&&document.getElementById(id)}).map(function(id){return '<button type="button" data-system-test="'+id+'">🧪 '+(ensureAppRegistry().testNames[id]||id)+'</button>'}).join('')}
+function buildSystemHub(){var box=document.getElementById('systemHubButtons'),entry=getGroup('system');if(!box||!entry)return;box.innerHTML=entry.ids.filter(function(id){return id!=='systemHubCard'&&document.getElementById(id)}).map(function(id){return '<button type="button" data-system-test="'+id+'">🧪 '+esc(ensureAppRegistry().testNames[id]||id)+'</button>'}).join('');box.querySelectorAll('[data-system-test]').forEach(function(btn){btn.addEventListener('click',function(){openSystemTest(btn.getAttribute('data-system-test'))})})}
 function openSystemTest(id){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(x){return x!=='systemHubCard'}).forEach(function(x){setModuleVisible(document.getElementById(x),false)});var el=document.getElementById(id);if(!el){alert('Test paneli bulunamadı: '+id);return}setModuleVisible(document.getElementById('systemHubCard'),true);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}
 function showAllSystemTests(){var entry=getGroup('system');if(entry)entry.ids.forEach(function(id){setModuleVisible(document.getElementById(id),true)})}
 function closeAllSystemTests(){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(id){return id!=='systemHubCard'}).forEach(function(id){var el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false)});setModuleVisible(document.getElementById('systemHubCard'),true)}
@@ -4557,7 +4659,7 @@ function runStabilityChecks(showDetails){
  add('Sistem kontrol merkezi',!!document.getElementById('systemHubCard'));
  var registry=ensureAppRegistry();Object.keys(registry.groups).forEach(function(key){var g=registry.groups[key];add('Kategori: '+g.title,g.ids.some(function(id){return !!document.getElementById(id)}),'Tanımlı kart: '+g.ids.length)});
  var ids=Array.from(document.querySelectorAll('[id]')).map(function(el){return el.id}),dups=ids.filter(function(id,i){return ids.indexOf(id)!==i});add('Benzersiz HTML kimlikleri',dups.length===0,dups.length?dups.join(', '):'Çakışma yok');
- ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm','renderSmartQuestions','applySmartQuestionAnswers','renderTriageAlert','loadRandomEmergencyCase','renderCaseScorePanel','evaluateActiveTestCase','openModuleGroup'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
+ ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm','renderSmartQuestions','applySmartQuestionAnswers','renderTriageAlert','loadRandomEmergencyCase','renderCaseScorePanel','evaluateActiveTestCase','openModuleGroup','renderModuleCollection','openCollectionTool'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
  var stableRegistry=ensureAppRegistry();add('Başlatma hatası',stableRegistry.initErrors.length===0,stableRegistry.initErrors.join(' | '));
  add('Çalışma zamanı hatası',stableRegistry.runtimeErrors.length===0,stableRegistry.runtimeErrors.slice(-5).join(' | '));
  var ux=typeof runUsabilityChecks==='function'?runUsabilityChecks():null;if(ux)ux.checks.forEach(function(c){checks.push({name:'Kullanılabilirlik: '+c.name,ok:c.ok,detail:c.detail})});var passed=checks.filter(function(c){return c.ok}).length,total=checks.length,box=document.getElementById('stabilitySummary');
@@ -4659,7 +4761,7 @@ function initAppStable(){
 }
 window.addEventListener('error',function(e){ensureAppRegistry().runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){ensureAppRegistry().runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
+Object.assign(window,{openCollectionTool:openCollectionTool,renderModuleCollection:renderModuleCollection,renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
 
