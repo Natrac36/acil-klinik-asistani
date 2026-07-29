@@ -503,7 +503,7 @@ body.module-view .layout{display:grid!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.8.0 · Profesyonel Vaka Merkezi</span>
+    <span class="dashboard-version">v8.8.1 · Profesyonel Vaka Merkezi</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -546,7 +546,7 @@ body.module-view .layout{display:grid!important}
   </div>
  </section>
 
- <details class="dashboard-more-tools">
+ <details class="dashboard-more-tools" id="dashboardMoreTools">
   <summary><span>🧰</span><div><b>Diğer araçlar</b><small>Eğitim, simülasyon, yapay zekâ ve sistem yönetimi</small></div><strong>＋</strong></summary>
   <div class="dashboard-more-grid">
    <button onclick="openModuleGroup('tools')"><span>🧰</span><div><b>Gelişmiş klinik araçlar</b><small>Kılavuz, kural ve tutarlılık motorları</small></div></button>
@@ -6406,7 +6406,20 @@ function acaOpenLatestActiveCase(){
  }catch(e){alert('Aktif vaka bilgisi okunamadı.')}
 }
 function showWorkflowSummary(){try{enterModuleView();hideAllModules();var card=document.getElementById('workflowSummaryCard');setModuleVisible(card,true);updateModuleHeading('Vaka özeti');renderWorkflowSummary();setDockActive('dockSummaryBtn');setTimeout(function(){if(card)card.scrollIntoView({behavior:'smooth',block:'start'})},20)}catch(err){console.error('Özet açma hatası',err);alert('Özet açılırken hata oluştu: '+(err.message||err))}}
-function showToolsWorkspace(){openModuleGroup('tools');setDockActive('dockToolsBtn')}
+function showToolsWorkspace(){
+ try{
+  showDashboardHome();
+  setTimeout(function(){
+   var tools=document.getElementById('dashboardMoreTools');
+   if(!tools)return;
+   tools.open=true;
+   tools.scrollIntoView({behavior:'smooth',block:'center'});
+  },180);
+ }catch(err){
+  console.error('Diğer araçlara yönlendirme hatası',err);
+  showDashboardHome();
+ }
+}
 function copyWorkflowSummary(){var text=renderWorkflowSummary()||'';if(!text)return;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert('Vaka özeti kopyalandı.')}).catch(function(){fallbackCopy(text)})}else fallbackCopy(text)}
 function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('Vaka özeti kopyalandı.')}catch(e){alert('Kopyalama başarısız oldu.')}ta.remove()}
 
