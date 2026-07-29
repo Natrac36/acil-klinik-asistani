@@ -400,6 +400,14 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 .advanced-systems-grid button b{display:block;margin-bottom:3px}
 .advanced-systems-grid button small{color:var(--muted)}
 @media(max-width:560px){.advanced-systems-grid{grid-template-columns:1fr}}
+
+/* v8.5.0 ana sayfa sadeleştirme düzeltmesi */
+body.dashboard-home #evidenceGuidelineEngineCard,
+body.dashboard-home #guidelineCurrencyAuditCard,
+body.dashboard-home #dynamicRuleEngineCard,
+body.dashboard-home #decisionTransparencyCard,
+body.dashboard-home #clinicalConsistencyCard{display:none!important}
+
 </style>
 
 <style>
@@ -6053,7 +6061,7 @@ function ensureAppRegistry(){
  return fallback;
 }
 function getGroup(group){var registry=ensureAppRegistry();return registry.groups[String(group||'')]||null}
-function allModuleElements(){return Array.from(document.querySelectorAll('.layout section > .card,.layout section > details'))}
+function allModuleElements(){return Array.from(document.querySelectorAll('.layout section > .card,.layout section > details,#evidenceGuidelineEngineCard,#guidelineCurrencyAuditCard,#dynamicRuleEngineCard,#decisionTransparencyCard,#clinicalConsistencyCard'))}
 function setModuleVisible(el,visible){if(!el)return;el.hidden=!visible;el.classList.toggle('module-hidden',!visible);el.style.setProperty('display',visible?'block':'none','important')}
 function hideAllModules(){allModuleElements().forEach(function(el){setModuleVisible(el,false)})}
 function updateModuleHeading(title){var h=document.getElementById('moduleHeadingText');if(h)h.textContent=title||'Araçlar'}
