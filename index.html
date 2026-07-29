@@ -426,16 +426,27 @@ body.dashboard-home #clinicalConsistencyCard{display:none!important}
 .license-center-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.license-panel{border:1px solid var(--line);border-radius:14px;padding:12px;background:#f8fafc}.license-panel h3{margin:0 0 8px;font-size:15px}.license-kv{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.license-kv div{padding:8px;border-radius:10px;background:#fff;border:1px solid var(--line)}.license-kv b{display:block;color:#0f172a}.license-kv span{color:var(--muted);word-break:break-word}.license-status-box{padding:10px;border-radius:12px;font-weight:800;margin:10px 0}.license-status-box.ok{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}.license-status-box.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}.license-status-box.bad{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}.package-table{width:100%;border-collapse:collapse;font-size:11px}.package-table th,.package-table td{padding:7px;border:1px solid var(--line);text-align:center}.package-table th:first-child,.package-table td:first-child{text-align:left}.license-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}.license-note{font-size:11px;color:var(--muted);margin-top:8px}.license-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.license-actions button{font-size:12px}.feature-lock{opacity:.55;filter:grayscale(.2)}
 @media(max-width:650px){.license-center-grid{grid-template-columns:1fr}.license-kv{grid-template-columns:1fr 1fr}}
 </style>
+
+<style id="aca-v851-home-restore">
+/* v8.5.1 düzeltme: sade ana ekran geri yüklendi */
+body.dashboard-home header .modebar,
+body.dashboard-home header .head:last-child{display:none!important}
+body.dashboard-home #dashboardShell{display:block!important}
+body.dashboard-home .layout,
+body.dashboard-home #moduleHeading,
+body.dashboard-home .dashboard-back{display:none!important}
+@media(max-width:900px){body.module-view .dashboard-back{display:none!important}}
+</style>
 </head>
-<body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı vaka yönetimi ve klinik karar desteği</p></div><div class="status">v8.5.1 • Sade Profesyonel Ana Menü</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<body class="dashboard-home">
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı vaka yönetimi ve klinik karar desteği</p></div><div class="status">v8.5.1 • Sade Ana Menü</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell dashboard-v840 no-print">
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.5.1 · Sade ana menü</span>
+    <span class="dashboard-version">v8.5.1 · Sade ana ekran</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -3558,6 +3569,24 @@ body.dashboard-home #dashboardShell{display:block!important}
   }catch(e){}
   if(typeof openModuleGroup==='function') openModuleGroup('case');
  };
+})();
+</script>
+
+<script id="aca-v851-home-start-fix">
+(function(){
+ function restoreHome(){
+  try{
+   document.body.classList.remove('module-view');
+   document.body.classList.add('dashboard-home');
+   var layout=document.querySelector('.layout');
+   if(layout)layout.style.removeProperty('display');
+   if(typeof window.hideAllModules==='function')window.hideAllModules();
+   if(typeof window.setDockActive==='function')window.setDockActive('dockHomeBtn');
+   window.scrollTo(0,0);
+  }catch(e){console.error('Ana ekran geri yükleme hatası',e)}
+ }
+ if(document.readyState==='complete')setTimeout(restoreHome,0);
+ else window.addEventListener('load',function(){setTimeout(restoreHome,60)},{once:true});
 })();
 </script>
 </body></html>`);w.document.close();w.focus();w.print();
