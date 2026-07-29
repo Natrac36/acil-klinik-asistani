@@ -143,10 +143,22 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
 .badge.warning{background:#92400e;color:#fff}
 .badge.ok{background:#166534;color:#fff}
 
+
+/* v6.9.4-alpha.4 klinik uyum ve karar şeffaflığı */
+.clinical-fit-card{border:1px solid rgba(148,163,184,.35);border-radius:14px;padding:12px;margin:10px 0;background:rgba(15,23,42,.18)}
+.clinical-fit-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.clinical-fit-score{font-weight:800;font-size:1.05rem}
+.clinical-fit-meta{font-size:.78rem;opacity:.8;margin-top:8px}
+.clinical-fit-evidence{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:10px}
+.clinical-fit-evidence>div{padding:9px;border-radius:10px;background:rgba(148,163,184,.08)}
+.clinical-fit-evidence ul{margin:6px 0 0 18px}
+.decision-transparency-note{font-size:.84rem;padding:10px;border-left:4px solid #64748b;background:rgba(100,116,139,.1);border-radius:8px;margin-top:12px}
+.confidence-strong,.confidence-moderate,.confidence-limited{font-weight:700}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.9.4-alpha.3 • Klinik Tutarlılık Denetimi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.9.4-alpha.4 • Klinik Uyum Skoru ve Karar Şeffaflığı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -756,6 +768,20 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
 </aside>
 </div>
 <div class="footer-note">Prototip yalnızca hekim kullanımına yönelik karar desteğidir. Tanı veya tedavi emri değildir; yerel protokol, güncel kılavuz ve klinik değerlendirme esastır.</div>
+
+
+<div class="card" id="decisionTransparencyCard">
+  <div class="section-title">
+    <h3>🔎 Karar Şeffaflığı ve Klinik Uyum</h3>
+    <span class="badge neutral">v6.9.4-alpha.4</span>
+  </div>
+  <div id="decisionTransparencyPanel" class="panel neutral">
+    Tanı ve öneriler üretildiğinde klinik uyum skoru, destekleyen bulgular, eksik veriler, güven düzeyi ve kaynak sürümü burada gösterilir.
+  </div>
+  <div class="decision-transparency-note">
+    Bu sistem klinik karar destek aracıdır. Nihai klinik karar ve sorumluluk, hastayı değerlendiren sağlık profesyoneline aittir.
+  </div>
+</div>
 
 <div class="card" id="clinicalConsistencyCard">
   <div class="section-title">
@@ -1625,8 +1651,8 @@ function loadRandomEmergencyCase(){
 /* v6.9.2 yalnızca görünüm düzenlemesi:
    Mevcut localStorage anahtarları ve kayıtlı vaka yapısı değiştirilmez. */
 try{
- if(!localStorage.getItem('aca_layout_version'))localStorage.setItem('aca_layout_version','6.9.4-alpha.3');
- else localStorage.setItem('aca_layout_version','6.9.4-alpha.3');
+ if(!localStorage.getItem('aca_layout_version'))localStorage.setItem('aca_layout_version','6.9.4-alpha.4');
+ else localStorage.setItem('aca_layout_version','6.9.4-alpha.4');
 }catch(e){}
 
 var ACTIVE_TEST_CASE=null;
@@ -4616,7 +4642,7 @@ function safeCall(name,fn){try{return fn()}catch(e){var registry=ensureAppRegist
 
 /* v6.9.4-alpha.2 — güvenli kimlik ve kayıt uyumluluğu katmanı */
 var ACA_SCHEMA_VERSION='1.0';
-var ACA_LAYOUT_VERSION='6.9.4-alpha.3';
+var ACA_LAYOUT_VERSION='6.9.4-alpha.4';
 var ACA_LEGACY_STORAGE_KEYS=[
  'aca_cases','aca_current_case','aca_settings','aca_drafts','aca_validation_log',
  'aca_layout_version'
@@ -4685,6 +4711,83 @@ function acaIdentityHealth(){
 }
 acaInitializeCompatibility();
 
+
+
+/* v6.9.4-alpha.4 — klinik uyum skoru ve karar şeffaflığı */
+var ACA_TRANSPARENCY_VERSION='1.0.0';
+var ACA_CLINICAL_ENGINE_VERSION='7.0.1';
+var ACA_RULE_ENGINE_VERSION='6.9.4-alpha.4';
+var ACA_SOURCE_REGISTRY={
+ acs:{label:'ESC / AHA-ACC',year:'2023–2025',version:'ACS-1'},
+ stroke:{label:'AHA-ASA / ESO',year:'2024–2025',version:'STROKE-1'},
+ sepsis:{label:'Surviving Sepsis Campaign',year:'2021',version:'SEPSIS-1'},
+ anaphylaxis:{label:'WAO / Resuscitation Council UK',year:'2021–2023',version:'ANAPHYLAXIS-1'},
+ pe:{label:'ESC',year:'2019–2024',version:'PE-1'},
+ generic:{label:'Uygulama klinik kural seti',year:'2026',version:'GENERIC-1'}
+};
+function acaClampScore(value){value=Number(value);if(!isFinite(value))value=0;return Math.max(0,Math.min(100,Math.round(value)))}
+function acaConfidenceFromScore(score,missingCount){
+ if(score>=75&&missingCount<=1)return {level:'strong',label:'Güçlü klinik uyum'};
+ if(score>=45&&missingCount<=3)return {level:'moderate',label:'Orta klinik uyum'};
+ return {level:'limited',label:'Yetersiz veya sınırlı veri'};
+}
+function acaSourceForDiagnosis(name){
+ var t=acaNormText(name);
+ if(acaIncludesAny(t,['stemi','akut koroner','miyokard','aks']))return ACA_SOURCE_REGISTRY.acs;
+ if(acaIncludesAny(t,['inme','stroke','serebrovasküler']))return ACA_SOURCE_REGISTRY.stroke;
+ if(acaIncludesAny(t,['sepsis','septik']))return ACA_SOURCE_REGISTRY.sepsis;
+ if(acaIncludesAny(t,['anafilaksi','anafilaktik']))return ACA_SOURCE_REGISTRY.anaphylaxis;
+ if(acaIncludesAny(t,['pulmoner embol','pe']))return ACA_SOURCE_REGISTRY.pe;
+ return ACA_SOURCE_REGISTRY.generic;
+}
+function acaExtractLikelyDiagnoses(){
+ var state=(typeof S==='object'&&S)?S:{};
+ var raw=state.diagnoses||state.diagnosis||state.differential||state.assessment||[];
+ if(Array.isArray(raw))return raw.map(function(x){
+  if(typeof x==='string')return {name:x,score:null,positive:[],negative:[],missing:[]};
+  return {name:x.name||x.title||x.diagnosis||x.label||'Tanı önerisi',score:x.score!=null?x.score:(x.probability!=null?x.probability:(x.percent!=null?x.percent:null)),positive:x.positive||x.supporting||x.for||[],negative:x.negative||x.against||[],missing:x.missing||x.unknown||[]};
+ });
+ var text=acaNormText(raw);if(!text)return [];
+ return text.split(/\n|;|,/).map(function(x){return x.trim()}).filter(Boolean).slice(0,8).map(function(x){var m=x.match(/(.+?)(?:\s*[-–—:]\s*|\s+)(\d{1,3})\s*%?/);return {name:m?m[1].trim():x,score:m?Number(m[2]):null,positive:[],negative:[],missing:[]}});
+}
+function acaInferEvidence(diag,data){
+ var t=acaNormText(diag.name),all=[data.complaint,data.notes,data.redFlags,data.domText].join(' '),positive=[],negative=[],missing=[],score=35;
+ function hit(terms,label,points){if(acaIncludesAny(all,terms)){positive.push(label);score+=points}else missing.push(label)}
+ if(acaIncludesAny(t,['stemi','akut koroner','aks','miyokard'])){hit(['göğüs ağr','retrosternal','baskı'],'Tipik göğüs ağrısı',18);hit(['terleme','soğuk ter'],'Otonom bulgular',10);hit(['ekg','st elevasyon','st depresyon'],'EKG bulgusu',20);if(acaIncludesAny(all,['troponin pozitif','troponin yüksek'])){positive.push('Troponin yüksekliği');score+=17}else missing.push('Troponin')}
+ else if(acaIncludesAny(t,['inme','stroke'])){hit(['hemiparezi','güç kaybı','fasiyal asimetri'],'Fokal nörolojik defisit',22);hit(['konuşma bozuk','afazi','dizartri'],'Konuşma bozukluğu',18);hit(['ani başlangıç'],'Ani başlangıç',12);if(!acaIncludesAny(all,['beyin bt','kraniyal bt','mr']))missing.push('Acil beyin görüntüleme')}
+ else if(acaIncludesAny(t,['sepsis','septik'])){hit(['ateş','hipotermi'],'Isı düzensizliği',12);hit(['taşikardi'],'Taşikardi',10);hit(['hipotansiyon'],'Hipotansiyon',18);hit(['laktat'],'Laktat değerlendirmesi',12)}
+ else if(acaIncludesAny(t,['anafilaksi','anafilaktik'])){hit(['ürtiker','anjiyoödem'],'Deri/mukoza bulgusu',18);hit(['wheezing','bronkospazm','stridor'],'Solunum yolu bulgusu',20);hit(['hipotansiyon','senkop'],'Dolaşım etkilenmesi',18)}
+ else if(acaIncludesAny(t,['pulmoner embol'])){hit(['ani dispne','nefes darlığı'],'Ani dispne',18);hit(['plevritik','plevral ağrı'],'Plevritik ağrı',14);hit(['taşikardi'],'Taşikardi',12);if(!acaIncludesAny(all,['wells']))missing.push('Wells skoru');if(!acaIncludesAny(all,['d-dimer','d dimer']))missing.push('D-dimer')}
+ else{if(data.complaint){positive.push('Başvuru yakınması mevcut');score+=15}if(data.notes){positive.push('Klinik not mevcut');score+=10}if(!data.tests)missing.push('Objektif tetkik verisi')}
+ if(data.redFlags)score+=8;return {score:acaClampScore(score),positive:positive,negative:negative,missing:missing};
+}
+function acaBuildClinicalFitModels(){
+ var data=(typeof acaCollectClinicalOutputs==='function')?acaCollectClinicalOutputs():{complaint:'',notes:'',redFlags:'',tests:'',domText:''};
+ return acaExtractLikelyDiagnoses().map(function(item){var inferred=acaInferEvidence(item,data),score=item.score!=null?acaClampScore(item.score):inferred.score,positive=item.positive&&item.positive.length?item.positive:inferred.positive,negative=item.negative&&item.negative.length?item.negative:inferred.negative,missing=item.missing&&item.missing.length?item.missing:inferred.missing;return {name:item.name,score:score,positive:positive,negative:negative,missing:missing,confidence:acaConfidenceFromScore(score,missing.length),source:acaSourceForDiagnosis(item.name),clinicalEngine:ACA_CLINICAL_ENGINE_VERSION,ruleEngine:ACA_RULE_ENGINE_VERSION}});
+}
+function acaReplaceProbabilityLanguage(root){
+ root=root||document;var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null),nodes=[];
+ while(walker.nextNode())nodes.push(walker.currentNode);
+ nodes.forEach(function(node){var parent=node.parentElement;if(!parent||parent.closest('script,style,textarea,input'))return;var original=node.nodeValue,updated=original.replace(/\bolasılık\s*[:：]?\s*(\d{1,3})\s*%/gi,'klinik uyum skoru: $1/100').replace(/\bprobability\s*[:：]?\s*(\d{1,3})\s*%/gi,'clinical fit score: $1/100').replace(/\bgüven\s*[:：]?\s*(\d{1,3})\s*%/gi,'klinik uyum skoru: $1/100');if(updated!==original)node.nodeValue=updated});
+}
+function acaListHtml(items,emptyLabel){if(!items||!items.length)return '<span class="muted">'+esc(emptyLabel)+'</span>';return '<ul>'+items.map(function(x){return '<li>'+esc(String(x))+'</li>'}).join('')+'</ul>'}
+function acaRenderDecisionTransparency(){
+ var panel=document.getElementById('decisionTransparencyPanel');if(!panel)return [];
+ acaReplaceProbabilityLanguage(document);var models=acaBuildClinicalFitModels();
+ if(!models.length){panel.className='panel neutral';panel.innerHTML='Henüz klinik uyum skoru oluşturulacak tanı önerisi bulunmuyor.';return []}
+ panel.className='panel';panel.innerHTML=models.slice(0,8).map(function(m){return '<div class="clinical-fit-card"><div class="clinical-fit-head"><b>'+esc(m.name)+'</b><span class="clinical-fit-score">Klinik Uyum: '+m.score+'/100</span></div><div class="confidence-'+esc(m.confidence.level)+'">'+esc(m.confidence.label)+'</div><div class="clinical-fit-evidence"><div><b>Lehine bulgular</b>'+acaListHtml(m.positive,'Belirgin destekleyici bulgu kaydedilmedi.')+'</div><div><b>Aleyhine / çelişen bulgular</b>'+acaListHtml(m.negative,'Belirgin çelişen bulgu kaydedilmedi.')+'</div><div><b>Eksik bilgiler</b>'+acaListHtml(m.missing,'Kritik eksik veri saptanmadı.')+'</div></div><div class="clinical-fit-meta">Kaynak: '+esc(m.source.label)+' · Kılavuz yılı: '+esc(m.source.year)+' · İçerik sürümü: '+esc(m.source.version)+' · Klinik Motor: v'+esc(m.clinicalEngine)+' · Kural Motoru: v'+esc(m.ruleEngine)+'</div></div>'}).join('');return models;
+}
+function acaDecisionTransparencySelfTest(){return [
+ {name:'Güçlü uyum sınıfı',passed:acaConfidenceFromScore(82,1).level==='strong'},
+ {name:'Orta uyum sınıfı',passed:acaConfidenceFromScore(55,2).level==='moderate'},
+ {name:'Sınırlı veri sınıfı',passed:acaConfidenceFromScore(30,4).level==='limited'},
+ {name:'Skor sınırlandırma',passed:acaClampScore(142)===100&&acaClampScore(-5)===0},
+ {name:'Kaynak eşleştirme',passed:acaSourceForDiagnosis('Akut koroner sendrom').version==='ACS-1'}
+]}
+function acaScheduleTransparency(){clearTimeout(window.__acaTransparencyTimer);window.__acaTransparencyTimer=setTimeout(acaRenderDecisionTransparency,100)}
+document.addEventListener('input',acaScheduleTransparency,true);
+document.addEventListener('change',acaScheduleTransparency,true);
+window.addEventListener('load',function(){setTimeout(acaRenderDecisionTransparency,260)});
 
 /* v6.9.4-alpha.3 — motorlar arası klinik tutarlılık denetimi */
 var ACA_CONSISTENCY_VERSION='1.0.0';
@@ -4935,7 +5038,7 @@ function runStabilityChecks(showDetails){
  add('Sistem kontrol merkezi',!!document.getElementById('systemHubCard'));
  var registry=ensureAppRegistry();Object.keys(registry.groups).forEach(function(key){var g=registry.groups[key];add('Kategori: '+g.title,g.ids.some(function(id){return !!document.getElementById(id)}),'Tanımlı kart: '+g.ids.length)});
  var ids=Array.from(document.querySelectorAll('[id]')).map(function(el){return el.id}),dups=ids.filter(function(id,i){return ids.indexOf(id)!==i});add('Benzersiz HTML kimlikleri',dups.length===0,dups.length?dups.join(', '):'Çakışma yok');
- ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm','renderSmartQuestions','applySmartQuestionAnswers','renderTriageAlert','loadRandomEmergencyCase','renderCaseScorePanel','evaluateActiveTestCase','openModuleGroup','renderModuleCollection','openCollectionTool','acaIdentityHealth','acaStorageSnapshot','acaFieldCompatibilityHealth','acaReadField','acaWriteField','acaRunConsistencyCheck','acaRefreshConsistency','acaConsistencySelfTest'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
+ ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm','renderSmartQuestions','applySmartQuestionAnswers','renderTriageAlert','loadRandomEmergencyCase','renderCaseScorePanel','evaluateActiveTestCase','openModuleGroup','renderModuleCollection','openCollectionTool','acaIdentityHealth','acaStorageSnapshot','acaFieldCompatibilityHealth','acaReadField','acaWriteField','acaRunConsistencyCheck','acaRefreshConsistency','acaConsistencySelfTest','acaRenderDecisionTransparency','acaBuildClinicalFitModels','acaDecisionTransparencySelfTest'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
  var stableRegistry=ensureAppRegistry();add('Başlatma hatası',stableRegistry.initErrors.length===0,stableRegistry.initErrors.join(' | '));
  add('Çalışma zamanı hatası',stableRegistry.runtimeErrors.length===0,stableRegistry.runtimeErrors.slice(-5).join(' | '));
  var ux=typeof runUsabilityChecks==='function'?runUsabilityChecks():null;if(ux)ux.checks.forEach(function(c){checks.push({name:'Kullanılabilirlik: '+c.name,ok:c.ok,detail:c.detail})});var passed=checks.filter(function(c){return c.ok}).length,total=checks.length,box=document.getElementById('stabilitySummary');
@@ -5037,7 +5140,7 @@ function initAppStable(){
 }
 window.addEventListener('error',function(e){ensureAppRegistry().runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){ensureAppRegistry().runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{acaConsistencySelfTest:acaConsistencySelfTest,acaRunConsistencyCheck:acaRunConsistencyCheck,acaRefreshConsistency:acaRefreshConsistency,acaCollectClinicalOutputs:acaCollectClinicalOutputs,acaFieldCompatibilityHealth:acaFieldCompatibilityHealth,acaReadField:acaReadField,acaWriteField:acaWriteField,acaIdentityHealth:acaIdentityHealth,acaStorageSnapshot:acaStorageSnapshot,acaRepairKnownDuplicateIds:acaRepairKnownDuplicateIds,openCollectionTool:openCollectionTool,renderModuleCollection:renderModuleCollection,renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
+Object.assign(window,{acaRenderDecisionTransparency:acaRenderDecisionTransparency,acaBuildClinicalFitModels:acaBuildClinicalFitModels,acaDecisionTransparencySelfTest:acaDecisionTransparencySelfTest,acaReplaceProbabilityLanguage:acaReplaceProbabilityLanguage,acaConsistencySelfTest:acaConsistencySelfTest,acaRunConsistencyCheck:acaRunConsistencyCheck,acaRefreshConsistency:acaRefreshConsistency,acaCollectClinicalOutputs:acaCollectClinicalOutputs,acaFieldCompatibilityHealth:acaFieldCompatibilityHealth,acaReadField:acaReadField,acaWriteField:acaWriteField,acaIdentityHealth:acaIdentityHealth,acaStorageSnapshot:acaStorageSnapshot,acaRepairKnownDuplicateIds:acaRepairKnownDuplicateIds,openCollectionTool:openCollectionTool,renderModuleCollection:renderModuleCollection,renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
 
