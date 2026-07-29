@@ -286,7 +286,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v7.6.0 • Akıllı Klinik Karar Destek Sistemi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v7.7.0 • Akıllı Modül Yönlendirme</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -450,6 +450,21 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
  </div>
  <div class="cdss-box" style="margin-top:10px"><h4>🏷️ Olası ICD-10 başlıkları</h4><div id="acaCdssIcd" class="cdss-icd"><span class="cdss-empty">Henüz değerlendirilmedi.</span></div></div>
  <div class="offline-note" style="margin-top:10px"><b>Güvenlik:</b> Karar, ilaç ve sevk sorumluluğu hekimdedir. Sistem; eksik veri, atipik başvuru, gebelik, çocuk, yaşlılık, immünsüpresyon ve çoklu hastalık durumlarında daha düşük eşikle ileri değerlendirme önerir.</div>
+</div>
+
+
+<div class="card module-router-card" id="smartModuleRouterCard">
+ <div class="section-title"><h2>🧭 Akıllı Modül Yönlendirme</h2><span class="phase-badge">v7.7.0</span></div>
+ <p class="muted">Şikâyet, öykü, muayene ve vital bulgulara göre uygulamadaki mevcut araçları önceliklendirir. Önerilen aracı tek dokunuşla açar; hiçbir modülü yeniden oluşturmaz.</p>
+ <div id="acaRouterBanner" class="panel neutral">Vaka verisi bekleniyor…</div>
+ <div class="router-summary">
+  <div class="router-kpi"><span>Önerilen araç</span><b id="acaRouterCount">0</b></div>
+  <div class="router-kpi"><span>Öncelikli araç</span><b id="acaRouterPriorityCount">0</b></div>
+  <div class="router-kpi"><span>En yüksek öncelik</span><b id="acaRouterTopPriority">—</b></div>
+ </div>
+ <div class="compact-actions no-print"><button class="primary" type="button" onclick="acaRunSmartModuleRouter()">Yönlendirmeyi yenile</button><button type="button" onclick="acaOpenTopRecommendedModule()">İlk öneriyi aç</button></div>
+ <div id="acaRouterList" class="router-list" style="margin-top:10px"><div class="router-empty">Şikâyet ve vital bulgular girildiğinde uygun EKG, skor, laboratuvar, görüntüleme, doz, ilaç güvenliği ve sevk araçları burada sıralanır.</div></div>
+ <div class="offline-note" style="margin-top:10px"><b>Not:</b> Yönlendirme, modül seçimini hızlandırır. Klinik değerlendirme, tetkik istemi, ilaç ve sevk kararı hekim sorumluluğundadır.</div>
 </div>
 
 <div class="card nl-case-card" id="naturalCaseEntryCard">
@@ -3318,6 +3333,10 @@ function downloadProfessionalDoc(){
 function printProfessionalDoc(){
  renderProfessionalDocs();const text=el('professionalDoc').value;const w=window.open('','_blank');w.document.write(`<html><head><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111} @media print{body{padding:0}}
 
+
+/* v7.7.0 Akıllı Modül Yönlendirme */
+.module-router-card{border:2px solid #0ea5e9;background:linear-gradient(180deg,#f0f9ff,#fff)}
+.module-router-card>.section-title h2{color:#075985}.router-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.router-kpi{border:1px solid #bae6fd;border-radius:12px;padding:9px;background:#fff;text-align:center}.router-kpi span{display:block;font-size:11px;color:var(--muted)}.router-kpi b{display:block;font-size:19px;margin-top:3px}.router-list{display:grid;gap:9px}.router-item{border:1px solid var(--line);border-left:6px solid #0ea5e9;border-radius:12px;padding:10px;background:#fff}.router-item.urgent{border-left-color:#dc2626;background:#fff7f7}.router-item.high{border-left-color:#f59e0b;background:#fffbeb}.router-item.standard{border-left-color:#0ea5e9}.router-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.router-title{font-weight:900}.router-reason{font-size:12px;color:#334155;margin-top:5px}.router-badge{display:inline-block;border-radius:99px;padding:3px 8px;font-size:10px;font-weight:900;white-space:nowrap;background:#e0f2fe;color:#075985}.router-item.urgent .router-badge{background:#fee2e2;color:#991b1b}.router-item.high .router-badge{background:#fef3c7;color:#92400e}.router-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.router-actions button{min-height:36px;padding:7px 10px;font-size:11px}.router-empty{border:1px dashed #7dd3fc;border-radius:12px;padding:14px;text-align:center;background:#f0f9ff;color:#475569}@media(max-width:700px){.router-summary{grid-template-columns:1fr}.router-head{display:block}.router-badge{margin-top:6px}}
 </style></head><body>${esc(text)}</body></html>`);w.document.close();w.focus();w.print();
 }
 
@@ -6462,7 +6481,7 @@ document.addEventListener('click',function(e){
   var box=document.getElementById('acaStabilityHealth');if(box)box.innerHTML=checks.map(function(c){return '<div class="stability-box"><h4>'+esc2(c[0])+'</h4><div class="stability-stat"><span>'+esc2(c[1])+'</span><span class="stability-badge '+(c[2]?'ok':'bad')+'">'+(c[2]?'Uygun':'Kontrol')+'</span></div></div>'}).join('');
   window.__acaLastHealthReport={time:now(),checks:checks,base:r};return window.__acaLastHealthReport;
  };
- window.acaStabilityCopyReport=function(){var r=window.__acaLastHealthReport||acaStabilityRunHealth(),txt='Acil Klinik Asistanı v7.6.0 Sistem Sağlık Raporu\n'+new Date(r.time).toLocaleString('tr-TR')+'\n\n'+r.checks.map(function(c){return(c[2]?'OK':'KONTROL')+' - '+c[0]+': '+c[1]}).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt);else prompt('Raporu kopyalayın:',txt)};
+ window.acaStabilityCopyReport=function(){var r=window.__acaLastHealthReport||acaStabilityRunHealth(),txt='Acil Klinik Asistanı v7.7.0 Sistem Sağlık Raporu\n'+new Date(r.time).toLocaleString('tr-TR')+'\n\n'+r.checks.map(function(c){return(c[2]?'OK':'KONTROL')+' - '+c[0]+': '+c[1]}).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt);else prompt('Raporu kopyalayın:',txt)};
 
  function normalizeTest(name,res){
   if(Array.isArray(res)){var pass=res.filter(function(x){return x&&(x.passed!==false)&&(x.ok!==false)}).length;return{name:name,ok:pass===res.length,detail:pass+'/'+res.length+' alt test geçti'}}
@@ -6573,6 +6592,121 @@ document.addEventListener('click',function(e){
 })();
 
 
-// v7.6.0 Akıllı Klinik Karar Destek Sistemi\n(function(){\n 'use strict';\n function el(id){return document.getElementById(id)}\n function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}\n function num(v){var n=parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(n)?n:null}\n function textData(){try{if(typeof collect==='function')collect()}catch(_e){}var d=(typeof S==='object'&&S)||{};return[d.complaint,d.history,d.exam,d.notes,d.onset,d.painType,d.ecgFindings,d.clinicalCourse].filter(Boolean).join(' ').toLocaleLowerCase('tr-TR')}\n function has(t,words){return words.some(function(w){return t.indexOf(w)>=0})}\n function uniq(a){return a.filter(function(x,i){return a.indexOf(x)===i})}\n function list(items){return items.length?'<ul class="cdss-list">'+items.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ul>':'<div class="cdss-empty">Belirgin bulgu saptanmadı; klinik değerlendirme sürdürülmelidir.</div>'}\n function build(){\n  var d=(typeof S==='object'&&S)||{},t=textData(),age=num(d.age),sbp=num(d.sbp),dbp=num(d.dbp),pulse=num(d.pulse),spo2=num(d.spo2),rr=num(d.rr||d.resp),temp=num(d.temp||d.temperature),glu=num(d.glucose);\n  var red=[],dx=[],tests=[],plan=[],icd=[];\n  if(sbp!==null&&sbp<90)red.push('Sistolik hipotansiyon (<90 mmHg): şok/hipoperfüzyon açısından acil değerlendirme.');\n  if(spo2!==null&&spo2<92)red.push('Düşük oksijen satürasyonu: ölçümü doğrula, solunum yetmezliği nedenlerini değerlendir.');\n  if(pulse!==null&&(pulse<40||pulse>130))red.push('Belirgin bradikardi/taşikardi: ritim ve hemodinami değerlendirmesi.');\n  if(rr!==null&&(rr<8||rr>30))red.push('Kritik solunum sayısı: ventilasyon ve yorgunluk bulgularını değerlendir.');\n  if(has(t,['bilinç kayb','konfüzy','uyandırılam','senkop','nöbet']))red.push('Bilinç değişikliği/senkop/nöbet ifadesi mevcut.');\n  if(has(t,['göğüs ağr','baskı tarz','sol kola','soğuk terleme'])){dx.push('Akut koroner sendrom ve diğer kardiyak nedenler');tests.push('12 derivasyon EKG ve seri klinik değerlendirme; uygun koşulda kardiyak biyobelirteç');icd.push(['R07.4','Göğüs ağrısı'],['I24.9','Akut iskemik kalp hastalığı, tanımlanmamış']);if(has(t,['baskı tarz','sol kola','soğuk terleme','nefes darlığı']))red.push('İskemik özellikli göğüs ağrısı olasılığı.')}\n  if(has(t,['nefes darl','dispne','solunum sıkınt'])){dx.push('Akut solunumsal/kardiyak nedenler, enfeksiyon, tromboemboli');tests.push('SpO₂ trendi, solunum muayenesi, EKG; klinik gerekliliğe göre akciğer görüntüleme');icd.push(['R06.0','Dispne']);}\n  if(has(t,['felç','yüzde kayma','kol güçsüz','konuşma bozuk','hemiparezi'])){red.push('Akut fokal nörolojik defisit olasılığı: son sağlam görülme zamanını netleştir.');dx.push('Akut inme / TİA ve taklitleri');tests.push('Parmak ucu glukozu, nörolojik muayene, acil görüntüleme/sevk yolu');icd.push(['R29.8','Diğer nörolojik belirti ve bulgular'],['I64','İnme, tanımlanmamış']);}\n  if(has(t,['karın ağr','batın ağr'])){dx.push('Cerrahi ve medikal akut batın nedenleri');tests.push('Seri batın muayenesi; gebelik olasılığı, idrar ve hedefe yönelik laboratuvar/görüntüleme');icd.push(['R10.4','Diğer ve tanımlanmamış karın ağrısı']);if(has(t,['rijidite','tahta karın','defans','rebound','kanlı kusma','melena']))red.push('Peritonit veya gastrointestinal kanama lehine ifade mevcut.')}\n  if(has(t,['baş ağr','ense sert','hayatımın en','ani başlayan'])){dx.push('Primer ve sekonder baş ağrısı nedenleri');tests.push('Nörolojik muayene, ateş/meningeal bulgular; sekonder neden şüphesinde acil görüntüleme');icd.push(['R51','Baş ağrısı']);if(has(t,['hayatımın en','ani başlayan','ense sert','nörolojik defisit']))red.push('Sekonder tehlikeli baş ağrısı için kırmızı bayrak.')}\n  if(has(t,['ateş','titreme','enfeksiyon'])){dx.push('Enfeksiyon odağı ve sepsis spektrumu');tests.push('Vital trendi ve odak muayenesi; klinik ağırlığa göre hemogram, CRP, laktat ve kültür');icd.push(['R50.9','Ateş, tanımlanmamış']);if((sbp!==null&&sbp<100)||(rr!==null&&rr>=22)||has(t,['konfüzy','bilinç değiş']))red.push('Enfeksiyonla birlikte organ disfonksiyonu/sepsis riski.')}\n  if(glu!==null&&(glu<60||glu>400))red.push('Kritik glukoz değeri: ölçümü doğrula ve metabolik acili değerlendir.');\n  if(age!==null&&(age<1||age>=75))plan.push('Yaş grubuna bağlı atipik bulgu ve hızlı kötüleşme riski nedeniyle düşük eşikle yeniden değerlendirme/sevk.');\n  if(has(t,['gebe','gebelik']))plan.push('Gebelikte maternal ve fetal riskleri birlikte değerlendir; ilaç ve görüntüleme kararını gebeliğe göre uyarlayın.');\n  if(!dx.length)dx.push('Şikâyete özgü sistemik, enfeksiyöz, metabolik ve ilaç ilişkili nedenler');\n  if(!tests.length)tests.push('Öykü, hedefe yönelik muayene ve vital bulguların tekrarı; yalnızca sonucu yönetimi değiştirecek tetkikleri seçin.');\n  plan.push('ABC yaklaşımı, vital bulguların doğrulanması ve klinik kötüleşme açısından yeniden değerlendirme.');\n  plan.push(red.length?'Kırmızı bayraklar nedeniyle acil sevk/ileri değerlendirme eşiğini düşük tutun.':'Stabil görünümde güvenlik ağı, kontrol zamanı ve geri başvuru belirtilerini açıkça belgeleyin.');\n  plan.push('İlaç seçimi ve dozunu alerji, gebelik, böbrek/karaciğer fonksiyonu, yaş ve etkileşimlere göre doğrulayın.');\n  if(!icd.length)icd.push(['R69','Bilinmeyen ve tanımlanmamış hastalık nedeni']);\n  red=uniq(red);dx=uniq(dx);tests=uniq(tests);plan=uniq(plan);\n  var risk=red.length>=2?'Yüksek':red.length===1?'Orta-yüksek':'Düşük/Belirsiz';\n  return{risk:risk,red:red,dx:dx,tests:tests,plan:plan,icd:icd};\n }\n window.acaRunSmartClinicalDecision=function(){var r=build();window.__acaCdssLast=r;if(el('acaCdssRisk'))el('acaCdssRisk').textContent=r.risk;if(el('acaCdssRedCount'))el('acaCdssRedCount').textContent=r.red.length;if(el('acaCdssTestCount'))el('acaCdssTestCount').textContent=r.tests.length;if(el('acaCdssIcdCount'))el('acaCdssIcdCount').textContent=r.icd.length;if(el('acaCdssRedFlags'))el('acaCdssRedFlags').innerHTML=list(r.red);if(el('acaCdssDifferential'))el('acaCdssDifferential').innerHTML=list(r.dx);if(el('acaCdssTests'))el('acaCdssTests').innerHTML=list(r.tests);if(el('acaCdssPlan'))el('acaCdssPlan').innerHTML=list(r.plan);if(el('acaCdssIcd'))el('acaCdssIcd').innerHTML=r.icd.map(function(x){return'<span class="cdss-code">'+esc(x[0])+' • '+esc(x[1])+'</span>'}).join('');var b=el('acaCdssBanner');if(b){b.className='panel '+(r.red.length?'urgent':'ok');b.innerHTML='<b>'+esc(r.risk)+' risk profili</b><br><small>'+r.red.length+' kırmızı bayrak • '+r.dx.length+' ayırıcı tanı başlığı • '+r.tests.length+' tetkik/izlem önerisi</small>'}return r};\n window.acaCopySmartClinicalDecision=function(){var r=window.__acaCdssLast||acaRunSmartClinicalDecision(),txt='AKILLI KLİNİK KARAR DESTEK ÖZETİ\\nRisk: '+r.risk+'\\n\\nKırmızı bayraklar:\\n- '+(r.red.join('\\n- ')||'Belirgin kırmızı bayrak saptanmadı')+'\\n\\nAyırıcı tanı:\\n- '+r.dx.join('\\n- ')+'\\n\\nTetkik/izlem:\\n- '+r.tests.join('\\n- ')+'\\n\\nYaklaşım:\\n- '+r.plan.join('\\n- ')+'\\n\\nICD başlıkları: '+r.icd.map(function(x){return x[0]+' '+x[1]}).join('; ');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){alert('Klinik özet kopyalandı.')}).catch(function(){prompt('Özeti kopyalayın:',txt)})}else prompt('Özeti kopyalayın:',txt)};\n window.acaSmartClinicalDecisionSelfTest=function(){var ids=['smartClinicalDecisionCard','acaCdssBanner','acaCdssRisk','acaCdssRedFlags','acaCdssDifferential','acaCdssTests','acaCdssPlan','acaCdssIcd'];return{ok:ids.every(function(id){return!!document.getElementById(id)}),module:'v7.6.0',checks:ids}};\n function init(){acaRunSmartClinicalDecision();var timer;function later(){clearTimeout(timer);timer=setTimeout(acaRunSmartClinicalDecision,500)}document.addEventListener('input',later,true);document.addEventListener('change',later,true);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.groups&&r.groups.clinical&&r.groups.clinical.ids.indexOf('smartClinicalDecisionCard')<0)r.groups.clinical.ids.push('smartClinicalDecisionCard');if(r&&r.testNames)r.testNames.smartClinicalDecisionCard='Akıllı Klinik Karar Destek Sistemi'}catch(_e){}}\n if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();\n})();\n
+// v7.6.0 Akıllı Klinik Karar Destek Sistemi
+(function(){
+ 'use strict';
+ function el(id){return document.getElementById(id)}
+ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+ function num(v){var n=parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(n)?n:null}
+ function textData(){try{if(typeof collect==='function')collect()}catch(_e){}var d=(typeof S==='object'&&S)||{};return[d.complaint,d.history,d.exam,d.notes,d.onset,d.painType,d.ecgFindings,d.clinicalCourse].filter(Boolean).join(' ').toLocaleLowerCase('tr-TR')}
+ function has(t,words){return words.some(function(w){return t.indexOf(w)>=0})}
+ function uniq(a){return a.filter(function(x,i){return a.indexOf(x)===i})}
+ function list(items){return items.length?'<ul class="cdss-list">'+items.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ul>':'<div class="cdss-empty">Belirgin bulgu saptanmadı; klinik değerlendirme sürdürülmelidir.</div>'}
+ function build(){
+  var d=(typeof S==='object'&&S)||{},t=textData(),age=num(d.age),sbp=num(d.sbp),dbp=num(d.dbp),pulse=num(d.pulse),spo2=num(d.spo2),rr=num(d.rr||d.resp),temp=num(d.temp||d.temperature),glu=num(d.glucose);
+  var red=[],dx=[],tests=[],plan=[],icd=[];
+  if(sbp!==null&&sbp<90)red.push('Sistolik hipotansiyon (<90 mmHg): şok/hipoperfüzyon açısından acil değerlendirme.');
+  if(spo2!==null&&spo2<92)red.push('Düşük oksijen satürasyonu: ölçümü doğrula, solunum yetmezliği nedenlerini değerlendir.');
+  if(pulse!==null&&(pulse<40||pulse>130))red.push('Belirgin bradikardi/taşikardi: ritim ve hemodinami değerlendirmesi.');
+  if(rr!==null&&(rr<8||rr>30))red.push('Kritik solunum sayısı: ventilasyon ve yorgunluk bulgularını değerlendir.');
+  if(has(t,['bilinç kayb','konfüzy','uyandırılam','senkop','nöbet']))red.push('Bilinç değişikliği/senkop/nöbet ifadesi mevcut.');
+  if(has(t,['göğüs ağr','baskı tarz','sol kola','soğuk terleme'])){dx.push('Akut koroner sendrom ve diğer kardiyak nedenler');tests.push('12 derivasyon EKG ve seri klinik değerlendirme; uygun koşulda kardiyak biyobelirteç');icd.push(['R07.4','Göğüs ağrısı'],['I24.9','Akut iskemik kalp hastalığı, tanımlanmamış']);if(has(t,['baskı tarz','sol kola','soğuk terleme','nefes darlığı']))red.push('İskemik özellikli göğüs ağrısı olasılığı.')}
+  if(has(t,['nefes darl','dispne','solunum sıkınt'])){dx.push('Akut solunumsal/kardiyak nedenler, enfeksiyon, tromboemboli');tests.push('SpO₂ trendi, solunum muayenesi, EKG; klinik gerekliliğe göre akciğer görüntüleme');icd.push(['R06.0','Dispne']);}
+  if(has(t,['felç','yüzde kayma','kol güçsüz','konuşma bozuk','hemiparezi'])){red.push('Akut fokal nörolojik defisit olasılığı: son sağlam görülme zamanını netleştir.');dx.push('Akut inme / TİA ve taklitleri');tests.push('Parmak ucu glukozu, nörolojik muayene, acil görüntüleme/sevk yolu');icd.push(['R29.8','Diğer nörolojik belirti ve bulgular'],['I64','İnme, tanımlanmamış']);}
+  if(has(t,['karın ağr','batın ağr'])){dx.push('Cerrahi ve medikal akut batın nedenleri');tests.push('Seri batın muayenesi; gebelik olasılığı, idrar ve hedefe yönelik laboratuvar/görüntüleme');icd.push(['R10.4','Diğer ve tanımlanmamış karın ağrısı']);if(has(t,['rijidite','tahta karın','defans','rebound','kanlı kusma','melena']))red.push('Peritonit veya gastrointestinal kanama lehine ifade mevcut.')}
+  if(has(t,['baş ağr','ense sert','hayatımın en','ani başlayan'])){dx.push('Primer ve sekonder baş ağrısı nedenleri');tests.push('Nörolojik muayene, ateş/meningeal bulgular; sekonder neden şüphesinde acil görüntüleme');icd.push(['R51','Baş ağrısı']);if(has(t,['hayatımın en','ani başlayan','ense sert','nörolojik defisit']))red.push('Sekonder tehlikeli baş ağrısı için kırmızı bayrak.')}
+  if(has(t,['ateş','titreme','enfeksiyon'])){dx.push('Enfeksiyon odağı ve sepsis spektrumu');tests.push('Vital trendi ve odak muayenesi; klinik ağırlığa göre hemogram, CRP, laktat ve kültür');icd.push(['R50.9','Ateş, tanımlanmamış']);if((sbp!==null&&sbp<100)||(rr!==null&&rr>=22)||has(t,['konfüzy','bilinç değiş']))red.push('Enfeksiyonla birlikte organ disfonksiyonu/sepsis riski.')}
+  if(glu!==null&&(glu<60||glu>400))red.push('Kritik glukoz değeri: ölçümü doğrula ve metabolik acili değerlendir.');
+  if(age!==null&&(age<1||age>=75))plan.push('Yaş grubuna bağlı atipik bulgu ve hızlı kötüleşme riski nedeniyle düşük eşikle yeniden değerlendirme/sevk.');
+  if(has(t,['gebe','gebelik']))plan.push('Gebelikte maternal ve fetal riskleri birlikte değerlendir; ilaç ve görüntüleme kararını gebeliğe göre uyarlayın.');
+  if(!dx.length)dx.push('Şikâyete özgü sistemik, enfeksiyöz, metabolik ve ilaç ilişkili nedenler');
+  if(!tests.length)tests.push('Öykü, hedefe yönelik muayene ve vital bulguların tekrarı; yalnızca sonucu yönetimi değiştirecek tetkikleri seçin.');
+  plan.push('ABC yaklaşımı, vital bulguların doğrulanması ve klinik kötüleşme açısından yeniden değerlendirme.');
+  plan.push(red.length?'Kırmızı bayraklar nedeniyle acil sevk/ileri değerlendirme eşiğini düşük tutun.':'Stabil görünümde güvenlik ağı, kontrol zamanı ve geri başvuru belirtilerini açıkça belgeleyin.');
+  plan.push('İlaç seçimi ve dozunu alerji, gebelik, böbrek/karaciğer fonksiyonu, yaş ve etkileşimlere göre doğrulayın.');
+  if(!icd.length)icd.push(['R69','Bilinmeyen ve tanımlanmamış hastalık nedeni']);
+  red=uniq(red);dx=uniq(dx);tests=uniq(tests);plan=uniq(plan);
+  var risk=red.length>=2?'Yüksek':red.length===1?'Orta-yüksek':'Düşük/Belirsiz';
+  return{risk:risk,red:red,dx:dx,tests:tests,plan:plan,icd:icd};
+ }
+ window.acaRunSmartClinicalDecision=function(){var r=build();window.__acaCdssLast=r;if(el('acaCdssRisk'))el('acaCdssRisk').textContent=r.risk;if(el('acaCdssRedCount'))el('acaCdssRedCount').textContent=r.red.length;if(el('acaCdssTestCount'))el('acaCdssTestCount').textContent=r.tests.length;if(el('acaCdssIcdCount'))el('acaCdssIcdCount').textContent=r.icd.length;if(el('acaCdssRedFlags'))el('acaCdssRedFlags').innerHTML=list(r.red);if(el('acaCdssDifferential'))el('acaCdssDifferential').innerHTML=list(r.dx);if(el('acaCdssTests'))el('acaCdssTests').innerHTML=list(r.tests);if(el('acaCdssPlan'))el('acaCdssPlan').innerHTML=list(r.plan);if(el('acaCdssIcd'))el('acaCdssIcd').innerHTML=r.icd.map(function(x){return'<span class="cdss-code">'+esc(x[0])+' • '+esc(x[1])+'</span>'}).join('');var b=el('acaCdssBanner');if(b){b.className='panel '+(r.red.length?'urgent':'ok');b.innerHTML='<b>'+esc(r.risk)+' risk profili</b><br><small>'+r.red.length+' kırmızı bayrak • '+r.dx.length+' ayırıcı tanı başlığı • '+r.tests.length+' tetkik/izlem önerisi</small>'}return r};
+ window.acaCopySmartClinicalDecision=function(){var r=window.__acaCdssLast||acaRunSmartClinicalDecision(),txt='AKILLI KLİNİK KARAR DESTEK ÖZETİ\
+Risk: '+r.risk+'\
+\
+Kırmızı bayraklar:\
+- '+(r.red.join('\
+- ')||'Belirgin kırmızı bayrak saptanmadı')+'\
+\
+Ayırıcı tanı:\
+- '+r.dx.join('\
+- ')+'\
+\
+Tetkik/izlem:\
+- '+r.tests.join('\
+- ')+'\
+\
+Yaklaşım:\
+- '+r.plan.join('\
+- ')+'\
+\
+ICD başlıkları: '+r.icd.map(function(x){return x[0]+' '+x[1]}).join('; ');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){alert('Klinik özet kopyalandı.')}).catch(function(){prompt('Özeti kopyalayın:',txt)})}else prompt('Özeti kopyalayın:',txt)};
+ window.acaSmartClinicalDecisionSelfTest=function(){var ids=['smartClinicalDecisionCard','acaCdssBanner','acaCdssRisk','acaCdssRedFlags','acaCdssDifferential','acaCdssTests','acaCdssPlan','acaCdssIcd'];return{ok:ids.every(function(id){return!!document.getElementById(id)}),module:'v7.6.0',checks:ids}};
+ function init(){acaRunSmartClinicalDecision();var timer;function later(){clearTimeout(timer);timer=setTimeout(acaRunSmartClinicalDecision,500)}document.addEventListener('input',later,true);document.addEventListener('change',later,true);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.groups&&r.groups.clinical&&r.groups.clinical.ids.indexOf('smartClinicalDecisionCard')<0)r.groups.clinical.ids.push('smartClinicalDecisionCard');if(r&&r.testNames)r.testNames.smartClinicalDecisionCard='Akıllı Klinik Karar Destek Sistemi'}catch(_e){}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+
+
+// v7.7.0 Akıllı Modül Yönlendirme
+(function(){
+ 'use strict';
+ function el(id){return document.getElementById(id)}
+ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+ function num(v){var n=parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(n)?n:null}
+ function data(){try{if(typeof collect==='function')collect()}catch(_e){}return(typeof S==='object'&&S)||{}}
+ function text(d){return[d.complaint,d.history,d.exam,d.notes,d.onset,d.painType,d.ecgFindings,d.clinicalCourse,d.aiNarrative].filter(Boolean).join(' ').toLocaleLowerCase('tr-TR')}
+ function has(t,a){return a.some(function(w){return t.indexOf(w)>=0})}
+ var MODULES={
+  ecgDecisionCard:['EKG Karar Desteği','EKG çekimi ve ritim/iskemi değerlendirmesi','🫀'],
+  clinicalScoringCard:['Klinik Skorlar','Uygun risk skorunu hesaplama','📊'],
+  laboratoryEngineCard:['Laboratuvar Motoru','Laboratuvar sonucu seçimi ve yorumlama','🧪'],
+  smartTestOrderCard:['Akıllı Tetkik İstemi','Sonucu yönetimi değiştirecek tetkikleri seçme','🔬'],
+  radiologyEngineCard:['Radyoloji Motoru','Uygun görüntüleme yöntemini değerlendirme','🩻'],
+  emergencyCoreCard:['Acil Çekirdek / ABCDE','Stabilizasyon ve zaman kritik yaklaşım','🚨'],
+  pediatricEmergencyCard:['Pediatrik Acil','Yaşa özgü değerlendirme ve doz yaklaşımı','👶'],
+  doseCalculatorCard:['Doz Hesaplama','Kilo/yaşa göre doz kontrolü','⚖️'],
+  medicationSafetyCard:['İlaç Güvenliği','Alerji, etkileşim ve kontrendikasyon kontrolü','🛡️'],
+  smartTreatmentOrderCard:['Tedavi / Order Motoru','İlk yaklaşım ve order planı','💉'],
+  consultDispositionCard:['Konsültasyon ve Sonlandırma','Sevk, yatış, gözlem veya taburculuk kararı','🚑'],
+  icdCard:['ICD-10 Önerileri','Tanı kodlamasını doğrulama','🏷️'],
+  aiClinicalAssistantCard:['Klinik Asistan','Ayırıcı tanı ve eksik veri kontrolü','🧠']
+ };
+ function add(map,id,priority,reason){if(!document.getElementById(id))return;var old=map[id];if(!old||priority<old.priority)map[id]={id:id,priority:priority,reason:reason};else if(old.reason.indexOf(reason)<0)old.reason+='; '+reason}
+ function build(){
+  var d=data(),t=text(d),age=num(d.age),sbp=num(d.sbp),pulse=num(d.pulse),spo2=num(d.spo2),rr=num(d.rr||d.resp),glu=num(d.glucose),m={};
+  var unstable=(sbp!==null&&sbp<90)||(spo2!==null&&spo2<92)||(pulse!==null&&(pulse<40||pulse>130))||(rr!==null&&(rr<8||rr>30));
+  if(unstable)add(m,'emergencyCoreCard',1,'Kritik vital bulgu veya hemodinamik/solunumsal instabilite olasılığı');
+  if(has(t,['göğüs ağr','baskı tarz','çarpıntı','senkop','bradikardi','taşikardi'])){add(m,'ecgDecisionCard',unstable?1:2,'Kardiyak yakınma veya ritim bozukluğu olasılığı');add(m,'laboratoryEngineCard',2,'Troponin ve hedefe yönelik laboratuvar değerlendirmesi gerekebilir');add(m,'clinicalScoringCard',2,'HEART/Wells/PERC gibi uygun skorlar değerlendirilebilir');}
+  if(has(t,['nefes darl','dispne','hemoptizi','plevritik','bacak şiş','dvt'])){add(m,'clinicalScoringCard',2,'Pulmoner emboli ve solunumsal risk skorları gündeme gelebilir');add(m,'ecgDecisionCard',2,'Kardiyak yüklenme veya eşlik eden kardiyak nedenlerin değerlendirilmesi');add(m,'radiologyEngineCard',2,'Akciğer görüntüleme gerekliliğinin değerlendirilmesi');add(m,'smartTestOrderCard',2,'D-dimer ve hedefe yönelik tetkik seçimi');}
+  if(has(t,['ateş','titreme','enfeksiyon','pnömoni','öksürük'])){add(m,'clinicalScoringCard',2,'qSOFA/CURB-65 gibi uygun klinik skorlar değerlendirilebilir');add(m,'laboratoryEngineCard',2,'Enfeksiyon ağırlığı ve organ etkilenimi için laboratuvar değerlendirmesi');add(m,'radiologyEngineCard',3,'Odak şüphesine göre görüntüleme seçimi');}
+  if(has(t,['felç','yüzde kayma','kol güçsüz','konuşma bozuk','hemiparezi','nöbet','bilinç'])){add(m,'emergencyCoreCard',1,'Zaman kritik nörolojik acil olasılığı');add(m,'laboratoryEngineCard',2,'Glukoz ve metabolik taklitlerin değerlendirilmesi');add(m,'radiologyEngineCard',1,'Acil nörogörüntüleme gerekliliği');add(m,'consultDispositionCard',1,'Acil sevk/konsültasyon kararı');}
+  if(has(t,['karın ağr','batın ağr','kusma','melena','hematemez','defans','rebound'])){add(m,'smartTestOrderCard',2,'Akut batın için hedefe yönelik tetkik seçimi');add(m,'laboratoryEngineCard',2,'Hemogram, biyokimya ve klinik bağlama uygun testler');add(m,'radiologyEngineCard',2,'USG/BT gerekliliğinin değerlendirilmesi');add(m,'consultDispositionCard',has(t,['defans','rebound','melena','hematemez'])?1:2,'Cerrahi konsültasyon veya sevk gerekliliği');}
+  if(has(t,['baş ağr','ani başlayan','ense sert','travma','düşme'])){add(m,'radiologyEngineCard',has(t,['ani başlayan','ense sert','travma'])?1:2,'Sekonder neden veya travma için görüntüleme kararı');add(m,'consultDispositionCard',2,'İleri değerlendirme/sevk eşiğinin belirlenmesi');}
+  if(glu!==null&&(glu<60||glu>250)){add(m,'laboratoryEngineCard',1,'Anormal glukoz için metabolik değerlendirme');add(m,'smartTreatmentOrderCard',1,'Hipoglisemi/hiperglisemi ilk yaklaşımı');}
+  if(age!==null&&age<18){add(m,'pediatricEmergencyCard',1,'Pediatrik yaş grubuna özgü değerlendirme');add(m,'doseCalculatorCard',2,'Kilo bazlı doz doğrulaması');}
+  if(has(t,['ilaç','reçete','antibiyotik','analjezik','antikoagülan','alerji'])||Object.keys(m).length){add(m,'medicationSafetyCard',3,'Planlanan tedavide alerji, etkileşim ve kontrendikasyon kontrolü');}
+  if(Object.keys(m).length){add(m,'smartTreatmentOrderCard',3,'Bulgulara göre ilk yaklaşım ve order planını yapılandırma');add(m,'consultDispositionCard',3,'Gözlem, sevk, yatış veya taburculuk güvenliği');add(m,'icdCard',4,'Klinik değerlendirme sonrası ICD-10 kodunu doğrulama');}
+  else {add(m,'aiClinicalAssistantCard',2,'Şikâyete özgü ayırıcı tanı ve eksik veri kontrolü');add(m,'smartTestOrderCard',3,'Hedefe yönelik tetkik seçimi');add(m,'icdCard',4,'Olası tanı başlıklarının kodlanması');}
+  return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.priority-b.priority});
+ }
+ function priorityText(p){return p===1?'Acil':p===2?'Öncelikli':p===3?'Tamamlayıcı':'Son aşama'}
+ function priorityClass(p){return p===1?'urgent':p===2?'high':'standard'}
+ window.acaRunSmartModuleRouter=function(){var a=build();window.__acaRouterLast=a;var priority=a.filter(function(x){return x.priority<=2}).length;if(el('acaRouterCount'))el('acaRouterCount').textContent=a.length;if(el('acaRouterPriorityCount'))el('acaRouterPriorityCount').textContent=priority;if(el('acaRouterTopPriority'))el('acaRouterTopPriority').textContent=a.length?priorityText(a[0].priority):'—';var box=el('acaRouterList');if(box)box.innerHTML=a.length?a.map(function(x){var meta=MODULES[x.id]||[x.id,'','🧩'];return'<div class="router-item '+priorityClass(x.priority)+'"><div class="router-head"><div><div class="router-title">'+esc(meta[2]+' '+meta[0])+'</div><div class="router-reason">'+esc(x.reason)+'</div></div><span class="router-badge">'+esc(priorityText(x.priority))+'</span></div><div class="router-actions no-print"><button type="button" onclick="acaOpenRecommendedModule(\''+esc(x.id)+'\')">Modülü aç</button></div></div>'}).join(''):'<div class="router-empty">Uygun modül önerisi üretilemedi.</div>';var b=el('acaRouterBanner');if(b){b.className='panel '+(a.some(function(x){return x.priority===1})?'urgent':priority?'warn':'ok');b.innerHTML='<b>'+a.length+' mevcut araç önerildi.</b><br><small>'+priority+' araç öncelikli • En üst öneri: '+esc(a.length?(MODULES[a[0].id]||[a[0].id])[0]:'—')+'</small>'}return a};
+ window.acaOpenRecommendedModule=function(id){if(typeof openSingleModule==='function')openSingleModule(id);else{var x=el(id);if(x){x.style.display='block';if(x.tagName==='DETAILS')x.open=true;x.scrollIntoView({behavior:'smooth',block:'start'})}else alert('Önerilen modül bulunamadı: '+id)}};
+ window.acaOpenTopRecommendedModule=function(){var a=window.__acaRouterLast||acaRunSmartModuleRouter();if(a.length)acaOpenRecommendedModule(a[0].id);else alert('Açılacak öneri bulunamadı.')};
+ window.acaSmartModuleRouterSelfTest=function(){var ids=['smartModuleRouterCard','acaRouterBanner','acaRouterList','acaRouterCount','acaRouterPriorityCount','acaRouterTopPriority'];return{ok:ids.every(function(id){return!!document.getElementById(id)}),module:'v7.7.0',checks:ids}};
+ function init(){acaRunSmartModuleRouter();var timer;function later(){clearTimeout(timer);timer=setTimeout(acaRunSmartModuleRouter,550)}document.addEventListener('input',later,true);document.addEventListener('change',later,true);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.groups&&r.groups.diagnosis&&r.groups.diagnosis.ids.indexOf('smartModuleRouterCard')<0)r.groups.diagnosis.ids.unshift('smartModuleRouterCard');if(r&&r.testNames)r.testNames.smartModuleRouterCard='Akıllı Modül Yönlendirme'}catch(_e){}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+
 </script>
 </body></html>
