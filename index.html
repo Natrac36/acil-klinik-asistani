@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.3.0</title>
+<title>Acil Klinik Asistanı v8.3.1</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -332,7 +332,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.3.0 • Ana Menü ve Modül Düzeni</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.3.1 • Ana Menü Kontrol Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell">
@@ -372,7 +372,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
  <div class="card dashboard-hero">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.3.0 · Düzenlenmiş ana menü</span>
+    <span class="dashboard-version">v8.3.1 · Düzenlenmiş ana menü</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>İşleminizi klinik akışa göre seçin veya araç adını yazarak doğrudan bulun.</p>
    </div>
@@ -6195,7 +6195,7 @@ function applyUsabilityGuards(){
 function runUsabilityChecks(){
  var checks=[];
  function add(name,ok,detail){checks.push({name:name,ok:!!ok,detail:detail||''})}
- add('Ana kategori kartları',document.querySelectorAll('#dashboardGrid .dashboard-tile').length===9,document.querySelectorAll('#dashboardGrid .dashboard-tile').length+'/9');
+ add('Ana kategori kartları',document.querySelectorAll('#dashboardGrid .dashboard-tile').length===7,document.querySelectorAll('#dashboardGrid .dashboard-tile').length+'/7');
  add('Alt iş akışı menüsü',document.querySelectorAll('.workflow-dock button').length===4,document.querySelectorAll('.workflow-dock button').length+'/4');
  add('Vaka formu',!!document.getElementById('caseEntryCard'));
  add('Birleşik özet',!!document.getElementById('workflowSummaryCard'));
