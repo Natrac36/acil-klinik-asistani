@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.7.0</title>
+<title>Acil Klinik Asistanı v8.7.1</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -439,6 +439,7 @@ body.module-view #dashboardShell{display:none!important}
 body.module-view .layout{display:grid!important}
 </style>
 <style id="aca-v870-universal-search-css">.universal-search-wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center}.universal-search-clear{width:38px;min-width:38px;padding:8px;font-size:21px;background:#ffffff22;color:#fff;border-color:#ffffff44}.universal-search-panel{margin-top:9px;background:#fff;color:#172033;border:1px solid #cbd5e1;border-radius:15px;box-shadow:0 18px 45px #02061738;overflow:hidden;max-height:420px;overflow-y:auto}.universal-search-head{display:flex;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;color:#64748b}.universal-search-result{width:100%;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:11px 12px;border:0;border-bottom:1px solid #eef2f7;border-radius:0;background:#fff;color:#172033}.universal-search-result:hover,.universal-search-result.active{background:#ecfdf5}.universal-search-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:#e6fffb;font-size:18px}.universal-search-copy{min-width:0}.universal-search-copy b,.universal-search-copy small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.universal-search-copy small{color:#64748b;font-size:10.5px}.universal-search-type{font-size:9px;font-weight:900;padding:4px 6px;border-radius:999px;background:#e2e8f0;color:#475569}.universal-recent-searches{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.universal-recent-searches:empty{display:none}.universal-recent-searches span{font-size:10px;color:#dbeafe}.universal-recent-searches button{padding:5px 8px;min-height:29px;font-size:10px;background:#ffffff14;color:#fff;border-color:#ffffff2f}.universal-search-empty{padding:15px;text-align:center;color:#64748b;font-size:12px}@media(max-width:560px){.universal-search-wrap{grid-template-columns:minmax(0,1fr) auto}.universal-search-wrap .primary{grid-column:1/-1}.universal-search-clear{position:absolute;right:6px;top:6px;background:transparent;color:#64748b;border:0}.universal-search-result{grid-template-columns:34px minmax(0,1fr)}.universal-search-type{display:none}}</style>
+<style id="aca-v871-search-banner-css">.universal-search-banner{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:12px 0 8px;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);color:#fff}.universal-search-banner span{font-size:9px;font-weight:900;letter-spacing:.08em;padding:4px 6px;border-radius:999px;background:#fef3c7;color:#92400e}.universal-search-banner b{font-size:12px}.universal-search-banner small{font-size:10px;opacity:.88}@media(max-width:560px){.universal-search-banner small{width:100%}}</style>
 </head>
 <body class="dashboard-home">
 <header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.6.2 • Profesyonel Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
@@ -498,12 +499,13 @@ body.module-view .layout{display:grid!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.7.0 · Evrensel Akıllı Arama</span>
+    <span class="dashboard-version">v8.7.1 · Evrensel Akıllı Arama</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
    <button class="dashboard-new-case dashboard-new-case-main" onclick="openModuleGroup('case')"><span>＋</span> Yeni vaka başlat</button>
   </div>
+  <div class="universal-search-banner"><span>YENİ</span><b> Evrensel Akıllı Arama</b><small> Semptom, tanı, ICD, ilaç, tetkik ve araçları tek noktadan bulun.</small></div>
   <div class="dashboard-search dashboard-search-compact universal-search-wrap">
    <input id="moduleSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Semptom, tanı, ICD, ilaç, tetkik veya araç ara…" oninput="acaUniversalSearch(this.value)" onkeydown="acaUniversalSearchKey(event)">
    <button class="primary" onclick="runModuleSearch()">Ara</button>
