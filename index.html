@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.5.0</title>
+<title>Acil Klinik Asistanı v8.5.1</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -408,6 +408,18 @@ body.dashboard-home #dynamicRuleEngineCard,
 body.dashboard-home #decisionTransparencyCard,
 body.dashboard-home #clinicalConsistencyCard{display:none!important}
 
+
+/* v8.5.1 Profesyonel dashboard ve hızlı işlem merkezi */
+#commercialDashboard{display:none!important}
+.dashboard-quick-center{background:rgba(255,255,255,.94);border:1px solid rgba(148,163,184,.28);border-radius:17px;padding:13px 14px;margin-bottom:12px;box-shadow:var(--shadow-soft)}
+.dashboard-quick-center-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.dashboard-quick-center-head h3{margin:0;font-size:14px}.dashboard-quick-center-head small{color:var(--muted);font-size:10px}
+.dashboard-quick-actions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.dashboard-quick-action{min-height:58px;padding:8px 6px;border-radius:12px;background:#fff;display:grid;place-items:center;align-content:center;gap:3px;text-align:center;font-size:10px}
+.dashboard-quick-action span{font-size:20px;line-height:1}.dashboard-quick-action b{font-size:10.5px}
+.dashboard-quick-action.continue{background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;border-color:#0f766e}
+@media(max-width:760px){.dashboard-quick-actions{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:440px){.dashboard-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-quick-action{min-height:55px}}
 </style>
 
 <style>
@@ -416,7 +428,7 @@ body.dashboard-home #clinicalConsistencyCard{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel kısayollar ve akıllı çalışma alanı</p></div><div class="status">v8.5.0 • Akıllı Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel kısayollar ve akıllı çalışma alanı</p></div><div class="status">v8.5.1 • Profesyonel Dashboard</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell">
@@ -456,7 +468,7 @@ body.dashboard-home #clinicalConsistencyCard{display:none!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.5.0 · Sade çalışma alanı</span>
+    <span class="dashboard-version">v8.5.1 · Profesyonel dashboard</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -474,6 +486,18 @@ body.dashboard-home #clinicalConsistencyCard{display:none!important}
   <section class="dashboard-smart-card" aria-labelledby="smartFavTitle"><div class="dashboard-smart-head"><div><h3 id="smartFavTitle">⭐ Benim kısayollarım</h3><small>En çok kullandığınız araçlar</small></div><button class="dashboard-customize-btn" type="button" onclick="acaV850ToggleCustomizer()">Düzenle</button></div><div id="dashboardSmartFavorites" class="dashboard-smart-list"></div><div id="dashboardFavoriteCustomizer" class="dashboard-customizer hidden"></div></section>
   <section class="dashboard-smart-card" aria-labelledby="smartRecentTitle"><div class="dashboard-smart-head"><div><h3 id="smartRecentTitle">🕘 Son kullanılanlar</h3><small>Kaldığınız yerden devam edin</small></div><button class="dashboard-customize-btn" type="button" onclick="acaV850ClearRecent()">Temizle</button></div><div id="dashboardSmartRecent" class="dashboard-smart-list"></div></section>
  </div>
+
+ <section class="dashboard-quick-center" aria-labelledby="quickCenterTitle">
+  <div class="dashboard-quick-center-head"><div><h3 id="quickCenterTitle">⚡ Hızlı işlem merkezi</h3><small>Sık kullanılan klinik araçlara tek dokunuşla ulaşın</small></div></div>
+  <div class="dashboard-quick-actions">
+   <button class="dashboard-quick-action continue" type="button" onclick="acaV851ContinueCase()"><span>▶</span><b>Vakaya devam et</b></button>
+   <button class="dashboard-quick-action" type="button" onclick="acaV851OpenTool('ecgDecisionCard','EKG')"><span>🫀</span><b>EKG</b></button>
+   <button class="dashboard-quick-action" type="button" onclick="acaV851OpenTool('smartTestOrderCard','Tetkik')"><span>🧪</span><b>Tetkik</b></button>
+   <button class="dashboard-quick-action" type="button" onclick="acaV851OpenTool('smartPrescriptionCard','Reçete')"><span>💊</span><b>Reçete</b></button>
+   <button class="dashboard-quick-action" type="button" onclick="acaV851OpenTool('icdCard','ICD-10')"><span>🏷️</span><b>ICD-10</b></button>
+   <button class="dashboard-quick-action" type="button" onclick="acaV851OpenTool('multiSpecialistConsultCard','Konsültasyon')"><span>👥</span><b>Konsültasyon</b></button>
+  </div>
+ </section>
 
  <section class="dashboard-main-section" aria-labelledby="clinicalMenuTitle">
   <div class="dashboard-simple-head">
@@ -3545,6 +3569,30 @@ function printProfessionalDoc(){
 @media(max-width:650px){.license-center-grid{grid-template-columns:1fr}.license-kv{grid-template-columns:1fr 1fr}}
 </style>
 </head><body>${esc(text)}
+
+<script>
+/* v8.5.1 hızlı işlem merkezi */
+(function(){
+ window.acaV851OpenTool=function(cardId,label){
+  try{
+   if(typeof openSingleModule==='function') openSingleModule(cardId);
+   else {
+    document.body.classList.remove('dashboard-home');
+    var card=document.getElementById(cardId);
+    if(card){card.classList.remove('module-hidden');card.scrollIntoView({behavior:'smooth',block:'start'});}
+   }
+   try{localStorage.setItem('aca_v851_last_action',JSON.stringify({id:cardId,label:label||'Klinik araç',time:Date.now()}));}catch(e){}
+  }catch(e){console.error('Hızlı araç açılamadı',e);}
+ };
+ window.acaV851ContinueCase=function(){
+  try{
+   var raw=localStorage.getItem('aca_v851_last_action');
+   if(raw){var last=JSON.parse(raw);if(last&&last.id){window.acaV851OpenTool(last.id,last.label);return;}}
+  }catch(e){}
+  if(typeof openModuleGroup==='function') openModuleGroup('case');
+ };
+})();
+</script>
 </body></html>`);w.document.close();w.focus();w.print();
 }
 
