@@ -204,6 +204,9 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 .guideline-source-pending{border-left:5px solid #64748b;background:#f8fafc}
 
 
+
+
+
 /* v7.1 Çoklu Uzman Konsültasyon Konseyi */
 .multi-consult-card{border:2px solid #a5b4fc;background:linear-gradient(180deg,#eef2ff,#fff)}
 .multi-consult-card>.section-title h3{color:#3730a3}
@@ -241,10 +244,16 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 .ai-contract-list{margin:6px 0 0;padding-left:18px}.ai-contract-list li{font-size:12px;margin:4px 0}
 @media(max-width:700px){.ai-compat-grid{grid-template-columns:1fr}}
 
+
+
+/* v7.3 Güvenli Yapay Zekâ Bağlantı Katmanı */
+.ai-connection-card{border:2px solid #99f6e4;background:linear-gradient(180deg,#f0fdfa,#fff)}
+.ai-connection-card>.section-title h3{color:#0f766e}.ai-connection-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ai-connection-box{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.ai-connection-box h4{margin:0 0 8px}.ai-connection-status{display:grid;gap:7px}.ai-connection-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 9px;border:1px solid var(--line);border-radius:10px;background:#f8fafc;font-size:12px}.ai-connection-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:#94a3b8}.ai-connection-dot.ready{background:#16a34a}.ai-connection-dot.warn{background:#f59e0b}.ai-connection-dot.error{background:#dc2626}.ai-result-preview{white-space:pre-wrap;word-break:break-word;max-height:420px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:10px}.ai-security-note{border-left:5px solid #0f766e;background:#ecfdf5;border-radius:11px;padding:10px;font-size:12px}.ai-connection-card input[type=url]{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}@media(max-width:700px){.ai-connection-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v7.2.0 • Tam Yapay Zekâ Uyum Katmanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v7.3.0 • Güvenli Yapay Zekâ Bağlantı Katmanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -354,7 +363,31 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
   <div class="ai-compat-box"><h4>Anonim vaka paketi</h4><div id="aiCompatibilityPreview" class="ai-schema-preview">Vaka paketi hazırlanıyor…</div></div>
   <div class="ai-compat-box"><h4>Beklenen yapay zekâ yanıt şeması</h4><div id="aiResponseSchemaPreview" class="ai-schema-preview"></div></div>
  </div>
- <div id="aiCompatibilityNotice" class="panel info" style="margin-top:10px">Bu aşama bağlantı altyapısını hazırlar; gerçek API bağlantısı v7.3'te güvenli sunucu aracılığıyla eklenecektir.</div>
+ <div id="aiCompatibilityNotice" class="panel info" style="margin-top:10px">Güvenli bağlantı katmanı v7.3 ile hazırlandı. Gerçek kullanım için Sistem kontrolü bölümünde size ait HTTPS aracı adresi tanımlanmalıdır.</div>
+</div>
+
+
+
+<div class="card ai-connection-card" id="aiConnectionCard">
+ <div class="section-title"><h3>Güvenli Yapay Zekâ Bağlantısı</h3><span class="phase-badge">v7.3</span></div>
+ <p class="muted">Anonim vaka paketini yalnızca sizin yönettiğiniz güvenli sunucu aracısına gönderir. API anahtarı ve sağlayıcı gizli bilgileri bu HTML dosyasına yazılmaz. Bağlantı kurulamazsa mevcut çevrimdışı klinik motorları çalışmaya devam eder.</p>
+ <div class="ai-security-note"><b>Güvenlik modeli:</b> Tarayıcı → HTTPS aracınız → seçilen yapay zekâ sağlayıcısı. Gizli API anahtarı yalnızca sunucuda tutulmalıdır; GitHub Pages veya <code>index.html</code> içine eklenmemelidir.</div>
+ <div class="ai-connection-grid" style="margin-top:10px">
+  <div class="ai-connection-box">
+   <h4>Bağlantı ayarları</h4>
+   <label>Sağlayıcı etiketi<select id="aiProviderLabel" onchange="saveAIConnectionSettings()"><option value="openai">OpenAI uyumlu</option><option value="azure-openai">Azure OpenAI uyumlu</option><option value="custom">Özel güvenli aracı</option></select></label>
+   <label style="margin-top:8px">Güvenli aracı adresi<input id="aiProxyEndpoint" type="url" inputmode="url" autocomplete="off" placeholder="https://ornek-domain.com/api/clinical-ai" oninput="renderAIConnectionStatus()"></label>
+   <div class="grid" style="margin-top:8px"><label>Zaman aşımı<select id="aiRequestTimeout" onchange="saveAIConnectionSettings()"><option value="15000">15 saniye</option><option value="30000" selected>30 saniye</option><option value="60000">60 saniye</option></select></label><label>Çalışma modu<select id="aiConnectionMode" onchange="saveAIConnectionSettings()"><option value="manual" selected>Hekim başlatır</option><option value="disabled">Kapalı</option></select></label></div>
+   <p class="muted">Adres cihazın yerel depolamasında tutulabilir; API anahtarı için alan özellikle bulunmaz.</p>
+  </div>
+  <div class="ai-connection-box"><h4>Bağlantı durumu</h4><div id="aiConnectionStatus" class="ai-connection-status"></div></div>
+ </div>
+ <div class="compact-actions no-print"><button class="primary" type="button" onclick="sendCaseToSecureAI()">Anonim vakayı güvenli AI'ya gönder</button><button type="button" onclick="testSecureAIConnection()">Bağlantıyı test et</button><button type="button" onclick="cancelSecureAIRequest()">İsteği iptal et</button><button type="button" onclick="clearAIConnectionSettings()">Ayarları temizle</button></div>
+ <div class="ai-connection-grid">
+  <div class="ai-connection-box"><h4>Son işlem</h4><div id="aiConnectionLog" class="ai-result-preview">Henüz bağlantı işlemi yapılmadı.</div></div>
+  <div class="ai-connection-box"><h4>Doğrulanmış yapay zekâ yanıtı</h4><div id="aiSecureResponsePreview" class="ai-result-preview">Geçerli bir yanıt geldiğinde burada gösterilir.</div></div>
+ </div>
+ <div id="aiConnectionFallback" class="panel info" style="margin-top:10px"><b>Çevrimdışı geri dönüş hazır:</b> Bağlantı hatasında vaka, kural motoru, kılavuz motoru ve uzman konseyi mevcut şekilde kullanılabilir.</div>
 </div>
 
 <div class="card multi-consult-card" id="multiSpecialistConsultCard">
@@ -5604,7 +5637,7 @@ window.addEventListener('load',function(){setTimeout(acaRefreshConsistency,200)}
 function ensureAppRegistry(){
  if(typeof APP_REGISTRY==='object'&&APP_REGISTRY&&APP_REGISTRY.groups)return APP_REGISTRY;
  if(window.APP_REGISTRY&&window.APP_REGISTRY.groups)return window.APP_REGISTRY;
- var fallback={groups:{case:{title:'Yeni vaka',ids:['naturalCaseEntryCard','caseEntryCard','clinicalNoteCard']},summary:{title:'Vaka özeti',ids:['workflowSummaryCard']},emergency:{title:'Acil değerlendirme',ids:['emergencyCoreCard']},diagnosis:{title:'Tanı desteği',ids:['aiClinicalAssistantCard','aiCompatibilityCard','multiSpecialistConsultCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard']},tests:{title:'Tetkik ve sonuç yorumlama',ids:['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard']},treatment:{title:'Tedavi ve order',ids:['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard']},prescription:{title:'Akıllı reçete',ids:['smartPrescriptionCard']},documents:{title:'Belge ve sonlandırma',ids:['professionalDocCard']},education:{title:'Eğitim ve Simülasyon',ids:['educationSimulationCard']},system:{title:'Sistem kontrolü',ids:['systemHubCard','guidelineCurrencyAuditCard']}},testNames:{},initErrors:[],runtimeErrors:[]};
+ var fallback={groups:{case:{title:'Yeni vaka',ids:['naturalCaseEntryCard','caseEntryCard','clinicalNoteCard']},summary:{title:'Vaka özeti',ids:['workflowSummaryCard']},emergency:{title:'Acil değerlendirme',ids:['emergencyCoreCard']},diagnosis:{title:'Tanı desteği',ids:['aiClinicalAssistantCard','aiCompatibilityCard','multiSpecialistConsultCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard']},tests:{title:'Tetkik ve sonuç yorumlama',ids:['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard']},treatment:{title:'Tedavi ve order',ids:['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard']},prescription:{title:'Akıllı reçete',ids:['smartPrescriptionCard']},documents:{title:'Belge ve sonlandırma',ids:['professionalDocCard']},education:{title:'Eğitim ve Simülasyon',ids:['educationSimulationCard']},system:{title:'Sistem kontrolü',ids:['systemHubCard','guidelineCurrencyAuditCard','aiConnectionCard']}},testNames:{},initErrors:[],runtimeErrors:[]};
  window.APP_REGISTRY=fallback;
  return fallback;
 }
@@ -5621,6 +5654,7 @@ var COMPACT_COLLECTIONS={
   description:'Yeni vaka ekranındaki otomatik önerilerin ötesinde ayrıntılı inceleme gerektiğinde bir araç seçin.',
   labels:{
    aiClinicalAssistantCard:'Klinik asistan',
+   aiConnectionCard:'Güvenli AI bağlantısı',
    guidelineEngineCard:'Kılavuz motoru',
    guidelineCurrencyAuditCard:'Kılavuz güncellik ve otomatik kaynak kontrolü',
    clinicalScoringCard:'Klinik skorlar',
@@ -5726,7 +5760,7 @@ function closeAllSystemTests(){var entry=getGroup('system');if(!entry)return;ent
 function showDashboard(){document.body.classList.remove('module-view');document.body.classList.add('dashboard-home');hideAllModules();var layout=document.querySelector('.layout');if(layout)layout.style.removeProperty('display');if(typeof setDockActive==='function')setDockActive('dockHomeBtn');window.scrollTo({top:0,behavior:'smooth'})}
 function showDashboardHome(){showDashboard()}
 function filterDashboard(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim(),found=0;document.querySelectorAll('#dashboardGrid .dashboard-tile').forEach(function(btn){var text=(btn.textContent+' '+(btn.dataset.search||'')).toLocaleLowerCase('tr-TR'),visible=!q||text.includes(q);btn.style.display=visible?'':'none';if(visible)found++});document.getElementById('searchNoResult')?.classList.toggle('show',!!q&&!found)}
-function runModuleSearch(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;var map=[['eğitim','education'],['egitim','education'],['simülasyon','education'],['simulasyon','education'],['vaka bankası','education'],['vaka puanlama','education'],['sistem','system'],['test','system'],['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['konsültasyon','multiSpecialistConsultCard'],['konsultasyon','multiSpecialistConsultCard'],['uzman konseyi','multiSpecialistConsultCard'],['yapay zeka uyum','aiCompatibilityCard'],['ai uyum','aiCompatibilityCard'],['json vaka','aiCompatibilityCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']],hit=map.find(function(x){return q.includes(x[0])});if(hit){(hit[1]==='system'||hit[1]==='education')?openModuleGroup(hit[1]):openSingleModule(hit[1])}else{var first=Array.from(document.querySelectorAll('#dashboardGrid .dashboard-tile')).find(function(b){return b.style.display!=='none'});if(first)first.click()}}
+function runModuleSearch(){var q=(document.getElementById('moduleSearch')?.value||'').toLocaleLowerCase('tr-TR').trim();if(!q)return;var map=[['eğitim','education'],['egitim','education'],['simülasyon','education'],['simulasyon','education'],['vaka bankası','education'],['vaka puanlama','education'],['sistem','system'],['test','system'],['reçete','smartPrescriptionCard'],['recete','smartPrescriptionCard'],['order','smartTreatmentOrderCard'],['tedavi','smartTreatmentOrderCard'],['laboratuvar','laboratoryEngineCard'],['troponin','laboratoryEngineCard'],['radyoloji','radiologyEngineCard'],['heart','clinicalScoringCard'],['skor','clinicalScoringCard'],['ekg','ecgDecisionCard'],['icd','icdCard'],['konsültasyon','multiSpecialistConsultCard'],['konsultasyon','multiSpecialistConsultCard'],['uzman konseyi','multiSpecialistConsultCard'],['yapay zeka bağlantı','aiConnectionCard'],['ai bağlantı','aiConnectionCard'],['api bağlantı','aiConnectionCard'],['yapay zeka uyum','aiCompatibilityCard'],['ai uyum','aiCompatibilityCard'],['json vaka','aiCompatibilityCard'],['epikriz','professionalDocCard'],['belge','professionalDocCard'],['sepsis','smartTreatmentOrderCard'],['abcde','emergencyCoreCard']],hit=map.find(function(x){return q.includes(x[0])});if(hit){(hit[1]==='system'||hit[1]==='education')?openModuleGroup(hit[1]):openSingleModule(hit[1])}else{var first=Array.from(document.querySelectorAll('#dashboardGrid .dashboard-tile')).find(function(b){return b.style.display!=='none'});if(first)first.click()}}
 function runStabilityChecks(showDetails){
  var checks=[],add=function(name,ok,detail){checks.push({name:name,ok:!!ok,detail:detail||''})};
  add('Tek uygulama kaydı',!!ensureAppRegistry());
@@ -5893,13 +5927,83 @@ function buildAICompatibilityPacket(){
 function renderAICompatibilityLayer(){
  var packet=buildAICompatibilityPacket(),preview=document.getElementById('aiCompatibilityPreview'),schema=document.getElementById('aiResponseSchemaPreview'),status=document.getElementById('aiCompatibilityStatus');
  if(preview)preview.textContent=JSON.stringify(packet,null,2);if(schema)schema.textContent=JSON.stringify(ACA_AI_RESPONSE_SCHEMA,null,2);
- if(status){var hasCase=!!(packet.encounter.chief_complaint||packet.encounter.narrative),hasVitals=Object.keys(packet.vitals).length>0,hasLabs=Object.keys(packet.laboratory).length>0,hasSources=packet.decision_support_outputs.length>0;status.innerHTML=[['Standart vaka şeması',true],['Kimlik ayıklama',packet.privacy.deidentified],['Klinik vaka verisi',hasCase],['Vital veri',hasVitals],['Laboratuvar verisi',hasLabs],['Mevcut motor çıktıları',hasSources],['Çevrimdışı geri dönüş',true],['Güvenli API bağlantısı',false]].map(function(x){return '<div class="ai-status-row"><span>'+esc(x[0])+'</span><b class="'+(x[1]?'case-feedback-good':'case-feedback-warn')+'">'+(x[1]?'Hazır':'Bekliyor')+'</b></div>'}).join('')}
+ if(status){var hasCase=!!(packet.encounter.chief_complaint||packet.encounter.narrative),hasVitals=Object.keys(packet.vitals).length>0,hasLabs=Object.keys(packet.laboratory).length>0,hasSources=packet.decision_support_outputs.length>0;status.innerHTML=[['Standart vaka şeması',true],['Kimlik ayıklama',packet.privacy.deidentified],['Klinik vaka verisi',hasCase],['Vital veri',hasVitals],['Laboratuvar verisi',hasLabs],['Mevcut motor çıktıları',hasSources],['Çevrimdışı geri dönüş',true],['Güvenli API bağlantı katmanı',typeof acaSecureAIFetch==='function']].map(function(x){return '<div class="ai-status-row"><span>'+esc(x[0])+'</span><b class="'+(x[1]?'case-feedback-good':'case-feedback-warn')+'">'+(x[1]?'Hazır':'Bekliyor')+'</b></div>'}).join('')}
  window.ACA_LAST_AI_PACKET=packet;return packet;
 }
 function copyAICompatibilityPacket(){var p=renderAICompatibilityLayer(),t=JSON.stringify(p,null,2);if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){alert('Anonim vaka JSON paketi kopyalandı.')}).catch(function(){fallbackCopy(t)});else fallbackCopy(t)}
 function downloadAICompatibilityPacket(){var p=renderAICompatibilityLayer(),blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='aca-anonim-vaka-'+Date.now()+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},500)}
 function validateAIResponseContract(data){var errors=[];if(!data||typeof data!=='object')errors.push('Yanıt nesne değil');if(data&&data.schema_version!=='aca.ai.response.v1')errors.push('Yanıt şema sürümü uyumsuz');if(data&&!Array.isArray(data.missing_critical_data))errors.push('missing_critical_data dizi değil');if(data&&!Array.isArray(data.safety_alerts))errors.push('safety_alerts dizi değil');if(data&&!Array.isArray(data.differential_diagnoses))errors.push('differential_diagnoses dizi değil');return {ok:errors.length===0,errors:errors}}
 function runAICompatibilitySelfTest(showAlert){var p=buildAICompatibilityPacket(),sample={schema_version:'aca.ai.response.v1',missing_critical_data:[],safety_alerts:[],differential_diagnoses:[]},v=validateAIResponseContract(sample),text=JSON.stringify(p);var r={ok:p.schema_version===ACA_AI_SCHEMA_VERSION&&p.privacy.deidentified&&!/\b\d{11}\b/.test(text)&&v.ok,packet_schema:p.schema_version,response_contract:v.ok};if(showAlert)alert(r.ok?'Yapay zekâ uyumluluk testi başarılı.':'Uyumluluk testinde sorun bulundu.');return r}
+
+/* v7.3 Güvenli Yapay Zekâ Bağlantı Katmanı */
+var ACA_AI_CONNECTION_STORAGE='aca.ai.connection.v1';
+var ACA_AI_ACTIVE_CONTROLLER=null;
+var ACA_AI_LAST_RESPONSE=null;
+function acaAIConnectionReadSettings(){
+ var fallback={provider:'openai',endpoint:'',timeout:30000,mode:'manual'};
+ try{var raw=localStorage.getItem(ACA_AI_CONNECTION_STORAGE);if(!raw)return fallback;var x=JSON.parse(raw);return {provider:x.provider||fallback.provider,endpoint:x.endpoint||'',timeout:Number(x.timeout)||fallback.timeout,mode:x.mode||fallback.mode}}catch(e){return fallback}
+}
+function acaAIConnectionIsAllowedEndpoint(value){
+ try{var u=new URL(String(value||'').trim());return u.protocol==='https:'||((u.hostname==='localhost'||u.hostname==='127.0.0.1')&&u.protocol==='http:')}catch(e){return false}
+}
+function saveAIConnectionSettings(){
+ var endpoint=(document.getElementById('aiProxyEndpoint')||{}).value||'',provider=(document.getElementById('aiProviderLabel')||{}).value||'openai',timeout=Number((document.getElementById('aiRequestTimeout')||{}).value)||30000,mode=(document.getElementById('aiConnectionMode')||{}).value||'manual';
+ try{localStorage.setItem(ACA_AI_CONNECTION_STORAGE,JSON.stringify({provider:provider,endpoint:endpoint.trim(),timeout:timeout,mode:mode}))}catch(e){}
+ renderAIConnectionStatus();
+}
+function loadAIConnectionSettings(){
+ var x=acaAIConnectionReadSettings(),e=document.getElementById('aiProxyEndpoint'),p=document.getElementById('aiProviderLabel'),t=document.getElementById('aiRequestTimeout'),m=document.getElementById('aiConnectionMode');
+ if(e)e.value=x.endpoint||'';if(p)p.value=x.provider;if(t)t.value=String(x.timeout);if(m)m.value=x.mode;renderAIConnectionStatus();return x;
+}
+function acaSetAIConnectionLog(message,state){
+ var e=document.getElementById('aiConnectionLog');if(e)e.textContent='['+new Date().toLocaleTimeString('tr-TR')+'] '+message;
+ var f=document.getElementById('aiConnectionFallback');if(f){f.className='panel '+(state==='error'?'warn':state==='ok'?'ok':'info')}
+}
+function renderAIConnectionStatus(){
+ var x=acaAIConnectionReadSettings(),input=document.getElementById('aiProxyEndpoint');if(input&&input.value!==x.endpoint)x.endpoint=input.value.trim();
+ var allowed=acaAIConnectionIsAllowedEndpoint(x.endpoint),online=navigator.onLine!==false,enabled=x.mode!=='disabled',busy=!!ACA_AI_ACTIVE_CONTROLLER,status=document.getElementById('aiConnectionStatus');
+ if(status)status.innerHTML=[
+  ['Tarayıcı ağı',online?'Çevrimiçi':'Çevrimdışı',online?'ready':'warn'],
+  ['Bağlantı modu',enabled?'Hekim başlatır':'Kapalı',enabled?'ready':'warn'],
+  ['HTTPS aracı adresi',x.endpoint?(allowed?'Geçerli':'Geçersiz'):'Tanımlanmadı',allowed?'ready':x.endpoint?'error':'warn'],
+  ['API anahtarı', 'HTML içinde tutulmuyor','ready'],
+  ['Çevrimdışı motorlar','Hazır','ready'],
+  ['İstek durumu',busy?'Çalışıyor':'Beklemede',busy?'warn':'ready']
+ ].map(function(r){return '<div class="ai-connection-row"><span><i class="ai-connection-dot '+r[2]+'"></i>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>'}).join('');
+ return {online:online,enabled:enabled,allowed:allowed,busy:busy,settings:x};
+}
+function acaExtractAIResponse(payload){
+ if(payload&&payload.data&&typeof payload.data==='object')return payload.data;
+ if(payload&&payload.result&&typeof payload.result==='object')return payload.result;
+ if(payload&&payload.response&&typeof payload.response==='object')return payload.response;
+ return payload;
+}
+async function acaSecureAIFetch(action){
+ var state=renderAIConnectionStatus(),x=state.settings;if(!state.enabled)throw new Error('Yapay zekâ bağlantısı kapalı.');if(!state.online)throw new Error('İnternet bağlantısı yok.');if(!state.allowed)throw new Error('Geçerli bir HTTPS aracı adresi girin.');
+ saveAIConnectionSettings();if(ACA_AI_ACTIVE_CONTROLLER)ACA_AI_ACTIVE_CONTROLLER.abort();var controller=new AbortController();ACA_AI_ACTIVE_CONTROLLER=controller;renderAIConnectionStatus();
+ var timer=setTimeout(function(){controller.abort()},x.timeout),packet=buildAICompatibilityPacket();
+ try{
+  var response=await fetch(x.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:action,provider:x.provider,packet:packet,response_schema:ACA_AI_RESPONSE_SCHEMA,client:{application:'Acil Klinik Asistanı',version:'7.3.0'}}),signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'});
+  var text=await response.text(),body=null;try{body=text?JSON.parse(text):{}}catch(e){throw new Error('Sunucu geçerli JSON döndürmedi. HTTP '+response.status)}
+  if(!response.ok)throw new Error((body&&body.error&&body.error.message)||body.message||('Sunucu hatası: HTTP '+response.status));return body;
+ }catch(e){if(e&&e.name==='AbortError')throw new Error('İstek iptal edildi veya zaman aşımına uğradı.');throw e}
+ finally{clearTimeout(timer);if(ACA_AI_ACTIVE_CONTROLLER===controller)ACA_AI_ACTIVE_CONTROLLER=null;renderAIConnectionStatus()}
+}
+async function testSecureAIConnection(){
+ acaSetAIConnectionLog('Güvenli aracı bağlantısı test ediliyor…','info');
+ try{var body=await acaSecureAIFetch('health_check');acaSetAIConnectionLog('Bağlantı testi başarılı. Sunucu JSON yanıt verdi.','ok');var e=document.getElementById('aiSecureResponsePreview');if(e)e.textContent=JSON.stringify(body,null,2)}catch(err){acaSetAIConnectionLog('Bağlantı testi başarısız: '+err.message,'error')}
+}
+async function sendCaseToSecureAI(){
+ acaSetAIConnectionLog('Anonim vaka paketi gönderiliyor…','info');var out=document.getElementById('aiSecureResponsePreview');if(out)out.textContent='Yanıt bekleniyor…';
+ try{var body=await acaSecureAIFetch('clinical_decision_support'),data=acaExtractAIResponse(body),validation=validateAIResponseContract(data);if(!validation.ok)throw new Error('Yanıt klinik şemaya uymuyor: '+validation.errors.join('; '));ACA_AI_LAST_RESPONSE=data;if(out)out.textContent=JSON.stringify(data,null,2);acaSetAIConnectionLog('Yanıt alındı ve klinik şema doğrulandı. Otomatik order/reçete uygulanmadı.','ok')}
+ catch(err){if(out)out.textContent='Geçerli AI yanıtı yok. Çevrimdışı klinik motorları kullanılmaya devam ediyor.';acaSetAIConnectionLog('AI isteği tamamlanamadı: '+err.message,'error')}
+}
+function cancelSecureAIRequest(){if(ACA_AI_ACTIVE_CONTROLLER){ACA_AI_ACTIVE_CONTROLLER.abort();ACA_AI_ACTIVE_CONTROLLER=null;acaSetAIConnectionLog('Aktif istek kullanıcı tarafından iptal edildi.','info')}else acaSetAIConnectionLog('İptal edilecek aktif istek yok.','info');renderAIConnectionStatus()}
+function clearAIConnectionSettings(){
+ if(ACA_AI_ACTIVE_CONTROLLER)cancelSecureAIRequest();try{localStorage.removeItem(ACA_AI_CONNECTION_STORAGE)}catch(e){}var e=document.getElementById('aiProxyEndpoint');if(e)e.value='';ACA_AI_LAST_RESPONSE=null;var r=document.getElementById('aiSecureResponsePreview');if(r)r.textContent='Geçerli bir yanıt geldiğinde burada gösterilir.';loadAIConnectionSettings();acaSetAIConnectionLog('Bağlantı ayarları temizlendi.','info')
+}
+function acaAIConnectionSelfTest(){var sample='https://example.org/api/clinical-ai',bad='javascript:alert(1)',x=acaAIConnectionReadSettings();return {ok:acaAIConnectionIsAllowedEndpoint(sample)&&!acaAIConnectionIsAllowedEndpoint(bad)&&typeof AbortController==='function'&&typeof fetch==='function'&&x&&typeof x==='object',secret_in_html:false,offline_fallback:true}}
+window.addEventListener('online',renderAIConnectionStatus);window.addEventListener('offline',renderAIConnectionStatus);
 
 /* v7.1 Çoklu Uzman Konsültasyon Konseyi */
 var ACA_SPECIALISTS={
@@ -5987,11 +6091,11 @@ function multiSpecialistConsultSelfTest(){var r=buildMultiSpecialistConsult();re
 function initAppStable(){
  try{renderTestCasePanel();renderCaseScorePanel()}catch(e){console.error('Test vaka paneli yüklenemedi',e)}
  safeCall('Kayıt yükleme',function(){if(typeof load==='function')load()});
- initializeClinicalModules();bindStableEvents();safeCall('Yapay zekâ uyum katmanı',renderAICompatibilityLayer);safeCall('Çoklu uzman konseyi',renderMultiSpecialistConsult);buildSystemHub();showDashboard();acaRenderGuidelineCurrencyAudit();acaFetchGuidelineUpdateStatus(false);applyUsabilityGuards();setTimeout(applyUsabilityGuards,250);runStabilityChecks(false)
+ initializeClinicalModules();bindStableEvents();safeCall('Yapay zekâ uyum katmanı',renderAICompatibilityLayer);safeCall('Güvenli AI bağlantısı',loadAIConnectionSettings);safeCall('Çoklu uzman konseyi',renderMultiSpecialistConsult);buildSystemHub();showDashboard();acaRenderGuidelineCurrencyAudit();acaFetchGuidelineUpdateStatus(false);applyUsabilityGuards();setTimeout(applyUsabilityGuards,250);runStabilityChecks(false)
 }
 window.addEventListener('error',function(e){ensureAppRegistry().runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){ensureAppRegistry().runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{renderAICompatibilityLayer:renderAICompatibilityLayer,buildAICompatibilityPacket:buildAICompatibilityPacket,copyAICompatibilityPacket:copyAICompatibilityPacket,downloadAICompatibilityPacket:downloadAICompatibilityPacket,validateAIResponseContract:validateAIResponseContract,runAICompatibilitySelfTest:runAICompatibilitySelfTest,renderMultiSpecialistConsult:renderMultiSpecialistConsult,copyMultiSpecialistConsult:copyMultiSpecialistConsult,multiSpecialistConsultSelfTest:multiSpecialistConsultSelfTest,acaRunGuidelineCurrencyAudit:acaRunGuidelineCurrencyAudit,acaRenderGuidelineCurrencyAudit:acaRenderGuidelineCurrencyAudit,acaCopyGuidelineAuditSummary:acaCopyGuidelineAuditSummary,acaFetchGuidelineUpdateStatus:acaFetchGuidelineUpdateStatus,acaRenderGuidelineUpdateStatus:acaRenderGuidelineUpdateStatus,acaGuidelineCurrencyAuditSelfTest:acaGuidelineCurrencyAuditSelfTest,acaAuditOneGuideline:acaAuditOneGuideline,acaRunGuidelineEngine:acaRunGuidelineEngine,acaRenderGuidelineEngine:acaRenderGuidelineEngine,acaRegisterGuideline:acaRegisterGuideline,acaGuidelineRegistryHealth:acaGuidelineRegistryHealth,acaGuidelineEngineSelfTest:acaGuidelineEngineSelfTest,acaRunDynamicRuleEngine:acaRunDynamicRuleEngine,acaRenderDynamicRuleEngine:acaRenderDynamicRuleEngine,acaRegisterRule:acaRegisterRule,acaRuleRegistryHealth:acaRuleRegistryHealth,acaDynamicRuleEngineSelfTest:acaDynamicRuleEngineSelfTest,acaRenderDecisionTransparency:acaRenderDecisionTransparency,acaBuildClinicalFitModels:acaBuildClinicalFitModels,acaDecisionTransparencySelfTest:acaDecisionTransparencySelfTest,acaReplaceProbabilityLanguage:acaReplaceProbabilityLanguage,acaConsistencySelfTest:acaConsistencySelfTest,acaRunConsistencyCheck:acaRunConsistencyCheck,acaRefreshConsistency:acaRefreshConsistency,acaCollectClinicalOutputs:acaCollectClinicalOutputs,acaFieldCompatibilityHealth:acaFieldCompatibilityHealth,acaReadField:acaReadField,acaWriteField:acaWriteField,acaIdentityHealth:acaIdentityHealth,acaStorageSnapshot:acaStorageSnapshot,acaRepairKnownDuplicateIds:acaRepairKnownDuplicateIds,openCollectionTool:openCollectionTool,renderModuleCollection:renderModuleCollection,renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
+Object.assign(window,{loadAIConnectionSettings:loadAIConnectionSettings,saveAIConnectionSettings:saveAIConnectionSettings,renderAIConnectionStatus:renderAIConnectionStatus,testSecureAIConnection:testSecureAIConnection,sendCaseToSecureAI:sendCaseToSecureAI,cancelSecureAIRequest:cancelSecureAIRequest,clearAIConnectionSettings:clearAIConnectionSettings,acaAIConnectionSelfTest:acaAIConnectionSelfTest,renderAICompatibilityLayer:renderAICompatibilityLayer,buildAICompatibilityPacket:buildAICompatibilityPacket,copyAICompatibilityPacket:copyAICompatibilityPacket,downloadAICompatibilityPacket:downloadAICompatibilityPacket,validateAIResponseContract:validateAIResponseContract,runAICompatibilitySelfTest:runAICompatibilitySelfTest,renderMultiSpecialistConsult:renderMultiSpecialistConsult,copyMultiSpecialistConsult:copyMultiSpecialistConsult,multiSpecialistConsultSelfTest:multiSpecialistConsultSelfTest,acaRunGuidelineCurrencyAudit:acaRunGuidelineCurrencyAudit,acaRenderGuidelineCurrencyAudit:acaRenderGuidelineCurrencyAudit,acaCopyGuidelineAuditSummary:acaCopyGuidelineAuditSummary,acaFetchGuidelineUpdateStatus:acaFetchGuidelineUpdateStatus,acaRenderGuidelineUpdateStatus:acaRenderGuidelineUpdateStatus,acaGuidelineCurrencyAuditSelfTest:acaGuidelineCurrencyAuditSelfTest,acaAuditOneGuideline:acaAuditOneGuideline,acaRunGuidelineEngine:acaRunGuidelineEngine,acaRenderGuidelineEngine:acaRenderGuidelineEngine,acaRegisterGuideline:acaRegisterGuideline,acaGuidelineRegistryHealth:acaGuidelineRegistryHealth,acaGuidelineEngineSelfTest:acaGuidelineEngineSelfTest,acaRunDynamicRuleEngine:acaRunDynamicRuleEngine,acaRenderDynamicRuleEngine:acaRenderDynamicRuleEngine,acaRegisterRule:acaRegisterRule,acaRuleRegistryHealth:acaRuleRegistryHealth,acaDynamicRuleEngineSelfTest:acaDynamicRuleEngineSelfTest,acaRenderDecisionTransparency:acaRenderDecisionTransparency,acaBuildClinicalFitModels:acaBuildClinicalFitModels,acaDecisionTransparencySelfTest:acaDecisionTransparencySelfTest,acaReplaceProbabilityLanguage:acaReplaceProbabilityLanguage,acaConsistencySelfTest:acaConsistencySelfTest,acaRunConsistencyCheck:acaRunConsistencyCheck,acaRefreshConsistency:acaRefreshConsistency,acaCollectClinicalOutputs:acaCollectClinicalOutputs,acaFieldCompatibilityHealth:acaFieldCompatibilityHealth,acaReadField:acaReadField,acaWriteField:acaWriteField,acaIdentityHealth:acaIdentityHealth,acaStorageSnapshot:acaStorageSnapshot,acaRepairKnownDuplicateIds:acaRepairKnownDuplicateIds,openCollectionTool:openCollectionTool,renderModuleCollection:renderModuleCollection,renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
 
