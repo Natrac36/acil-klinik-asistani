@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.7.1</title>
+<title>Acil Klinik Asistanı v8.7.2</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -458,7 +458,7 @@ body.module-view .layout{display:grid!important}
       <div class="professional-status-strip">
         <div><span class="status-dot online"></span><b>Sistem hazır</b><small>Yerel çalışma etkin</small></div>
         <div><b id="commercialOfflineState">Hazır</b><small>Çevrimdışı durum</small></div>
-        <div><b>v8.6.0</b><small>Güncel sürüm</small></div>
+        <div><b>v8.7.2</b><small>Güncel sürüm</small></div>
       </div>
       <div class="commercial-stats professional-stats">
         <div class="commercial-stat"><b id="commercialTodayCount">0</b><span>Bugünkü vaka</span></div>
@@ -499,7 +499,7 @@ body.module-view .layout{display:grid!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.7.1 · Evrensel Akıllı Arama</span>
+    <span class="dashboard-version">v8.7.2 · Çoklu Aktif Vaka</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -644,6 +644,22 @@ body.module-view .layout{display:grid!important}
 </div>
 
 
+
+
+<div class="card active-cases-card" id="activeCasesCard">
+ <div class="section-title"><div><h3>🗂️ Aktif Vakalar</h3><p class="muted">Aynı anda birden fazla vaka üzerinde çalışın ve kaldığınız yerden devam edin.</p></div><span class="phase-badge">v8.7.2</span></div>
+ <div class="active-case-toolbar no-print">
+  <button class="primary" type="button" onclick="acaSaveCurrentAsActiveCase()">＋ Mevcut vakayı aktif kaydet</button>
+  <button type="button" onclick="acaStartBlankActiveCase()">Yeni boş vaka</button>
+  <button type="button" onclick="acaRenderActiveCases()">Yenile</button>
+ </div>
+ <div class="active-case-summary">
+  <div><small>Açık vaka</small><b id="acaActiveCaseCount">0</b></div>
+  <div><small>Şu an çalışılan</small><b id="acaCurrentActiveCase">Seçilmedi</b></div>
+ </div>
+ <div id="acaActiveCaseList" class="active-case-list"><div class="active-case-empty">Henüz aktif vaka yok.</div></div>
+ <details class="active-case-archive-link"><summary>Arşiv ve yedekleme seçenekleri</summary><p>Kalıcı arşiv, JSON yedeği ve senkronizasyon işlemleri aşağıdaki “Çevrimdışı Vaka Kayıt ve Senkronizasyon” bölümündedir.</p></details>
+</div>
 
 <div class="card offline-case-card" id="offlineCaseSyncCard">
  <div class="section-title"><h3>💾 Çevrimdışı Vaka Kayıt ve Senkronizasyon</h3><span class="phase-badge">v7.5.3</span></div>
@@ -3600,6 +3616,23 @@ body.dashboard-home .layout{display:none!important}
 body.dashboard-home #moduleHeading,body.dashboard-home .dashboard-back{display:none!important}
 body.module-view #dashboardShell{display:none!important}
 body.module-view .layout{display:grid!important}
+
+/* v8.7.2 Çoklu Aktif Vaka Yönetimi */
+.active-cases-card{border:1px solid #d9e4ec;background:linear-gradient(180deg,#fff,#f8fbfd)}
+.active-case-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.active-case-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+.active-case-summary>div{padding:12px 14px;border:1px solid #dce5eb;border-radius:14px;background:#fff}
+.active-case-summary small{display:block;color:#6d7a88;margin-bottom:4px}.active-case-summary b{font-size:16px}
+.active-case-list{display:grid;gap:10px;margin-top:12px}
+.active-case-item{border:1px solid #d9e2e8;border-radius:16px;background:#fff;padding:14px;box-shadow:0 4px 14px rgba(15,35,55,.05)}
+.active-case-item.current{border-color:#159a8c;box-shadow:0 0 0 2px rgba(21,154,140,.12)}
+.active-case-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.active-case-head b{font-size:16px}.active-case-meta{color:#6c7886;font-size:13px;line-height:1.45;margin-top:5px}
+.active-case-state{white-space:nowrap;font-size:12px;font-weight:800;border-radius:999px;padding:5px 9px;background:#eaf7f4;color:#08786e}
+.active-case-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.active-case-actions button{padding:9px 12px}
+.active-case-empty{padding:18px;border:1px dashed #cbd6de;border-radius:14px;text-align:center;color:#71808f;background:#fbfcfd}
+.active-case-archive-link{margin-top:12px}.active-case-archive-link summary{cursor:pointer;font-weight:800}.active-case-archive-link p{color:#6d7885}
+@media(max-width:620px){.active-case-summary{grid-template-columns:1fr}.active-case-head{display:block}.active-case-state{display:inline-block;margin-top:8px}.active-case-actions button{flex:1 1 130px}}
 </style>
 </head><body>${esc(text)}
 </body></html>`);w.document.close();w.focus();w.print();
@@ -7088,4 +7121,32 @@ function init(){index=build();drawRecent()}if(document.readyState==='loading')do
 })();
 </script>
 
+
+<script id="aca-v872-active-cases">
+(function(){
+ 'use strict';
+ var ACTIVE_KEY='acaActiveCasesV872',CURRENT_KEY='acaCurrentActiveCaseV872',ARCHIVE_KEY='acaOfflineCaseArchiveV753',LIMIT=12;
+ function el(id){return document.getElementById(id)}
+ function read(k,d){try{var x=JSON.parse(localStorage.getItem(k)||'null');return x==null?d:x}catch(_e){return d}}
+ function write(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){alert('Aktif vaka kaydedilemedi: '+e.message);return false}}
+ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+ function clone(v){return JSON.parse(JSON.stringify(v||{}))}
+ function archive(){var a=read(ARCHIVE_KEY,[]);return Array.isArray(a)?a:[]}
+ function activeIds(){var a=read(ACTIVE_KEY,[]);return Array.isArray(a)?a.filter(Boolean):[]}
+ function saveIds(a){return write(ACTIVE_KEY,a.slice(-LIMIT))}
+ function dataNow(){try{if(typeof collect==='function')collect()}catch(_e){}return clone(typeof S==='object'&&S?S:read('acilCase',{}))}
+ function meaningful(d){if(!d||typeof d!=='object')return false;return !!(d.complaint||d.age||d.notes||d.sbp||d.pulse||d.sex)}
+ function title(d){var a=[];if(d.age)a.push(d.age+' yaş');if(d.sex&&d.sex!=='Seçilmedi')a.push(d.sex);if(d.complaint)a.push(d.complaint);return a.join(' • ')||'Başlıksız vaka'}
+ function meta(d,r){var a=[];if(d.sbp)a.push('TA '+d.sbp+(d.dbp?'/'+d.dbp:''));if(d.pulse)a.push('Nabız '+d.pulse);if(d.spo2)a.push('SpO₂ %'+d.spo2);if(d.disposition)a.push(d.disposition);a.push(new Date(r.updatedAt||r.createdAt||Date.now()).toLocaleString('tr-TR'));return a.join(' • ')}
+ function recordById(id){return archive().find(function(r){return r&&r.id===id})}
+ function ensureArchived(){var d=dataNow();if(!meaningful(d)){alert('Önce vaka bilgisi girin.');return null}if(typeof window.acaArchiveCurrentCase!=='function'){alert('Vaka arşiv modülü hazır değil.');return null}var id=window.acaArchiveCurrentCase(false);return id||null}
+ window.acaSaveCurrentAsActiveCase=function(){var id=ensureArchived();if(!id)return;var ids=activeIds().filter(function(x){return x!==id});ids.push(id);saveIds(ids);localStorage.setItem(CURRENT_KEY,id);acaRenderActiveCases();alert('Vaka aktif çalışma listesine kaydedildi.')};
+ window.acaSwitchActiveCase=function(id){var r=recordById(id);if(!r){acaCloseActiveCase(id,true);alert('Vaka arşiv kaydı bulunamadı.');return}try{localStorage.setItem('acilCase',JSON.stringify(r.data||{}));localStorage.setItem('acilStep','0');localStorage.setItem(CURRENT_KEY,id);if(typeof S==='object')S=clone(r.data);if(typeof render==='function')render();if(typeof updateAll==='function')updateAll();acaRenderActiveCases();if(typeof showCaseWorkspace==='function')showCaseWorkspace();setTimeout(function(){var c=el('caseEntryCard');if(c)c.scrollIntoView({behavior:'smooth',block:'start'})},50)}catch(e){alert('Vaka açılamadı: '+e.message)}};
+ window.acaCloseActiveCase=function(id,silent){var ids=activeIds().filter(function(x){return x!==id});saveIds(ids);if(localStorage.getItem(CURRENT_KEY)===id)localStorage.removeItem(CURRENT_KEY);acaRenderActiveCases();if(!silent)alert('Vaka aktif listeden kapatıldı. Arşiv kaydı silinmedi.')};
+ window.acaStartBlankActiveCase=function(){var d=dataNow();if(meaningful(d)&&!confirm('Mevcut vaka kaydedilmeden boş vaka açılsın mı?'))return;try{localStorage.removeItem('acilCase');localStorage.setItem('acilStep','0');localStorage.removeItem(CURRENT_KEY);if(typeof location!=='undefined')location.reload()}catch(e){alert('Yeni vaka başlatılamadı: '+e.message)}};
+ window.acaRenderActiveCases=function(){var ids=activeIds(),records=ids.map(recordById).filter(Boolean),current=localStorage.getItem(CURRENT_KEY)||'';if(records.length!==ids.length)saveIds(records.map(function(r){return r.id}));var count=el('acaActiveCaseCount'),cur=el('acaCurrentActiveCase'),box=el('acaActiveCaseList');if(count)count.textContent=records.length;if(cur){var cr=records.find(function(r){return r.id===current});cur.textContent=cr?title(cr.data):'Seçilmedi'}if(!box)return;if(!records.length){box.innerHTML='<div class="active-case-empty">Henüz aktif vaka yok. Mevcut vakayı kaydederek başlayın.</div>';return}records.sort(function(a,b){return new Date(b.updatedAt||0)-new Date(a.updatedAt||0)});box.innerHTML=records.map(function(r){var isCurrent=r.id===current;return '<div class="active-case-item '+(isCurrent?'current':'')+'"><div class="active-case-head"><div><b>'+esc(title(r.data||{}))+'</b><div class="active-case-meta">'+esc(meta(r.data||{},r))+'</div></div><span class="active-case-state">'+(isCurrent?'Şu an açık':'Beklemede')+'</span></div><div class="active-case-actions no-print"><button class="'+(isCurrent?'':'primary')+'" type="button" onclick="acaSwitchActiveCase(\''+esc(r.id)+'\')">'+(isCurrent?'Yeniden yükle':'Vakaya geç')+'</button><button type="button" onclick="acaCloseActiveCase(\''+esc(r.id)+'\')">Aktif listeden kapat</button></div></div>'}).join('')};
+ function init(){try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.groups&&r.groups.case&&r.groups.case.ids.indexOf('activeCasesCard')<0)r.groups.case.ids.unshift('activeCasesCard');if(r&&r.testNames)r.testNames.activeCasesCard='Çoklu Aktif Vaka Yönetimi'}catch(_e){}acaRenderActiveCases();window.addEventListener('storage',function(e){if(e.key===ACTIVE_KEY||e.key===CURRENT_KEY||e.key===ARCHIVE_KEY)acaRenderActiveCases()})}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body></html>
