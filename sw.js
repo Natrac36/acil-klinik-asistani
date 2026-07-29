@@ -1,4 +1,4 @@
-const CACHE_NAME = "acil-klinik-asistani-v7.5.2";
+const CACHE_NAME = "acil-klinik-asistani-v7.5.3";
 
 const FILES_TO_CACHE = [
   "./",
