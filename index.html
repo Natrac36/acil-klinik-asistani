@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.4.0</title>
+<title>Acil Klinik Asistanı v8.5.0</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -386,6 +386,10 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
  .dashboard-search-compact button{width:auto}
 }
 
+
+/* v8.5.0 Akıllı ve kişiselleştirilebilir çalışma alanı */
+.dashboard-personal-strip{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.dashboard-smart-card{background:rgba(255,255,255,.94);border:1px solid rgba(148,163,184,.28);border-radius:17px;padding:12px 14px;box-shadow:var(--shadow-soft);min-width:0}.dashboard-smart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.dashboard-smart-head h3{margin:0;font-size:14px}.dashboard-smart-head small{color:var(--muted);font-size:10px}.dashboard-smart-list{display:flex;gap:6px;flex-wrap:wrap;min-height:38px;align-items:center}.dashboard-smart-chip{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:7px 9px;border-radius:11px;background:#f8fafc;border:1px solid var(--line);font-size:11px;font-weight:800;cursor:pointer}.dashboard-smart-chip:hover{border-color:#5eead4;background:#f0fdfa}.dashboard-smart-chip .remove-fav{font-size:13px;color:#94a3b8;margin-left:2px}.dashboard-smart-empty{font-size:11px;color:var(--muted);padding:7px 0}.dashboard-customize-btn{min-height:32px;padding:6px 9px;font-size:10px;border-radius:9px}.dashboard-customizer{border:1px solid var(--line);border-radius:13px;background:#f8fafc;padding:10px;margin-top:9px}.dashboard-customizer.hidden{display:none!important}.dashboard-customizer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.dashboard-customizer label{display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:11px;cursor:pointer}.dashboard-customizer input{width:16px;height:16px;min-height:0;accent-color:var(--teal)}.dashboard-customizer-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}.dashboard-customizer-actions button{min-height:34px;padding:6px 9px;font-size:10px}.dashboard-context-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.dashboard-context-line span{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:#ffffff14;border:1px solid #ffffff20;color:#dbeafe}@media(max-width:700px){.dashboard-personal-strip{grid-template-columns:1fr}.dashboard-customizer-grid{grid-template-columns:1fr 1fr}}@media(max-width:440px){.dashboard-customizer-grid{grid-template-columns:1fr}.dashboard-smart-chip{flex:1 1 calc(50% - 6px);justify-content:center}}
+
 </style>
 
 <style>
@@ -434,7 +438,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.4.0 · Sade ana sayfa</span>
+    <span class="dashboard-version">v8.5.0 · Akıllı çalışma alanı</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -445,6 +449,12 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
    <button class="primary" onclick="runModuleSearch()">Ara</button>
   </div>
   <div id="searchNoResult" class="panel warn search-no-result">Eşleşen ana bölüm bulunamadı. Arama düğmesine basarak araçlarda arayabilirsiniz.</div>
+  <div class="dashboard-context-line"><span id="dashboardLastVisit">Hazır</span><span id="dashboardUsageCount">0 araç kullanıldı</span><span>Çevrimdışı uyumlu</span></div>
+ </div>
+
+ <div class="dashboard-personal-strip">
+  <section class="dashboard-smart-card" aria-labelledby="smartFavTitle"><div class="dashboard-smart-head"><div><h3 id="smartFavTitle">⭐ Benim kısayollarım</h3><small>En çok kullandığınız araçlar</small></div><button class="dashboard-customize-btn" type="button" onclick="acaV850ToggleCustomizer()">Düzenle</button></div><div id="dashboardSmartFavorites" class="dashboard-smart-list"></div><div id="dashboardFavoriteCustomizer" class="dashboard-customizer hidden"></div></section>
+  <section class="dashboard-smart-card" aria-labelledby="smartRecentTitle"><div class="dashboard-smart-head"><div><h3 id="smartRecentTitle">🕘 Son kullanılanlar</h3><small>Kaldığınız yerden devam edin</small></div><button class="dashboard-customize-btn" type="button" onclick="acaV850ClearRecent()">Temizle</button></div><div id="dashboardSmartRecent" class="dashboard-smart-list"></div></section>
  </div>
 
  <section class="dashboard-main-section" aria-labelledby="clinicalMenuTitle">
@@ -461,17 +471,6 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
   </div>
  </section>
 
- <section class="dashboard-favorites" aria-labelledby="favoriteTitle">
-  <div class="dashboard-simple-head">
-   <div><h3 id="favoriteTitle">⭐ Sık kullanılanlar</h3><p>Tek dokunuşla erişim</p></div>
-  </div>
-  <div class="favorite-chip-grid">
-   <button onclick="openSingleModule('clinicalScoringCard')">📊 Klinik skorlar</button>
-   <button onclick="openSingleModule('ecgDecisionCard')">🫀 EKG</button>
-   <button onclick="openSingleModule('laboratoryEngineCard')">🧪 Laboratuvar</button>
-   <button onclick="openSingleModule('smartTreatmentOrderCard')">💉 Tedavi / Order</button>
-  </div>
- </section>
 
  <details class="dashboard-more-tools">
   <summary><span>🧰</span><div><b>Diğer araçlar</b><small>Eğitim, simülasyon, yapay zekâ ve sistem yönetimi</small></div><strong>＋</strong></summary>
@@ -6968,6 +6967,26 @@ window.acaImportLicense=function(input){var f=input&&input.files&&input.files[0]
 window.acaLicenseSelfTest=function(){var ids=['commercialLicenseModal','licenseStatusBox','licenseDeviceValue'];return{ok:ids.every(function(id){return!!el(id)})&&!!getDeviceId(),module:'v8.1.0',checks:ids,license:current().validation}};
 function init(){render();window.addEventListener('storage',render);setInterval(render,60000);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.testNames)r.testNames.commercialLicenseModal='Yerel Lisans ve Paket Kontrolü'}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+// v8.5.0 Akıllı çalışma alanı: kişisel kısayollar ve son kullanılanlar
+(function(){
+'use strict';
+var FAV_KEY='aca_dashboard_favorites_v850',REC_KEY='aca_dashboard_recent_v850',COUNT_KEY='aca_dashboard_usage_v850';
+var MODULES=[{id:'emergencyCoreCard',label:'Acil çekirdek',icon:'🚨',group:'emergency'},{id:'clinicalScoringCard',label:'Klinik skorlar',icon:'📊',group:'diagnosis'},{id:'ecgDecisionCard',label:'EKG',icon:'🫀',group:'diagnosis'},{id:'laboratoryEngineCard',label:'Laboratuvar',icon:'🧪',group:'tests'},{id:'radiologyEngineCard',label:'Radyoloji',icon:'🩻',group:'tests'},{id:'smartTreatmentOrderCard',label:'Tedavi / Order',icon:'💉',group:'treatment'},{id:'smartPrescriptionCard',label:'Reçete',icon:'💊',group:'prescription'},{id:'professionalDocCard',label:'Belge / Epikriz',icon:'📄',group:'documents'},{id:'multiSpecialistConsultCard',label:'Uzman konseyi',icon:'👥',group:'diagnosis'},{id:'icdCard',label:'ICD kodları',icon:'🏷️',group:'diagnosis'}];
+var DEFAULT_FAV=['clinicalScoringCard','ecgDecisionCard','laboratoryEngineCard','smartTreatmentOrderCard'];
+function read(k,d){try{var x=localStorage.getItem(k);return x?JSON.parse(x):d}catch(e){return d}}function write(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}function byId(id){return MODULES.find(function(x){return x.id===id})}
+function track(id){if(!byId(id))return;var rec=read(REC_KEY,[]).filter(function(x){return x!==id});rec.unshift(id);write(REC_KEY,rec.slice(0,6));var c=read(COUNT_KEY,{count:0,last:null});c.count=(c.count||0)+1;c.last=new Date().toISOString();write(COUNT_KEY,c);render()}
+function openSmart(id){var m=byId(id);if(!m)return;if(typeof window.openSingleModule==='function'&&document.getElementById(id))window.openSingleModule(id);else{track(id);if(typeof window.openModuleGroup==='function')window.openModuleGroup(m.group)}}
+function chip(m,removable){var b=document.createElement('button');b.type='button';b.className='dashboard-smart-chip';b.innerHTML='<span>'+m.icon+'</span><span>'+m.label+'</span>'+(removable?'<span class="remove-fav" title="Kısayoldan çıkar">×</span>':'');b.onclick=function(ev){if(removable&&ev.target&&ev.target.classList.contains('remove-fav')){ev.stopPropagation();removeFavorite(m.id)}else openSmart(m.id)};return b}
+function renderList(id,ids,empty,removable){var box=document.getElementById(id);if(!box)return;box.innerHTML='';ids.map(byId).filter(Boolean).forEach(function(m){box.appendChild(chip(m,removable))});if(!box.children.length){var e=document.createElement('div');e.className='dashboard-smart-empty';e.textContent=empty;box.appendChild(e)}}
+function renderCustomizer(){var box=document.getElementById('dashboardFavoriteCustomizer');if(!box)return;var fav=read(FAV_KEY,DEFAULT_FAV);box.innerHTML='<b style="font-size:11px">Ana sayfada gösterilecek araçları seçin (en fazla 6)</b><div class="dashboard-customizer-grid">'+MODULES.map(function(m){return '<label><input type="checkbox" value="'+m.id+'" '+(fav.includes(m.id)?'checked':'')+'><span>'+m.icon+' '+m.label+'</span></label>'}).join('')+'</div><div class="dashboard-customizer-actions"><button type="button" onclick="acaV850ResetFavorites()">Varsayılan</button><button type="button" class="primary" onclick="acaV850SaveFavorites()">Kaydet</button></div>'}
+function render(){var fav=read(FAV_KEY,DEFAULT_FAV),rec=read(REC_KEY,[]),usage=read(COUNT_KEY,{count:0,last:null});renderList('dashboardSmartFavorites',fav,'Kısayol seçmek için Düzenle’ye dokunun.',true);renderList('dashboardSmartRecent',rec,'Henüz bir araç açılmadı.',false);var c=document.getElementById('dashboardUsageCount');if(c)c.textContent=(usage.count||0)+' araç kullanıldı';var l=document.getElementById('dashboardLastVisit');if(l){l.textContent=!usage.last?'Yeni çalışma alanı hazır':'Son işlem: '+new Date(usage.last).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}renderCustomizer()}
+function removeFavorite(id){write(FAV_KEY,read(FAV_KEY,DEFAULT_FAV).filter(function(x){return x!==id}));render()}
+window.acaV850ToggleCustomizer=function(){var box=document.getElementById('dashboardFavoriteCustomizer');if(box)box.classList.toggle('hidden')};window.acaV850SaveFavorites=function(){var box=document.getElementById('dashboardFavoriteCustomizer');if(!box)return;var ids=Array.from(box.querySelectorAll('input:checked')).map(function(x){return x.value}).slice(0,6);if(!ids.length){alert('En az bir kısayol seçin.');return}write(FAV_KEY,ids);box.classList.add('hidden');render()};window.acaV850ResetFavorites=function(){write(FAV_KEY,DEFAULT_FAV);render()};window.acaV850ClearRecent=function(){write(REC_KEY,[]);render()};window.acaV850Track=track;
+function wrap(){var original=window.openSingleModule;if(typeof original!=='function'||original.__v850wrapped)return;var wrapped=function(){var id=arguments[0],result=original.apply(this,arguments);if(byId(id))track(id);return result};wrapped.__v850wrapped=true;window.openSingleModule=wrapped}
+function init(){render();wrap();window.addEventListener('storage',render);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.testNames)r.testNames.dashboardV850='v8.5.0 Akıllı Çalışma Alanı'}catch(e){}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 </body></html>
