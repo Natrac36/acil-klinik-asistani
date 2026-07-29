@@ -290,6 +290,12 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 @media(max-width:560px){.commercial-top{display:block}.plan-chip{margin-top:10px}.commercial-stats{grid-template-columns:1fr 1fr}.module-shortcuts{grid-template-columns:1fr}.commercial-brand h2{font-size:19px}}
 
 .aca-privacy-mode input[type="text"],.aca-privacy-mode textarea{transition:filter .2s}
+
+/* v8.2.0 Satışa Hazır Ticari Katman */
+.sales-toggle{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:10px 0}.sales-toggle button.active{background:#0f766e;color:#fff;border-color:#0f766e}.pricing-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}.pricing-card{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fff;position:relative}.pricing-card.recommended{border:2px solid #0f766e;box-shadow:0 10px 30px #0f766e18}.pricing-card h3{margin:0 0 4px}.pricing-card .price{font-size:23px;font-weight:950;margin:8px 0}.pricing-card .price small{font-size:11px;color:var(--muted);font-weight:700}.pricing-card ul{padding-left:17px;margin:9px 0;color:#475569;font-size:12px}.pricing-card li{margin:5px 0}.pricing-ribbon{position:absolute;right:9px;top:9px;background:#0f766e;color:#fff;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900}.sales-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sales-summary{border:1px solid var(--line);border-radius:14px;padding:12px;background:#f8fafc;margin-top:10px}.sales-summary-row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:12px}.sales-summary-row.total{font-size:15px;font-weight:900;border-top:1px solid var(--line);margin-top:5px;padding-top:9px}.sales-note{padding:10px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:11px;margin-top:10px}.sales-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.coupon-result{font-size:11px;margin-top:5px;font-weight:800}.coupon-result.ok{color:#047857}.coupon-result.bad{color:#b91c1c}.sales-request-list{margin-top:10px;max-height:150px;overflow:auto}.sales-request-item{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff;margin-top:6px;font-size:11px}.legal-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.legal-tabs button{font-size:11px;min-height:34px}.legal-content{max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:10px;background:#f8fafc;font-size:11px;color:#475569;white-space:pre-line}
+@media(max-width:900px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.pricing-grid,.sales-form-grid{grid-template-columns:1fr}}
+
 </style>
 
 <style>
@@ -298,7 +304,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.1.0 • Yerel Lisans ve Paket Kontrolü</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.2.0 • Satışa Hazır Ticari Katman</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell">
@@ -320,7 +326,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
       <div class="dashboard-title"><h2>Çalışma alanı</h2><span class="commercial-badge" id="commercialWorkspaceBadge">Kişisel</span></div>
       <div class="commercial-tabs"><button type="button" id="tabFavorites" class="active" onclick="acaCommercialTab('favorites')">Favoriler</button><button type="button" id="tabRecent" onclick="acaCommercialTab('recent')">Son kullanılanlar</button><button type="button" id="tabSuggested" onclick="acaCommercialTab('suggested')">Önerilenler</button></div>
       <div id="commercialWorkspace" class="module-shortcuts"></div>
-      <div class="commercial-actions"><button type="button" class="primary" onclick="acaOpenCommercialProfile()">Profili düzenle</button><button type="button" onclick="acaCommercialLock()">Ekranı kilitle</button><button type="button" onclick="acaOpenLicenseCenter()">Lisans merkezi</button></div>
+      <div class="commercial-actions"><button type="button" class="primary" onclick="acaOpenCommercialProfile()">Profili düzenle</button><button type="button" onclick="acaCommercialLock()">Ekranı kilitle</button><button type="button" onclick="acaOpenLicenseCenter()">Lisans merkezi</button><button type="button" onclick="acaOpenSalesCenter()">Paketler ve satış</button></div>
     </div>
     <div class="card profile-card">
       <div class="profile-head"><div class="profile-id"><div class="avatar" id="commercialAvatar">DR</div><div><div class="profile-name" id="commercialProfileName">Demo Hekim</div><div class="profile-meta" id="commercialProfileMeta">Hekim • Kişisel çalışma alanı</div></div></div><span id="commercialUserBadge" class="commercial-badge demo">DEMO</span></div>
@@ -3387,6 +3393,46 @@ function printProfessionalDoc(){
 @media(max-width:650px){.license-center-grid{grid-template-columns:1fr}.license-kv{grid-template-columns:1fr 1fr}}
 </style>
 </head><body>${esc(text)}
+\n<script>
+// v8.2.0 Satışa hazır ticari katman
+(function(){
+'use strict';
+var KEY='aca_sales_requests_v820',DRAFT='aca_sales_draft_v820';
+var billing='monthly',coupon=null,lastRequest=null;
+var PLANS={
+ pro:{name:'Pro Hekim',monthly:349,features:['Tüm temel klinik modüller','Akıllı modül yönlendirme','Tek kullanıcı / cihaz','Standart destek']},
+ proplus:{name:'Pro Plus',monthly:549,features:['Pro Hekim özellikleri','Çevrimdışı arşiv ve dışa aktarma','Gelişmiş kişiselleştirme','Öncelikli destek']},
+ institution:{name:'Kurum',monthly:1299,features:['Çoklu kullanıcı altyapısı','Kurumsal çalışma alanı','Merkezi raporlama hazırlığı','Teklif ve entegrasyon desteği']}
+};
+function el(id){return document.getElementById(id)}
+function read(k,d){try{var x=localStorage.getItem(k);return x?JSON.parse(x):d}catch(e){return d}}
+function write(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+function money(n){return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:0}).format(n)}
+function esc(v){return String(v==null?'':v).replace(/[&<>\"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'})[c]})}
+function monthlyPrice(plan){return PLANS[plan].monthly}
+function subtotal(plan,seats){var base=monthlyPrice(plan),months=billing==='yearly'?12:1,discount=billing==='yearly'?.20:0;var total=base*months*(1-discount);if(plan==='institution'&&seats>5)total+=Math.max(0,seats-5)*120*months*(1-discount);return Math.round(total)}
+function discountAmount(sum){if(!coupon)return 0;return coupon.type==='percent'?Math.round(sum*coupon.value/100):Math.min(sum,coupon.value)}
+function pricing(){var g=el('pricingGrid');if(!g)return;g.innerHTML=Object.keys(PLANS).map(function(k){var p=PLANS[k],raw=p.monthly*(billing==='yearly'?12:1),price=Math.round(raw*(billing==='yearly'?.8:1));return '<div class="pricing-card '+(k==='proplus'?'recommended':'')+'">'+(k==='proplus'?'<span class="pricing-ribbon">ÖNERİLEN</span>':'')+'<h3>'+p.name+'</h3><div class="price">'+money(price)+' <small>/ '+(billing==='yearly'?'yıl':'ay')+'</small></div><ul>'+p.features.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><button type="button" class="'+(k==='proplus'?'primary':'')+'" onclick="acaChooseSalesPlan(\''+k+'\')">Bu paketi seç</button></div>'}).join('')}
+function form(){return{plan:el('salesPlanInput')?el('salesPlanInput').value:'pro',seats:Math.max(1,Number(el('salesSeatInput')&&el('salesSeatInput').value||1)),customer:(el('salesCustomerInput')&&el('salesCustomerInput').value||'').trim(),email:(el('salesEmailInput')&&el('salesEmailInput').value||'').trim(),phone:(el('salesPhoneInput')&&el('salesPhoneInput').value||'').trim(),invoiceType:el('salesInvoiceType')?el('salesInvoiceType').value:'individual',taxOffice:(el('salesTaxOffice')&&el('salesTaxOffice').value||'').trim(),taxNo:(el('salesTaxNo')&&el('salesTaxNo').value||'').trim(),address:(el('salesInvoiceAddress')&&el('salesInvoiceAddress').value||'').trim(),note:(el('salesNoteInput')&&el('salesNoteInput').value||'').trim(),billing:billing,coupon:coupon?coupon.code:null}}
+function summary(){var f=form(),sum=subtotal(f.plan,f.seats),disc=discountAmount(sum),total=sum-disc,box=el('salesOrderSummary');if(box)box.innerHTML='<div class="sales-summary-row"><span>Paket</span><b>'+PLANS[f.plan].name+'</b></div><div class="sales-summary-row"><span>Dönem</span><b>'+(billing==='yearly'?'Yıllık':'Aylık')+'</b></div><div class="sales-summary-row"><span>Kullanıcı / cihaz</span><b>'+f.seats+'</b></div><div class="sales-summary-row"><span>Ara toplam</span><b>'+money(sum)+'</b></div>'+(disc?'<div class="sales-summary-row"><span>Kampanya indirimi</span><b>-'+money(disc)+'</b></div>':'')+'<div class="sales-summary-row total"><span>Tahmini toplam</span><b>'+money(total)+'</b></div><small>Vergi ve gerçek tahsilat koşulları sunucu/ödeme sistemi bağlandığında kesinleşir.</small>';write(DRAFT,f)}
+function renderList(){var a=read(KEY,[]),box=el('salesRequestList');if(!box)return;if(!a.length){box.innerHTML='<div class="commercial-empty">Henüz satış talebi oluşturulmadı.</div>';return}box.innerHTML=a.slice().reverse().map(function(x){return '<div class="sales-request-item"><b>'+esc(x.id)+' • '+esc(PLANS[x.plan].name)+'</b><br>'+esc(x.customer||'Adsız talep')+' • '+esc(x.createdAt)+'<br><b>'+money(x.total)+'</b> • '+esc(x.status)+'</div>'}).join('')}
+function requestText(x){return ['Acil Klinik Asistanı satış talebi','Talep no: '+x.id,'Paket: '+PLANS[x.plan].name,'Dönem: '+(x.billing==='yearly'?'Yıllık':'Aylık'),'Kullanıcı/cihaz: '+x.seats,'Müşteri: '+x.customer,'E-posta: '+x.email,'Telefon: '+x.phone,'Fatura türü: '+(x.invoiceType==='corporate'?'Kurumsal':'Bireysel'),'Vergi dairesi: '+x.taxOffice,'VKN/TCKN: '+x.taxNo,'Fatura adresi: '+x.address,'Kampanya: '+(x.coupon||'Yok'),'Tahmini toplam: '+money(x.total),'Not: '+x.note,'Durum: '+x.status].join('\n')}
+window.acaOpenSalesCenter=function(){var m=el('commercialSalesModal');if(m)m.classList.remove('hidden');pricing();summary();renderList();window.acaShowSalesLegal('terms')};
+window.acaCloseSalesCenter=function(){var m=el('commercialSalesModal');if(m)m.classList.add('hidden')};
+window.acaSetBillingCycle=function(v){billing=v==='yearly'?'yearly':'monthly';if(el('billingMonthlyBtn'))el('billingMonthlyBtn').classList.toggle('active',billing==='monthly');if(el('billingYearlyBtn'))el('billingYearlyBtn').classList.toggle('active',billing==='yearly');pricing();summary()};
+window.acaChooseSalesPlan=function(p){if(el('salesPlanInput'))el('salesPlanInput').value=p;summary();var x=el('salesPlanInput');if(x)x.scrollIntoView({behavior:'smooth',block:'center'})};
+window.acaRenderSalesSummary=summary;
+window.acaApplyCoupon=function(){var code=(el('salesCouponInput')&&el('salesCouponInput').value||'').trim().toUpperCase(),r=el('salesCouponResult');var map={NATRAC10:{type:'percent',value:10},YILLIK5:{type:'percent',value:5},KURUM250:{type:'fixed',value:250}};coupon=map[code]?Object.assign({code:code},map[code]):null;if(r){r.className='coupon-result '+(coupon?'ok':'bad');r.textContent=coupon?'Kampanya uygulandı: '+code:'Geçersiz veya tanımsız kampanya kodu.'}summary()};
+window.acaCreateSalesRequest=function(){var f=form();if(!f.customer||!f.email){alert('Ad/kurum ve e-posta alanları zorunludur.');return}if(!/^\S+@\S+\.\S+$/.test(f.email)){alert('Geçerli bir e-posta adresi girin.');return}if(!el('salesConsentInput')||!el('salesConsentInput').checked){alert('Ticari ve KVKK bilgilendirmesini onaylayın.');return}var sum=subtotal(f.plan,f.seats),disc=discountAmount(sum),x=Object.assign(f,{id:'ACA-'+Date.now().toString(36).toUpperCase(),createdAt:new Date().toLocaleString('tr-TR'),subtotal:sum,discount:disc,total:sum-disc,status:'Yerel taslak — gönderilmedi'});var a=read(KEY,[]);a.push(x);write(KEY,a.slice(-50));lastRequest=x;renderList();alert('Satış talebi yerel olarak oluşturuldu. Gerçek gönderim veya ödeme yapılmadı.')};
+window.acaCopySalesRequest=function(){var x=lastRequest||read(KEY,[]).slice(-1)[0];if(!x){alert('Önce bir satış talebi oluşturun.');return}var t=requestText(x);if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){alert('Talep metni kopyalandı.')});else prompt('Talep metni',t)};
+window.acaExportSalesRequest=function(){var x=lastRequest||read(KEY,[]).slice(-1)[0];if(!x){alert('Önce bir satış talebi oluşturun.');return}var b=new Blob([JSON.stringify({type:'ACA_SALES_REQUEST',version:'8.2.0',request:x},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='aca-satis-talebi-'+x.id+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},500)};
+window.acaClearSalesRequests=function(){if(!confirm('Bu cihazdaki tüm yerel satış talepleri silinsin mi?'))return;localStorage.removeItem(KEY);lastRequest=null;renderList()};
+window.acaShowSalesLegal=function(type){var texts={terms:'KULLANIM KOŞULLARI ÖZETİ\n\nAcil Klinik Asistanı klinik karar desteği sağlar. Tanı, tedavi, reçete, sevk ve hasta yönetimi sorumluluğu kullanıcı hekime aittir. Lisans devredilemez; paket kapsamı etkin lisansa göre belirlenir. Bu prototipte satış talebi ve lisans bilgileri cihazda yerel tutulur.',privacy:'KVKK / MAHREMİYET ÖZETİ\n\nGerçek hasta kimlik bilgilerinin gereksiz yere girilmemesi esastır. Yerel depolama kullanılan cihazın güvenliğinden kullanıcı sorumludur. Sunucu, hesap ve ödeme bağlantısı kurulduğunda aydınlatma metni, saklama süreleri, veri işleyen/aktaran taraflar ve başvuru kanalları ayrıca tanımlanmalıdır.',refund:'İPTAL VE İADE ÖZETİ\n\nBu sürüm gerçek ödeme almadığı için iade işlemi oluşturmaz. Gerçek satış başladığında mesafeli sözleşme, dijital içerik ifası, cayma hakkı istisnaları, iptal ve iade süreleri ilgili mevzuata ve ödeme sağlayıcısının kurallarına uygun biçimde yayımlanmalıdır.',support:'DESTEK\n\nBu prototipte destek talebi satış formundaki not alanıyla yerel taslak olarak hazırlanabilir. Gerçek ticari sürümde doğrulanmış e-posta, destek kaydı numarası, yanıt süresi ve kurumsal SLA tanımlanmalıdır.'};if(el('salesLegalContent'))el('salesLegalContent').textContent=texts[type]||texts.terms};
+window.acaSalesSelfTest=function(){var ids=['commercialSalesModal','pricingGrid','salesOrderSummary','salesRequestList'];return{ok:ids.every(function(id){return!!el(id)}),module:'v8.2.0',checks:ids}};
+function init(){pricing();summary();renderList();try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.testNames)r.testNames.commercialSalesModal='Satışa Hazır Ticari Katman'}catch(e){}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>\n
 </body></html>`);w.document.close();w.focus();w.print();
 }
 
@@ -6804,6 +6850,28 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   <div class="license-panel" style="margin-top:10px"><h3>Paket karşılaştırması</h3><div style="overflow:auto"><table class="package-table"><thead><tr><th>Özellik</th><th>Demo</th><th>Pro Hekim</th><th>Pro Plus</th><th>Kurum</th></tr></thead><tbody><tr><td>Temel klinik modüller</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>Akıllı yönlendirme</td><td>Sınırlı</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>Çevrimdışı vaka arşivi / dışa aktarma</td><td>—</td><td>Sınırlı</td><td>✓</td><td>✓</td></tr><tr><td>Gelişmiş kişiselleştirme</td><td>—</td><td>—</td><td>✓</td><td>✓</td></tr><tr><td>Çoklu kullanıcı ve merkezi yönetim</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr></tbody></table></div></div>
  </div>
 </div>
+
+<div id="commercialSalesModal" class="commercial-modal hidden" role="dialog" aria-modal="true" aria-labelledby="salesModalTitle">
+ <div class="commercial-dialog" style="width:min(980px,100%)">
+  <div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><div><h2 id="salesModalTitle">Paketler, abonelik ve satış merkezi</h2><p class="muted">Satış talebi, paket karşılaştırması ve lisans etkinleştirme öncesi yerel iş akışı</p></div><button type="button" onclick="acaCloseSalesCenter()">Kapat</button></div>
+  <div class="sales-toggle"><b>Faturalama:</b><button id="billingMonthlyBtn" type="button" class="active" onclick="acaSetBillingCycle('monthly')">Aylık</button><button id="billingYearlyBtn" type="button" onclick="acaSetBillingCycle('yearly')">Yıllık</button><span class="commercial-badge">Yıllık planda %20 avantaj</span></div>
+  <div id="pricingGrid" class="pricing-grid"></div>
+  <div class="license-center-grid">
+   <div class="license-panel"><h3>Satın alma / yenileme talebi</h3>
+    <div class="sales-form-grid"><label>Paket<select id="salesPlanInput" onchange="acaRenderSalesSummary()"><option value="pro">Pro Hekim</option><option value="proplus">Pro Plus</option><option value="institution">Kurum</option></select></label><label>Kullanıcı / cihaz sayısı<input id="salesSeatInput" type="number" min="1" max="500" value="1" oninput="acaRenderSalesSummary()"></label><label>Ad soyad / kurum<input id="salesCustomerInput" placeholder="Dr. Ad Soyad veya kurum"></label><label>E-posta<input id="salesEmailInput" type="email" placeholder="ornek@kurum.com"></label><label>Telefon<input id="salesPhoneInput" inputmode="tel" placeholder="05xx xxx xx xx"></label><label>Fatura türü<select id="salesInvoiceType"><option value="individual">Bireysel</option><option value="corporate">Kurumsal</option></select></label><label>Vergi dairesi<input id="salesTaxOffice" placeholder="Kurumsal talepler için"></label><label>VKN / TCKN<input id="salesTaxNo" inputmode="numeric" placeholder="İsteğe bağlı"></label></div>
+    <label>Fatura adresi<textarea id="salesInvoiceAddress" rows="2" placeholder="Fatura adresi"></textarea></label>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:7px;align-items:end"><label>Kampanya kodu<input id="salesCouponInput" placeholder="Kodu girin"></label><button type="button" onclick="acaApplyCoupon()">Uygula</button></div><div id="salesCouponResult" class="coupon-result"></div>
+    <label>Not<textarea id="salesNoteInput" rows="2" placeholder="Kurumsal teklif, özel entegrasyon veya destek talebi"></textarea></label>
+    <label class="choice"><input id="salesConsentInput" type="checkbox"> Ticari bilgilendirme, kullanım koşulları ve KVKK özetini okudum.</label>
+    <div id="salesOrderSummary" class="sales-summary"></div>
+    <div class="sales-actions"><button type="button" class="primary" onclick="acaCreateSalesRequest()">Talep oluştur</button><button type="button" onclick="acaCopySalesRequest()">Talebi kopyala</button><button type="button" onclick="acaExportSalesRequest()">JSON dışa aktar</button><button type="button" onclick="acaOpenLicenseCenter()">Lisans etkinleştirme</button></div>
+    <div class="sales-note"><b>Ödeme notu:</b> Bu GitHub Pages sürümünde gerçek kart tahsilatı yapılmaz. Oluşturulan kayıt bir satış/teklif talebidir. Gerçek ödeme için güvenli sunucu, ödeme kuruluşu ve mesafeli satış altyapısı bağlanmalıdır.</div>
+   </div>
+   <div class="license-panel"><h3>Ticari ve hukuki merkez</h3><div class="legal-tabs"><button type="button" onclick="acaShowSalesLegal('terms')">Kullanım koşulları</button><button type="button" onclick="acaShowSalesLegal('privacy')">KVKK özeti</button><button type="button" onclick="acaShowSalesLegal('refund')">İptal / iade</button><button type="button" onclick="acaShowSalesLegal('support')">Destek</button></div><div id="salesLegalContent" class="legal-content"></div><h3 style="margin-top:12px">Bu cihazdaki talepler</h3><div id="salesRequestList" class="sales-request-list"></div><div class="sales-actions"><button type="button" class="danger" onclick="acaClearSalesRequests()">Yerel talepleri sil</button></div></div>
+  </div>
+ </div>
+</div>
+
 <div id="commercialLockScreen" class="lock-screen hidden"><div class="lock-box"><div class="commercial-logo">✚</div><h2>Acil Klinik Asistanı kilitli</h2><p>Hasta mahremiyetini korumak için çalışma alanı gizlendi.</p><button type="button" class="primary" onclick="acaCommercialUnlock()">Kilidi aç</button></div></div>
 
 <script>
