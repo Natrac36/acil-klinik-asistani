@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v8.3.1</title>
+<title>Acil Klinik Asistanı v8.4.0</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -324,6 +324,68 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 @media(max-width:700px){.dashboard-hero-top{display:grid}.dashboard-new-case{width:100%;justify-content:center}.dashboard-secondary-grid{grid-template-columns:1fr}.dashboard-category{padding:12px}.dashboard-category-head{align-items:flex-start}.dashboard-category-count{display:none}}
 @media(max-width:560px){.dashboard-grid-clinical{grid-template-columns:1fr}.dashboard-hero h2{font-size:22px}.dashboard-wide-tile{grid-template-columns:34px 1fr auto}.dashboard-quick{display:grid;grid-template-columns:1fr 1fr}.dashboard-quick b{grid-column:1/-1}.dashboard-quick button{width:100%}}
 
+
+
+/* v8.4.0 Sade Ana Sayfa — klinik motorlara dokunulmamıştır */
+.dashboard-v840{max-width:1000px;margin-left:auto;margin-right:auto}
+.dashboard-hero-compact{padding:17px;margin-bottom:12px}
+.dashboard-hero-compact h2{font-size:25px;margin:0 0 3px}
+.dashboard-hero-compact p{margin:0;color:#dbeafe;font-size:13px}
+.dashboard-search-compact{margin-top:11px}
+.dashboard-new-case-main{min-height:54px;padding:11px 18px;font-size:14px}
+.dashboard-main-section,.dashboard-favorites,.dashboard-more-tools{background:rgba(255,255,255,.94);border:1px solid rgba(148,163,184,.28);border-radius:17px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow-soft)}
+.dashboard-simple-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dashboard-simple-head h3{margin:0;font-size:16px;color:#172033}
+.dashboard-simple-head p{margin:1px 0 0;color:var(--muted);font-size:11px}
+.dashboard-grid-simple{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0}
+.dashboard-tile-simple{min-height:92px;padding:11px;border-radius:13px;display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto;column-gap:8px;align-content:center;justify-content:initial}
+.dashboard-tile-simple span{grid-row:1/3;font-size:24px;align-self:center}
+.dashboard-tile-simple b{font-size:13px;align-self:end}
+.dashboard-tile-simple small{font-size:10.5px;align-self:start;line-height:1.3}
+.dashboard-tile-simple.emergency-tile{border-color:#fecaca;background:#fffafa}
+.dashboard-tile-simple.emergency-tile:hover{border-color:#f87171;background:#fff1f2}
+.dashboard-favorites{padding:12px 14px}
+.favorite-chip-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.favorite-chip-grid button{min-height:42px;padding:8px;font-size:11px;background:#f8fafc}
+.dashboard-more-tools{padding:0;overflow:hidden}
+.dashboard-more-tools summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:36px 1fr auto;gap:9px;align-items:center;padding:13px 14px}
+.dashboard-more-tools summary::-webkit-details-marker{display:none}
+.dashboard-more-tools summary>span{font-size:21px}
+.dashboard-more-tools summary div{display:grid;gap:1px}
+.dashboard-more-tools summary b{font-size:14px}
+.dashboard-more-tools summary small{font-size:10.5px;color:var(--muted);font-weight:600}
+.dashboard-more-tools summary>strong{font-size:18px;color:#64748b}
+.dashboard-more-tools[open] summary>strong{font-size:0}
+.dashboard-more-tools[open] summary>strong:after{content:"−";font-size:18px}
+.dashboard-more-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 13px 13px}
+.dashboard-more-grid button{display:grid;grid-template-columns:32px 1fr;gap:8px;text-align:left;align-items:center;padding:10px;background:#f8fafc}
+.dashboard-more-grid button>span{font-size:21px}
+.dashboard-more-grid button div{display:grid;gap:2px}
+.dashboard-more-grid button b{font-size:12px}
+.dashboard-more-grid button small{font-size:10px;color:var(--muted)}
+@media(max-width:760px){
+ .dashboard-grid-simple{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .favorite-chip-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ .dashboard-v840{margin-bottom:4px}
+ .dashboard-hero-compact{padding:13px}
+ .dashboard-hero-compact .dashboard-hero-top{gap:10px}
+ .dashboard-hero-compact h2{font-size:20px}
+ .dashboard-new-case-main{min-height:50px}
+ .dashboard-main-section,.dashboard-favorites{padding:11px;margin-bottom:9px}
+ .dashboard-grid-simple{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .dashboard-tile-simple{min-height:78px;padding:9px;grid-template-columns:29px 1fr;column-gap:6px}
+ .dashboard-tile-simple span{font-size:21px}
+ .dashboard-tile-simple b{font-size:12px}
+ .dashboard-tile-simple small{font-size:9.5px}
+ .favorite-chip-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .favorite-chip-grid button{min-height:40px;font-size:10px;padding:7px 5px}
+ .dashboard-more-grid{grid-template-columns:1fr}
+ .dashboard-search-compact{grid-template-columns:1fr auto}
+ .dashboard-search-compact button{width:auto}
+}
+
 </style>
 
 <style>
@@ -332,7 +394,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.3.1 • Ana Menü Kontrol Düzeltmesi</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.4.0 • Sade Ana Sayfa</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell">
@@ -368,68 +430,56 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 
 
 
-<div id="dashboardShell" class="dashboard-shell no-print">
- <div class="card dashboard-hero">
+<div id="dashboardShell" class="dashboard-shell dashboard-v840 no-print">
+ <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.3.1 · Düzenlenmiş ana menü</span>
+    <span class="dashboard-version">v8.4.0 · Sade ana sayfa</span>
     <h2>Acil Klinik Asistanı</h2>
-    <p>İşleminizi klinik akışa göre seçin veya araç adını yazarak doğrudan bulun.</p>
+    <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
-   <button class="dashboard-new-case" onclick="openModuleGroup('case')"><span>＋</span> Yeni vaka başlat</button>
+   <button class="dashboard-new-case dashboard-new-case-main" onclick="openModuleGroup('case')"><span>＋</span> Yeni vaka başlat</button>
   </div>
-  <div class="dashboard-search">
-   <input id="moduleSearch" type="search" placeholder="Örn. HEART, troponin, reçete, sepsis..." oninput="filterDashboard(this.value)">
+  <div class="dashboard-search dashboard-search-compact">
+   <input id="moduleSearch" type="search" placeholder="Ara: HEART, EKG, troponin, sepsis..." oninput="filterDashboard(this.value)">
    <button class="primary" onclick="runModuleSearch()">Ara</button>
   </div>
-  <div id="searchNoResult" class="panel warn search-no-result">Eşleşen araç bulunamadı.</div>
-  <div id="usabilityStatus" class="usability-status">Klinik, eğitim ve sistem araçları ayrı gruplarda gösteriliyor.</div>
+  <div id="searchNoResult" class="panel warn search-no-result">Eşleşen ana bölüm bulunamadı. Arama düğmesine basarak araçlarda arayabilirsiniz.</div>
  </div>
 
- <section class="dashboard-category dashboard-category-clinical" aria-labelledby="clinicalMenuTitle">
-  <div class="dashboard-category-head">
-   <div><span class="dashboard-category-icon">🏥</span><div><h3 id="clinicalMenuTitle">Klinik çalışma alanı</h3><p>Hastanın başvurusundan taburculuğa kadar ana akış</p></div></div>
-   <span class="dashboard-category-count">7 bölüm</span>
+ <section class="dashboard-main-section" aria-labelledby="clinicalMenuTitle">
+  <div class="dashboard-simple-head">
+   <div><h3 id="clinicalMenuTitle">Klinik işlemler</h3><p>Temel çalışma alanları</p></div>
   </div>
-  <div class="dashboard-grid dashboard-grid-clinical" id="dashboardGrid">
-   <button class="dashboard-tile dashboard-tile-featured" data-search="yeni vaka hasta vital klinik not" onclick="openModuleGroup('case')"><span>🩺</span><b>Yeni vaka</b><small>Hasta bilgisi ve birleşik klinik akış</small><em>Başlangıç</em></button>
-   <button class="dashboard-tile" data-search="acil abcde kırmızı bayrak vital triyaj" onclick="openModuleGroup('emergency')"><span>🚨</span><b>Acil değerlendirme</b><small>ABCDE, triyaj ve zaman kritik durumlar</small></button>
-   <button class="dashboard-tile" data-search="tanı yapay zeka skor ekg pediatri kılavuz icd ayırıcı tanı" onclick="openModuleGroup('diagnosis')"><span>🧠</span><b>Tanı desteği</b><small>Ayırıcı tanı, skorlar ve karar desteği</small></button>
-   <button class="dashboard-tile" data-search="tetkik laboratuvar radyoloji görüntüleme troponin sonuç" onclick="openModuleGroup('tests')"><span>🧪</span><b>Tetkik ve sonuç</b><small>İstem, laboratuvar ve görüntüleme yorumları</small></button>
-   <button class="dashboard-tile" data-search="tedavi order ilaç doz etkileşim acil tedavi" onclick="openModuleGroup('treatment')"><span>💉</span><b>Tedavi / Order</b><small>İlk saat tedavisi ve güvenli order planı</small></button>
-   <button class="dashboard-tile" data-search="reçete taburculuk ilaç çocuk erişkin" onclick="openModuleGroup('prescription')"><span>💊</span><b>Reçete</b><small>Akıllı reçete ve ilaç güvenliği</small></button>
-   <button class="dashboard-tile" data-search="belge epikriz konsültasyon sevk taburculuk pdf çıktı" onclick="openModuleGroup('documents')"><span>📄</span><b>Belge ve çıktı</b><small>Klinik not, epikriz, sevk ve PDF</small></button>
+  <div class="dashboard-grid dashboard-grid-simple" id="dashboardGrid">
+   <button class="dashboard-tile dashboard-tile-simple emergency-tile" data-search="acil abcde kırmızı bayrak vital triyaj" onclick="openModuleGroup('emergency')"><span>🚨</span><b>Acil değerlendirme</b><small>ABCDE ve triyaj</small></button>
+   <button class="dashboard-tile dashboard-tile-simple" data-search="tanı yapay zeka skor ekg pediatri kılavuz icd ayırıcı tanı" onclick="openModuleGroup('diagnosis')"><span>🧠</span><b>Tanı</b><small>Ayırıcı tanı ve karar desteği</small></button>
+   <button class="dashboard-tile dashboard-tile-simple" data-search="tetkik laboratuvar radyoloji görüntüleme troponin sonuç" onclick="openModuleGroup('tests')"><span>🧪</span><b>Tetkik</b><small>İstem ve sonuç yorumlama</small></button>
+   <button class="dashboard-tile dashboard-tile-simple" data-search="tedavi order ilaç doz etkileşim acil tedavi" onclick="openModuleGroup('treatment')"><span>💉</span><b>Tedavi</b><small>Order ve ilk saat planı</small></button>
+   <button class="dashboard-tile dashboard-tile-simple" data-search="reçete taburculuk ilaç çocuk erişkin" onclick="openModuleGroup('prescription')"><span>💊</span><b>Reçete</b><small>Güvenli ilaç planı</small></button>
+   <button class="dashboard-tile dashboard-tile-simple" data-search="belge epikriz konsültasyon sevk taburculuk pdf çıktı" onclick="openModuleGroup('documents')"><span>📄</span><b>Belge</b><small>Epikriz, sevk ve çıktı</small></button>
   </div>
  </section>
 
- <div class="dashboard-secondary-grid">
-  <section class="dashboard-category dashboard-category-education" aria-labelledby="educationMenuTitle">
-   <div class="dashboard-category-head compact">
-    <div><span class="dashboard-category-icon">📚</span><div><h3 id="educationMenuTitle">Eğitim ve simülasyon</h3><p>Vaka çalışması ve performans değerlendirmesi</p></div></div>
-   </div>
-   <button class="dashboard-wide-tile dashboard-tile" data-search="eğitim egitim simülasyon simulasyon vaka bankası vaka puanlama rastgele vaka" onclick="openModuleGroup('education')">
-    <span>🎓</span><div><b>Eğitim merkezini aç</b><small>Hazır vakalar, simülasyonlar ve vaka puanlama</small></div><strong>→</strong>
-   </button>
-  </section>
+ <section class="dashboard-favorites" aria-labelledby="favoriteTitle">
+  <div class="dashboard-simple-head">
+   <div><h3 id="favoriteTitle">⭐ Sık kullanılanlar</h3><p>Tek dokunuşla erişim</p></div>
+  </div>
+  <div class="favorite-chip-grid">
+   <button onclick="openSingleModule('clinicalScoringCard')">📊 Klinik skorlar</button>
+   <button onclick="openSingleModule('ecgDecisionCard')">🫀 EKG</button>
+   <button onclick="openSingleModule('laboratoryEngineCard')">🧪 Laboratuvar</button>
+   <button onclick="openSingleModule('smartTreatmentOrderCard')">💉 Tedavi / Order</button>
+  </div>
+ </section>
 
-  <section class="dashboard-category dashboard-category-system" aria-labelledby="systemMenuTitle">
-   <div class="dashboard-category-head compact">
-    <div><span class="dashboard-category-icon">⚙️</span><div><h3 id="systemMenuTitle">Sistem ve yönetim</h3><p>Teknik araçlar klinik ekrandan ayrı tutulur</p></div></div>
-   </div>
-   <button class="dashboard-wide-tile dashboard-tile" data-search="test doğrulama sistem kontrol senaryo yapay zeka güncelleme ayarlar lisans çevrimdışı" onclick="openModuleGroup('system')">
-    <span>🧰</span><div><b>Sistem merkezini aç</b><small>Kontroller, yapay zekâ, güncelleme ve lisans araçları</small></div><strong>→</strong>
-   </button>
-  </section>
- </div>
-
- <div class="dashboard-quick">
-  <b>Hızlı erişim</b>
-  <button onclick="openSingleModule('smartTreatmentOrderCard')">💉 Tedavi / Order</button>
-  <button onclick="openSingleModule('smartPrescriptionCard')">💊 Reçete</button>
-  <button onclick="openSingleModule('laboratoryEngineCard')">🧪 Laboratuvar</button>
-  <button onclick="openSingleModule('clinicalScoringCard')">📊 Klinik skor</button>
-  <button onclick="openSingleModule('professionalDocCard')">📄 Epikriz / belge</button>
- </div>
+ <details class="dashboard-more-tools">
+  <summary><span>🧰</span><div><b>Diğer araçlar</b><small>Eğitim, simülasyon, yapay zekâ ve sistem yönetimi</small></div><strong>＋</strong></summary>
+  <div class="dashboard-more-grid">
+   <button onclick="openModuleGroup('education')"><span>🎓</span><div><b>Eğitim ve simülasyon</b><small>Hazır vakalar ve performans değerlendirmesi</small></div></button>
+   <button onclick="openModuleGroup('system')"><span>⚙️</span><div><b>Sistem ve yönetim</b><small>Yapay zekâ, güncelleme, lisans ve kontroller</small></div></button>
+  </div>
+ </details>
 </div>
 
 <div id="moduleHeading" class="module-heading no-print"><h2 id="moduleHeadingText">Araçlar</h2><button onclick="showDashboardHome()">← Ana menü</button></div>
@@ -6195,7 +6245,7 @@ function applyUsabilityGuards(){
 function runUsabilityChecks(){
  var checks=[];
  function add(name,ok,detail){checks.push({name:name,ok:!!ok,detail:detail||''})}
- add('Ana kategori kartları',document.querySelectorAll('#dashboardGrid .dashboard-tile').length===7,document.querySelectorAll('#dashboardGrid .dashboard-tile').length+'/7');
+ add('Ana kategori kartları',document.querySelectorAll('#dashboardGrid .dashboard-tile').length===6,document.querySelectorAll('#dashboardGrid .dashboard-tile').length+'/6');
  add('Alt iş akışı menüsü',document.querySelectorAll('.workflow-dock button').length===4,document.querySelectorAll('.workflow-dock button').length+'/4');
  add('Vaka formu',!!document.getElementById('caseEntryCard'));
  add('Birleşik özet',!!document.getElementById('workflowSummaryCard'));
