@@ -390,6 +390,16 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
 /* v8.5.0 Akıllı ve kişiselleştirilebilir çalışma alanı */
 .dashboard-personal-strip{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.dashboard-smart-card{background:rgba(255,255,255,.94);border:1px solid rgba(148,163,184,.28);border-radius:17px;padding:12px 14px;box-shadow:var(--shadow-soft);min-width:0}.dashboard-smart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.dashboard-smart-head h3{margin:0;font-size:14px}.dashboard-smart-head small{color:var(--muted);font-size:10px}.dashboard-smart-list{display:flex;gap:6px;flex-wrap:wrap;min-height:38px;align-items:center}.dashboard-smart-chip{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:7px 9px;border-radius:11px;background:#f8fafc;border:1px solid var(--line);font-size:11px;font-weight:800;cursor:pointer}.dashboard-smart-chip:hover{border-color:#5eead4;background:#f0fdfa}.dashboard-smart-chip .remove-fav{font-size:13px;color:#94a3b8;margin-left:2px}.dashboard-smart-empty{font-size:11px;color:var(--muted);padding:7px 0}.dashboard-customize-btn{min-height:32px;padding:6px 9px;font-size:10px;border-radius:9px}.dashboard-customizer{border:1px solid var(--line);border-radius:13px;background:#f8fafc;padding:10px;margin-top:9px}.dashboard-customizer.hidden{display:none!important}.dashboard-customizer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.dashboard-customizer label{display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:11px;cursor:pointer}.dashboard-customizer input{width:16px;height:16px;min-height:0;accent-color:var(--teal)}.dashboard-customizer-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}.dashboard-customizer-actions button{min-height:34px;padding:6px 9px;font-size:10px}.dashboard-context-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.dashboard-context-line span{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:#ffffff14;border:1px solid #ffffff20;color:#dbeafe}@media(max-width:700px){.dashboard-personal-strip{grid-template-columns:1fr}.dashboard-customizer-grid{grid-template-columns:1fr 1fr}}@media(max-width:440px){.dashboard-customizer-grid{grid-template-columns:1fr}.dashboard-smart-chip{flex:1 1 calc(50% - 6px);justify-content:center}}
 
+
+/* v8.5.0 ana sayfa sadeleştirme */
+.advanced-systems-launcher{margin-top:12px;border:1px solid var(--line);border-radius:14px;background:#f8fafc}
+.advanced-systems-launcher summary{cursor:pointer;padding:13px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.advanced-systems-launcher summary small{display:block;font-weight:600;color:var(--muted);margin-top:3px}
+.advanced-systems-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 12px 12px}
+.advanced-systems-grid button{text-align:left;min-height:62px;background:#fff}
+.advanced-systems-grid button b{display:block;margin-bottom:3px}
+.advanced-systems-grid button small{color:var(--muted)}
+@media(max-width:560px){.advanced-systems-grid{grid-template-columns:1fr}}
 </style>
 
 <style>
@@ -438,7 +448,7 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.5.0 · Akıllı çalışma alanı</span>
+    <span class="dashboard-version">v8.5.0 · Sade çalışma alanı</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -495,6 +505,17 @@ body.dashboard-home #guidelineCurrencyAuditCard{display:none!important}
   <p class="muted" style="padding:0 12px">Günlük kullanımda gerekli değildir. Motor bazlı hata ayıklama ve geliştirme testlerini içerir.</p>
   <div class="system-hub-grid" id="systemHubButtons"></div>
   <div class="compact-actions" style="padding:0 12px 12px"><button onclick="closeAllSystemTests()">Açık test panelini kapat</button></div>
+ </details>
+ <details class="advanced-systems-launcher">
+  <summary><span>Gelişmiş sistemler<small>Günlük kullanımda gerekli olmayan teknik motorlar</small></span><strong>＋</strong></summary>
+  <div class="advanced-systems-grid">
+   <button type="button" onclick="openSingleModule('guidelineEngineCard')"><b>📚 Kanıta Dayalı Kılavuz</b><small>Kılavuz eşleşmeleri ve kanıt düzeyi</small></button>
+   <button type="button" onclick="openSingleModule('dynamicRuleEngineCard')"><b>⚙️ Dinamik Klinik Kurallar</b><small>Kural eşleşmeleri ve öncelikler</small></button>
+   <button type="button" onclick="openSingleModule('decisionTransparencyCard')"><b>🔎 Karar Şeffaflığı</b><small>Klinik uyum ve güven açıklaması</small></button>
+   <button type="button" onclick="openSingleModule('clinicalConsistencyCard')"><b>🛡️ Klinik Tutarlılık</b><small>Modüller arası çelişki denetimi</small></button>
+   <button type="button" onclick="openSingleModule('guidelineCurrencyAuditCard')"><b>🗓️ Kılavuz Güncelliği</b><small>Kaynak ve sürüm denetimi</small></button>
+   <button type="button" onclick="openSingleModule('systemStabilityCard')"><b>🛠️ Sistem Kararlılığı</b><small>Hata, performans ve bakım merkezi</small></button>
+  </div>
  </details>
 </div>
 
@@ -6223,7 +6244,7 @@ function renderWorkflowSummary(){try{if(typeof collect==='function')collect()}ca
 function setDockActive(id){['dockHomeBtn','dockCaseBtn','dockSummaryBtn','dockToolsBtn'].forEach(function(x){var btn=document.getElementById(x);if(btn)btn.classList.toggle('dock-active',x===id)})}
 function showCaseWorkspace(){openModuleGroup('case');setDockActive('dockCaseBtn')}
 function showWorkflowSummary(){try{enterModuleView();hideAllModules();var card=document.getElementById('workflowSummaryCard');setModuleVisible(card,true);updateModuleHeading('Vaka özeti');renderWorkflowSummary();setDockActive('dockSummaryBtn');setTimeout(function(){if(card)card.scrollIntoView({behavior:'smooth',block:'start'})},20)}catch(err){console.error('Özet açma hatası',err);alert('Özet açılırken hata oluştu: '+(err.message||err))}}
-function showToolsWorkspace(){showDashboard();setDockActive('dockToolsBtn');var grid=document.getElementById('dashboardGrid');setTimeout(function(){if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'})},20)}
+function showToolsWorkspace(){openModuleGroup('system');setDockActive('dockToolsBtn')}
 function copyWorkflowSummary(){var text=renderWorkflowSummary()||'';if(!text)return;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert('Vaka özeti kopyalandı.')}).catch(function(){fallbackCopy(text)})}else fallbackCopy(text)}
 function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('Vaka özeti kopyalandı.')}catch(e){alert('Kopyalama başarısız oldu.')}ta.remove()}
 
