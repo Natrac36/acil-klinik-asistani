@@ -427,7 +427,7 @@ body:not(.dashboard-home) #commercialDashboard{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.6.0 • Profesyonel Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v8.6.1 • Profesyonel Çalışma Alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell professional-home-panel no-print">
@@ -484,7 +484,7 @@ body:not(.dashboard-home) #commercialDashboard{display:none!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version">v8.6.0 · Profesyonel ana sayfa</span>
+    <span class="dashboard-version">v8.6.1 · Profesyonel ana sayfa</span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -526,8 +526,9 @@ body:not(.dashboard-home) #commercialDashboard{display:none!important}
  <details class="dashboard-more-tools">
   <summary><span>🧰</span><div><b>Diğer araçlar</b><small>Eğitim, simülasyon, yapay zekâ ve sistem yönetimi</small></div><strong>＋</strong></summary>
   <div class="dashboard-more-grid">
+   <button onclick="openModuleGroup('tools')"><span>🧰</span><div><b>Gelişmiş klinik araçlar</b><small>Kılavuz, kural ve tutarlılık motorları</small></div></button>
    <button onclick="openModuleGroup('education')"><span>🎓</span><div><b>Eğitim ve simülasyon</b><small>Hazır vakalar ve performans değerlendirmesi</small></div></button>
-   <button onclick="openModuleGroup('system')"><span>⚙️</span><div><b>Sistem ve yönetim</b><small>Yapay zekâ, güncelleme, lisans ve kontroller</small></div></button>
+   <button onclick="openModuleGroup('system')"><span>⚙️</span><div><b>Sistem ve yönetim</b><small>Güncelleme, lisans ve teknik kontroller</small></div></button>
   </div>
  </details>
 </div>
@@ -3573,6 +3574,14 @@ body.dashboard-home #dynamicRuleEngineCard,
 body.dashboard-home #decisionTransparencyCard,
 body.dashboard-home #clinicalConsistencyCard{display:none!important}
 </style>
+
+<style id="aca-v861-tools-placement">
+/* v8.6.1 — Ana sayfa ile gelişmiş araçların kesin ayrımı */
+body.dashboard-home .layout{display:none!important}
+body.dashboard-home #moduleHeading,body.dashboard-home .dashboard-back{display:none!important}
+body.module-view #dashboardShell{display:none!important}
+body.module-view .layout{display:grid!important}
+</style>
 </head><body>${esc(text)}
 </body></html>`);w.document.close();w.focus();w.print();
 }
@@ -5272,7 +5281,8 @@ var APP_REGISTRY={
   prescription:{title:'Akıllı reçete',ids:['smartPrescriptionCard']},
   documents:{title:'Belge ve sonlandırma',ids:['professionalDocCard']},
   education:{title:'Eğitim ve Simülasyon',ids:['educationSimulationCard']},
-  system:{title:'Sistem kontrolü',ids:['systemHubCard','guidelineCurrencyAuditCard','qaCard','clinicalScoringScenarioCard','medicationSafetyScenarioCard','testOrderScenarioCard','emergencyCoreScenarioCard','laboratoryScenarioCard','guidelineScenarioCard','radiologyScenarioCard','aiClinicalScenarioCard','pediatricScenarioCard','ecgScenarioCard','doseScenarioCard','prescriptionScenarioCard','clinicalScenarioCard','treatmentScenarioCard','drugLibraryScenarioCard','icdScenarioCard','reasoningScenarioCard','imagingScenarioCard','consultDispositionScenarioCard','dischargeScenarioCard','coreScenarioCard','documentationScenarioCard']}
+  tools:{title:'Gelişmiş Klinik Araçlar',ids:['evidenceGuidelineEngineCard','dynamicRuleEngineCard','decisionTransparencyCard','clinicalConsistencyCard','guidelineCurrencyAuditCard']},
+  system:{title:'Sistem kontrolü',ids:['systemHubCard','qaCard','clinicalScoringScenarioCard','medicationSafetyScenarioCard','testOrderScenarioCard','emergencyCoreScenarioCard','laboratoryScenarioCard','guidelineScenarioCard','radiologyScenarioCard','aiClinicalScenarioCard','pediatricScenarioCard','ecgScenarioCard','doseScenarioCard','prescriptionScenarioCard','clinicalScenarioCard','treatmentScenarioCard','drugLibraryScenarioCard','icdScenarioCard','reasoningScenarioCard','imagingScenarioCard','consultDispositionScenarioCard','dischargeScenarioCard','coreScenarioCard','documentationScenarioCard']}
  },
  testNames:{qaCard:'Genel kalite kontrolü',clinicalScoringScenarioCard:'Klinik skor testleri',medicationSafetyScenarioCard:'İlaç güvenliği testleri',testOrderScenarioCard:'Tetkik istem testleri',emergencyCoreScenarioCard:'Acil çekirdek testleri',laboratoryScenarioCard:'Laboratuvar testleri',guidelineScenarioCard:'Kılavuz testleri',radiologyScenarioCard:'Radyoloji testleri',aiClinicalScenarioCard:'Klinik asistan testleri',pediatricScenarioCard:'Pediatri testleri',ecgScenarioCard:'EKG testleri',doseScenarioCard:'Doz hesaplama testleri',prescriptionScenarioCard:'Reçete motoru testleri',clinicalScenarioCard:'Klinik senaryo testleri',treatmentScenarioCard:'Tedavi testleri',drugLibraryScenarioCard:'İlaç kütüphanesi testleri',icdScenarioCard:'ICD testleri',reasoningScenarioCard:'Gerekçelendirme testleri',imagingScenarioCard:'Görüntüleme testleri',consultDispositionScenarioCard:'Konsültasyon testleri',dischargeScenarioCard:'Taburculuk testleri',coreScenarioCard:'Ana çekirdek testleri',documentationScenarioCard:'Dokümantasyon testleri',systemStabilityCard:'Sistem Kararlılığı',offlineUpdateCard:'Çevrimdışı ve Güncelleme Merkezi',offlineCaseSyncCard:'Çevrimdışı Vaka Kayıt ve Senkronizasyon'},
  initErrors:[],runtimeErrors:[]
@@ -6085,7 +6095,7 @@ window.addEventListener('load',function(){setTimeout(acaRefreshConsistency,200)}
 function ensureAppRegistry(){
  if(typeof APP_REGISTRY==='object'&&APP_REGISTRY&&APP_REGISTRY.groups)return APP_REGISTRY;
  if(window.APP_REGISTRY&&window.APP_REGISTRY.groups)return window.APP_REGISTRY;
- var fallback={groups:{case:{title:'Yeni vaka',ids:['naturalCaseEntryCard','caseEntryCard','clinicalNoteCard']},summary:{title:'Vaka özeti',ids:['workflowSummaryCard']},emergency:{title:'Acil değerlendirme',ids:['emergencyCoreCard']},diagnosis:{title:'Tanı desteği',ids:['aiClinicalAssistantCard','aiCompatibilityCard','aiClinicalReconciliationCard','liveClinicalDecisionCard','multiSpecialistConsultCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard']},tests:{title:'Tetkik ve sonuç yorumlama',ids:['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard']},treatment:{title:'Tedavi ve order',ids:['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard']},prescription:{title:'Akıllı reçete',ids:['smartPrescriptionCard']},documents:{title:'Belge ve sonlandırma',ids:['professionalDocCard']},education:{title:'Eğitim ve Simülasyon',ids:['educationSimulationCard']},system:{title:'Sistem kontrolü',ids:['systemHubCard','guidelineCurrencyAuditCard','aiConnectionCard','systemStabilityCard','offlineUpdateCard','offlineCaseSyncCard']}},testNames:{},initErrors:[],runtimeErrors:[]};
+ var fallback={groups:{case:{title:'Yeni vaka',ids:['naturalCaseEntryCard','caseEntryCard','clinicalNoteCard']},summary:{title:'Vaka özeti',ids:['workflowSummaryCard']},emergency:{title:'Acil değerlendirme',ids:['emergencyCoreCard']},diagnosis:{title:'Tanı desteği',ids:['aiClinicalAssistantCard','aiCompatibilityCard','aiClinicalReconciliationCard','liveClinicalDecisionCard','multiSpecialistConsultCard','guidelineEngineCard','clinicalScoringCard','icdCard','ecgDecisionCard','pediatricEmergencyCard']},tests:{title:'Tetkik ve sonuç yorumlama',ids:['laboratoryEngineCard','radiologyEngineCard','smartTestOrderCard']},treatment:{title:'Tedavi ve order',ids:['smartTreatmentOrderCard','medicationSafetyCard','doseCalculatorCard']},prescription:{title:'Akıllı reçete',ids:['smartPrescriptionCard']},documents:{title:'Belge ve sonlandırma',ids:['professionalDocCard']},education:{title:'Eğitim ve Simülasyon',ids:['educationSimulationCard']},tools:{title:'Gelişmiş Klinik Araçlar',ids:['evidenceGuidelineEngineCard','dynamicRuleEngineCard','decisionTransparencyCard','clinicalConsistencyCard','guidelineCurrencyAuditCard']},system:{title:'Sistem kontrolü',ids:['systemHubCard','aiConnectionCard','systemStabilityCard','offlineUpdateCard','offlineCaseSyncCard']}},testNames:{},initErrors:[],runtimeErrors:[]};
  window.APP_REGISTRY=fallback;
  return fallback;
 }
@@ -6097,6 +6107,17 @@ function updateModuleHeading(title){var h=document.getElementById('moduleHeading
 function enterModuleView(){document.body.classList.remove('dashboard-home');document.body.classList.add('module-view');var layout=document.querySelector('.layout');if(layout)layout.style.setProperty('display','grid','important')}
 
 var COMPACT_COLLECTIONS={
+ tools:{
+  title:'Gelişmiş Klinik Araçlar',
+  description:'Kanıta dayalı karar desteği, dinamik kurallar ve klinik güvenlik denetimleri bu bölümde düzenli olarak sunulur.',
+  labels:{
+   evidenceGuidelineEngineCard:'Kanıta Dayalı Kılavuz Motoru',
+   dynamicRuleEngineCard:'Dinamik Klinik Kural Motoru',
+   decisionTransparencyCard:'Karar Şeffaflığı ve Klinik Uyum',
+   clinicalConsistencyCard:'Klinik Tutarlılık Analizi',
+   guidelineCurrencyAuditCard:'Kılavuz Güncellik ve Kaynak Denetimi'
+  }
+ },
  diagnosis:{
   title:'İleri tanı araçları',
   description:'Yeni vaka ekranındaki otomatik önerilerin ötesinde ayrıntılı inceleme gerektiğinde bir araç seçin.',
@@ -6281,7 +6302,7 @@ function renderWorkflowSummary(){try{if(typeof collect==='function')collect()}ca
 function setDockActive(id){['dockHomeBtn','dockCaseBtn','dockSummaryBtn','dockToolsBtn'].forEach(function(x){var btn=document.getElementById(x);if(btn)btn.classList.toggle('dock-active',x===id)})}
 function showCaseWorkspace(){openModuleGroup('case');setDockActive('dockCaseBtn')}
 function showWorkflowSummary(){try{enterModuleView();hideAllModules();var card=document.getElementById('workflowSummaryCard');setModuleVisible(card,true);updateModuleHeading('Vaka özeti');renderWorkflowSummary();setDockActive('dockSummaryBtn');setTimeout(function(){if(card)card.scrollIntoView({behavior:'smooth',block:'start'})},20)}catch(err){console.error('Özet açma hatası',err);alert('Özet açılırken hata oluştu: '+(err.message||err))}}
-function showToolsWorkspace(){showDashboard();setDockActive('dockToolsBtn');var grid=document.getElementById('dashboardGrid');setTimeout(function(){if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'})},20)}
+function showToolsWorkspace(){openModuleGroup('tools');setDockActive('dockToolsBtn')}
 function copyWorkflowSummary(){var text=renderWorkflowSummary()||'';if(!text)return;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert('Vaka özeti kopyalandı.')}).catch(function(){fallbackCopy(text)})}else fallbackCopy(text)}
 function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('Vaka özeti kopyalandı.')}catch(e){alert('Kopyalama başarısız oldu.')}ta.remove()}
 
