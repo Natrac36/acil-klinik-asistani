@@ -3770,82 +3770,12 @@ function downloadProfessionalDoc(){
  renderProfessionalDocs();const type=el('docType')?.value||'belge';const blob=new Blob([el('professionalDoc').value],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`acil_${type}_${new Date().toISOString().slice(0,10)}.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 function printProfessionalDoc(){
- renderProfessionalDocs();const text=el('professionalDoc').value;const w=window.open('','_blank');w.document.write(`<html><head><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111} @media print{body{padding:0}}
-
-
-/* v7.7.0 Akıllı Modül Yönlendirme */
-.module-router-card{border:2px solid #0ea5e9;background:linear-gradient(180deg,#f0f9ff,#fff)}
-.module-router-card>.section-title h2{color:#075985}.router-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.router-kpi{border:1px solid #bae6fd;border-radius:12px;padding:9px;background:#fff;text-align:center}.router-kpi span{display:block;font-size:11px;color:var(--muted)}.router-kpi b{display:block;font-size:19px;margin-top:3px}.router-list{display:grid;gap:9px}.router-item{border:1px solid var(--line);border-left:6px solid #0ea5e9;border-radius:12px;padding:10px;background:#fff}.router-item.urgent{border-left-color:#dc2626;background:#fff7f7}.router-item.high{border-left-color:#f59e0b;background:#fffbeb}.router-item.standard{border-left-color:#0ea5e9}.router-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.router-title{font-weight:900}.router-reason{font-size:12px;color:#334155;margin-top:5px}.router-badge{display:inline-block;border-radius:99px;padding:3px 8px;font-size:10px;font-weight:900;white-space:nowrap;background:#e0f2fe;color:#075985}.router-item.urgent .router-badge{background:#fee2e2;color:#991b1b}.router-item.high .router-badge{background:#fef3c7;color:#92400e}.router-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.router-actions button{min-height:36px;padding:7px 10px;font-size:11px}.router-empty{border:1px dashed #7dd3fc;border-radius:12px;padding:14px;text-align:center;background:#f0f9ff;color:#475569}@media(max-width:700px){.router-summary{grid-template-columns:1fr}.router-head{display:block}.router-badge{margin-top:6px}}
-</style>
-<style>
-.license-center-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.license-panel{border:1px solid var(--line);border-radius:14px;padding:12px;background:#f8fafc}.license-panel h3{margin:0 0 8px;font-size:15px}.license-kv{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.license-kv div{padding:8px;border-radius:10px;background:#fff;border:1px solid var(--line)}.license-kv b{display:block;color:#0f172a}.license-kv span{color:var(--muted);word-break:break-word}.license-status-box{padding:10px;border-radius:12px;font-weight:800;margin:10px 0}.license-status-box.ok{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}.license-status-box.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}.license-status-box.bad{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}.package-table{width:100%;border-collapse:collapse;font-size:11px}.package-table th,.package-table td{padding:7px;border:1px solid var(--line);text-align:center}.package-table th:first-child,.package-table td:first-child{text-align:left}.license-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}.license-note{font-size:11px;color:var(--muted);margin-top:8px}.license-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.license-actions button{font-size:12px}.feature-lock{opacity:.55;filter:grayscale(.2)}
-@media(max-width:650px){.license-center-grid{grid-template-columns:1fr}.license-kv{grid-template-columns:1fr 1fr}}
-
-/* v8.5.1 güvenli sadeleştirme — çalışan sayfa yapısı korunur */
-body.dashboard-home #evidenceGuidelineEngineCard,
-body.dashboard-home #guidelineCurrencyAuditCard,
-body.dashboard-home #dynamicRuleEngineCard,
-body.dashboard-home #decisionTransparencyCard,
-body.dashboard-home #clinicalConsistencyCard{display:none!important}
-</style>
-
-<style id="aca-v861-tools-placement">
-/* v8.6.1 — Ana sayfa ile gelişmiş araçların kesin ayrımı */
-body.dashboard-home .layout{display:none!important}
-body.dashboard-home #moduleHeading,body.dashboard-home .dashboard-back{display:none!important}
-body.module-view #dashboardShell{display:none!important}
-body.module-view .layout{display:grid!important}
-
-/* v8.7.2 Çoklu Aktif Vaka Yönetimi */
-.active-cases-card{border:1px solid #d9e4ec;background:linear-gradient(180deg,#fff,#f8fbfd)}
-.active-case-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.active-case-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
-.active-case-summary>div{padding:12px 14px;border:1px solid #dce5eb;border-radius:14px;background:#fff}
-.active-case-summary small{display:block;color:#6d7a88;margin-bottom:4px}.active-case-summary b{font-size:16px}
-.active-case-list{display:grid;gap:10px;margin-top:12px}
-.active-case-item{border:1px solid #d9e2e8;border-radius:16px;background:#fff;padding:14px;box-shadow:0 4px 14px rgba(15,35,55,.05)}
-.active-case-item.current{border-color:#159a8c;box-shadow:0 0 0 2px rgba(21,154,140,.12)}
-.active-case-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.active-case-head b{font-size:16px}.active-case-meta{color:#6c7886;font-size:13px;line-height:1.45;margin-top:5px}
-.active-case-state{white-space:nowrap;font-size:12px;font-weight:800;border-radius:999px;padding:5px 9px;background:#eaf7f4;color:#08786e}
-.active-case-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.active-case-actions button{padding:9px 12px}
-.active-case-empty{padding:18px;border:1px dashed #cbd6de;border-radius:14px;text-align:center;color:#71808f;background:#fbfcfd}
-.active-case-archive-link{margin-top:12px}.active-case-archive-link summary{cursor:pointer;font-weight:800}.active-case-archive-link p{color:#6d7885}
-@media(max-width:620px){.active-case-summary{grid-template-columns:1fr}.active-case-head{display:block}.active-case-state{display:inline-block;margin-top:8px}.active-case-actions button{flex:1 1 130px}}
-</style>
-</head><body>${esc(text)}
-
-
-
-
-
-
-
-<style id="aca-v950-real-ai-css">
-#acaBackendHealthStatus.ok{background:var(--greenbg);color:var(--green);border-color:#86efac}
-#acaBackendHealthStatus.bad{background:var(--redbg);color:var(--red);border-color:#fda4af}
-#acaBackendHealthStatus.busy{background:var(--amberbg);color:var(--amber);border-color:#fcd34d}
-.ai-result-clinical{white-space:normal!important;font-family:inherit!important;line-height:1.5}
-.ai-result-clinical .ai-section{padding:10px 0;border-bottom:1px solid rgba(148,163,184,.25)}
-.ai-result-clinical .ai-section:last-child{border-bottom:0}.ai-result-clinical h4{margin:0 0 5px}.ai-result-clinical ul{margin:5px 0 0 18px;padding:0}
-</style>
-<script id="aca-v950-real-ai-js">
-(function(){'use strict';
- function el(id){return document.getElementById(id)}
- function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
- function endpoint(){try{return (acaAIConnectionReadSettings().endpoint||'').trim()}catch(_){return''}}
- function healthUrl(url){return url.replace(/\/+$/,'').replace(/\/analyze$/,'')+'/health'}
- window.acaTestRealAIBackend=async function(){var box=el('acaBackendHealthStatus'),url=endpoint();if(!url||!/^https:\/\//i.test(url)){if(box){box.className='panel bad';box.innerHTML='<b>Gerçek AI backend:</b> Önce HTTPS endpoint adresini kaydedin.'}return}if(box){box.className='panel busy';box.innerHTML='<b>Gerçek AI backend:</b> Bağlantı sınanıyor…'}try{var c=new AbortController(),t=setTimeout(function(){c.abort()},12000),r=await fetch(healthUrl(url),{headers:{Accept:'application/json'},signal:c.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});clearTimeout(t);var b=await r.json().catch(function(){return{}});if(!r.ok||!b.ok)throw new Error((b&&b.message)||('HTTP '+r.status));if(box){box.className='panel ok';box.innerHTML='<b>Gerçek AI backend hazır.</b><br>Model: '+esc(b.model||'yapılandırılmış')+' · Görüntü analizi: '+(b.vision?'aktif':'pasif')+' · Anahtar: '+(b.key_configured?'gizli değişkende kayıtlı':'eksik')}}catch(e){if(box){box.className='panel bad';box.innerHTML='<b>Gerçek AI backend bağlantısı başarısız:</b> '+esc(e.message)}}};
- function list(v){return Array.isArray(v)?v:(v?[String(v)]:[])}
- window.acaRenderClinicalAIResult=function(target,data){var out=typeof target==='string'?el(target):target;if(!out)return;var d=data&&data.result?data.result:data;if(!d||typeof d!=='object'){out.textContent=typeof d==='string'?d:JSON.stringify(d,null,2);return}var sections=[['Teknik kalite',list(d.technical_quality||d.image_quality)],['Bulgular',list(d.findings)],['Kritik uyarılar',list(d.critical_alerts||d.red_flags)],['Olası yorum',list(d.impression||d.possible_interpretation)],['Belirsizlikler',list(d.uncertainties||d.limitations)],['Doğrulama / öneri',list(d.recommended_verification||d.recommendations)]];out.classList.add('ai-result-clinical');out.innerHTML=sections.map(function(x){return'<div class="ai-section"><h4>'+esc(x[0])+'</h4>'+(x[1].length?'<ul>'+x[1].map(function(y){return'<li>'+esc(y)+'</li>'}).join('')+'</ul>':'<div class="muted">Belirtilmedi.</div>')+'</div>'}).join('')+'<div class="muted" style="margin-top:10px">AI ikinci görüşüdür; tanı veya tedavi emri değildir. Hekim doğrulaması zorunludur.</div>'};
- // Intercept result assignments after existing functions complete, preserving existing send logic.
- function observe(id){var node=el(id);if(!node)return;new MutationObserver(function(){var text=node.textContent.trim();if(!text||text==='Henüz AI yanıtı yok.'||text==='Yanıt alınamadı.'||node.querySelector('.ai-section'))return;try{var data=JSON.parse(text);window.acaRenderClinicalAIResult(node,data)}catch(_){}}).observe(node,{childList:true,subtree:true,characterData:true})}
- function init(){observe('ecgPhotoAiResult');observe('xrayPhotoAiResult');var box=el('acaBackendHealthStatus');if(box&&endpoint())setTimeout(window.acaTestRealAIBackend,700)}
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
-
-</body></html>`);w.document.close();w.focus();w.print();
+ renderProfessionalDocs();
+ const text=el('professionalDoc')?.value||'';
+ const w=window.open('','_blank');
+ if(!w){alert('Yazdırma penceresi açılamadı. Tarayıcı açılır pencere iznini kontrol edin.');return;}
+ w.document.write('<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111}@media print{body{padding:0}}</style></head><body>'+esc(text)+'</body></html>');
+ w.document.close();w.focus();setTimeout(function(){w.print()},150);
 }
 
 const CLINICAL_VALIDATION_KEY='acil_klinik_validation_v4_1';
@@ -7483,7 +7413,7 @@ function log(action,ok,detail){var h=read(HISTORY_KEY,[]);h.unshift({time:new Da
 window.acaAICommandRefresh=render;
 window.acaAICommandOpenPacket=function(){if(typeof openSingleModule==='function')openSingleModule('aiCompatibilityCard')};
 window.acaAICommandClearHistory=function(){if(confirm('Yapay zekâ işlem geçmişi temizlensin mi?')){write(HISTORY_KEY,[]);render()}};
-window.acaAICommandSend=async function(){var p=render(),action=(el('aiCommandAction')||{}).value||'clinical_decision_support',note=(el('aiCommandNote')||{}).value||'';if(!p.packet||!p.privacy||!p.caseData){setStatus('Vaka paketi eksik veya kimlik ayıklama denetimi başarısız.','bad');return}if(!p.https||!p.enabled||!p.online){setStatus('Güvenli AI bağlantısı hazır değil. Bağlantı ayarlarını kontrol edin.','bad');return}if(!p.quota){setStatus('Günlük paket kotası doldu.','bad');return}setStatus('Anonim vaka paketi gönderiliyor…','busy');try{var packet=buildAICompatibilityPacket();packet.clinician_request={action:action,note:note.slice(0,500)};var settings=acaAIConnectionReadSettings(),controller=new AbortController(),timer=setTimeout(function(){controller.abort()},settings.timeout||30000);var response=await fetch(settings.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:action,provider:settings.provider,packet:packet,response_schema:ACA_AI_RESPONSE_SCHEMA,client:{application:'Acil Klinik Asistanı',version:(window.ACA_APP_VERSION||'v9.5.0'),update_name:(window.ACA_UPDATE_NAME||'Gerçek Görüntü AI Bağlantısı')}}),signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'});clearTimeout(timer);var body=await response.json().catch(function(){throw new Error('Sunucu geçerli JSON döndürmedi.')});if(!response.ok)throw new Error((body&&body.message)||('HTTP '+response.status));var data=typeof acaExtractAIResponse==='function'?acaExtractAIResponse(body):body,valid=typeof validateAIResponseContract==='function'?validateAIResponseContract(data):{ok:true,errors:[]};if(action==='clinical_decision_support'&&!valid.ok)throw new Error('Klinik yanıt şeması uyumsuz: '+valid.errors.join('; '));var u=todayUsage();u.count++;write(USAGE_KEY,u);window.ACA_AI_LAST_RESPONSE=data;var out=el('aiSecureResponsePreview');if(out)out.textContent=JSON.stringify(data,null,2);setStatus('Yanıt alındı. Hekim onayı olmadan order veya reçete uygulanmadı.','ok');log(action,true,'Yanıt alındı ve kaydedildi.')}catch(err){setStatus('Gönderim başarısız: '+err.message,'bad');log(action,false,err.message)}};
+window.acaAICommandSend=async function(){var p=render(),action=(el('aiCommandAction')||{}).value||'clinical_decision_support',note=(el('aiCommandNote')||{}).value||'';if(!p.packet||!p.privacy||!p.caseData){setStatus('Vaka paketi eksik veya kimlik ayıklama denetimi başarısız.','bad');return}if(!p.https||!p.enabled||!p.online){setStatus('Güvenli AI bağlantısı hazır değil. Bağlantı ayarlarını kontrol edin.','bad');return}if(!p.quota){setStatus('Günlük paket kotası doldu.','bad');return}setStatus('Anonim vaka paketi gönderiliyor…','busy');try{var packet=buildAICompatibilityPacket();packet.clinician_request={action:action,note:note.slice(0,500)};var settings=acaAIConnectionReadSettings(),controller=new AbortController(),timer=setTimeout(function(){controller.abort()},settings.timeout||30000);var response=await fetch(settings.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:action,provider:settings.provider,packet:packet,response_schema:ACA_AI_RESPONSE_SCHEMA,client:{application:'Acil Klinik Asistanı',version:(window.ACA_APP_VERSION||'v9.5.1'),update_name:(window.ACA_UPDATE_NAME||'Kararlılık ve Sekme Onarımı')}}),signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'});clearTimeout(timer);var body=await response.json().catch(function(){throw new Error('Sunucu geçerli JSON döndürmedi.')});if(!response.ok)throw new Error((body&&body.message)||('HTTP '+response.status));var data=typeof acaExtractAIResponse==='function'?acaExtractAIResponse(body):body,valid=typeof validateAIResponseContract==='function'?validateAIResponseContract(data):{ok:true,errors:[]};if(action==='clinical_decision_support'&&!valid.ok)throw new Error('Klinik yanıt şeması uyumsuz: '+valid.errors.join('; '));var u=todayUsage();u.count++;write(USAGE_KEY,u);window.ACA_AI_LAST_RESPONSE=data;var out=el('aiSecureResponsePreview');if(out)out.textContent=JSON.stringify(data,null,2);setStatus('Yanıt alındı. Hekim onayı olmadan order veya reçete uygulanmadı.','ok');log(action,true,'Yanıt alındı ve kaydedildi.')}catch(err){setStatus('Gönderim başarısız: '+err.message,'bad');log(action,false,err.message)}};
 function init(){render();window.addEventListener('online',render);window.addEventListener('offline',render);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.groups&&r.groups.diagnosis&&r.groups.diagnosis.ids.indexOf('aiCommandCenterCard')<0)r.groups.diagnosis.ids.unshift('aiCommandCenterCard');if(r&&r.testNames)r.testNames.aiCommandCenterCard='Yapay Zekâ Merkezi ve Güvenli Vaka Gönderimi'}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
@@ -7548,7 +7478,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="aca-v920-version-and-ecg-photo-js">
 (function(){'use strict';
-window.ACA_APP_VERSION='v9.5.0';window.ACA_UPDATE_NAME='Gerçek Görüntü AI Bağlantısı';
+window.ACA_APP_VERSION='v9.5.1';window.ACA_UPDATE_NAME='Kararlılık ve Sekme Onarımı';
 function el(id){return document.getElementById(id)}
 function applyVersion(){document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}
 var selectedUrl='';function revoke(){if(selectedUrl){URL.revokeObjectURL(selectedUrl);selectedUrl=''}}
@@ -7618,6 +7548,72 @@ window.acaVisionReset=function(){var c=el('visionCoreCanvas');c.width=0;c.height
 window.acaVisionOpenFromAnalysis=function(profile){var source=profile==='ecg'?el('ecgPhotoSelect'):el('xrayPhotoSelect'),id=source&&source.value;if(typeof openSingleModule==='function')openSingleModule('visionCoreCard');setTimeout(function(){refresh(id);el('visionCoreProfile').value=profile;window.acaVisionProfileChanged()},80)};
 function init(){refresh();try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.testNames)r.testNames.visionCoreCard='Görüntü Analiz Motoru';if(r&&r.groups&&r.groups.diagnosis&&r.groups.diagnosis.ids.indexOf('visionCoreCard')<0)r.groups.diagnosis.ids.unshift('visionCoreCard')}catch(_){};document.addEventListener('change',function(e){if(e.target&&e.target.id==='imageHubFileInput')setTimeout(refresh,500)})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();window.addEventListener('beforeunload',revoke);
+})();
+</script>
+
+
+<style id="aca-stability-restored-css">
+/* v7.7.0 Akıllı Modül Yönlendirme */
+.module-router-card{border:2px solid #0ea5e9;background:linear-gradient(180deg,#f0f9ff,#fff)}
+.module-router-card>.section-title h2{color:#075985}.router-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.router-kpi{border:1px solid #bae6fd;border-radius:12px;padding:9px;background:#fff;text-align:center}.router-kpi span{display:block;font-size:11px;color:var(--muted)}.router-kpi b{display:block;font-size:19px;margin-top:3px}.router-list{display:grid;gap:9px}.router-item{border:1px solid var(--line);border-left:6px solid #0ea5e9;border-radius:12px;padding:10px;background:#fff}.router-item.urgent{border-left-color:#dc2626;background:#fff7f7}.router-item.high{border-left-color:#f59e0b;background:#fffbeb}.router-item.standard{border-left-color:#0ea5e9}.router-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.router-title{font-weight:900}.router-reason{font-size:12px;color:#334155;margin-top:5px}.router-badge{display:inline-block;border-radius:99px;padding:3px 8px;font-size:10px;font-weight:900;white-space:nowrap;background:#e0f2fe;color:#075985}.router-item.urgent .router-badge{background:#fee2e2;color:#991b1b}.router-item.high .router-badge{background:#fef3c7;color:#92400e}.router-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.router-actions button{min-height:36px;padding:7px 10px;font-size:11px}.router-empty{border:1px dashed #7dd3fc;border-radius:12px;padding:14px;text-align:center;background:#f0f9ff;color:#475569}@media(max-width:700px){.router-summary{grid-template-columns:1fr}.router-head{display:block}.router-badge{margin-top:6px}}
+
+
+.license-center-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.license-panel{border:1px solid var(--line);border-radius:14px;padding:12px;background:#f8fafc}.license-panel h3{margin:0 0 8px;font-size:15px}.license-kv{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.license-kv div{padding:8px;border-radius:10px;background:#fff;border:1px solid var(--line)}.license-kv b{display:block;color:#0f172a}.license-kv span{color:var(--muted);word-break:break-word}.license-status-box{padding:10px;border-radius:12px;font-weight:800;margin:10px 0}.license-status-box.ok{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}.license-status-box.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}.license-status-box.bad{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}.package-table{width:100%;border-collapse:collapse;font-size:11px}.package-table th,.package-table td{padding:7px;border:1px solid var(--line);text-align:center}.package-table th:first-child,.package-table td:first-child{text-align:left}.license-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}.license-note{font-size:11px;color:var(--muted);margin-top:8px}.license-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.license-actions button{font-size:12px}.feature-lock{opacity:.55;filter:grayscale(.2)}
+@media(max-width:650px){.license-center-grid{grid-template-columns:1fr}.license-kv{grid-template-columns:1fr 1fr}}
+
+/* v8.5.1 güvenli sadeleştirme — çalışan sayfa yapısı korunur */
+body.dashboard-home #evidenceGuidelineEngineCard,
+body.dashboard-home #guidelineCurrencyAuditCard,
+body.dashboard-home #dynamicRuleEngineCard,
+body.dashboard-home #decisionTransparencyCard,
+body.dashboard-home #clinicalConsistencyCard{display:none!important}
+
+
+/* v8.6.1 — Ana sayfa ile gelişmiş araçların kesin ayrımı */
+body.dashboard-home .layout{display:none!important}
+body.dashboard-home #moduleHeading,body.dashboard-home .dashboard-back{display:none!important}
+body.module-view #dashboardShell{display:none!important}
+body.module-view .layout{display:grid!important}
+
+/* v8.7.2 Çoklu Aktif Vaka Yönetimi */
+.active-cases-card{border:1px solid #d9e4ec;background:linear-gradient(180deg,#fff,#f8fbfd)}
+.active-case-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.active-case-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+.active-case-summary>div{padding:12px 14px;border:1px solid #dce5eb;border-radius:14px;background:#fff}
+.active-case-summary small{display:block;color:#6d7a88;margin-bottom:4px}.active-case-summary b{font-size:16px}
+.active-case-list{display:grid;gap:10px;margin-top:12px}
+.active-case-item{border:1px solid #d9e2e8;border-radius:16px;background:#fff;padding:14px;box-shadow:0 4px 14px rgba(15,35,55,.05)}
+.active-case-item.current{border-color:#159a8c;box-shadow:0 0 0 2px rgba(21,154,140,.12)}
+.active-case-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.active-case-head b{font-size:16px}.active-case-meta{color:#6c7886;font-size:13px;line-height:1.45;margin-top:5px}
+.active-case-state{white-space:nowrap;font-size:12px;font-weight:800;border-radius:999px;padding:5px 9px;background:#eaf7f4;color:#08786e}
+.active-case-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.active-case-actions button{padding:9px 12px}
+.active-case-empty{padding:18px;border:1px dashed #cbd6de;border-radius:14px;text-align:center;color:#71808f;background:#fbfcfd}
+.active-case-archive-link{margin-top:12px}.active-case-archive-link summary{cursor:pointer;font-weight:800}.active-case-archive-link p{color:#6d7885}
+@media(max-width:620px){.active-case-summary{grid-template-columns:1fr}.active-case-head{display:block}.active-case-state{display:inline-block;margin-top:8px}.active-case-actions button{flex:1 1 130px}}
+
+</style>
+<style id="aca-v950-real-ai-css">
+#acaBackendHealthStatus.ok{background:var(--greenbg);color:var(--green);border-color:#86efac}
+#acaBackendHealthStatus.bad{background:var(--redbg);color:var(--red);border-color:#fda4af}
+#acaBackendHealthStatus.busy{background:var(--amberbg);color:var(--amber);border-color:#fcd34d}
+.ai-result-clinical{white-space:normal!important;font-family:inherit!important;line-height:1.5}
+.ai-result-clinical .ai-section{padding:10px 0;border-bottom:1px solid rgba(148,163,184,.25)}
+.ai-result-clinical .ai-section:last-child{border-bottom:0}.ai-result-clinical h4{margin:0 0 5px}.ai-result-clinical ul{margin:5px 0 0 18px;padding:0}
+</style>
+<script id="aca-v950-real-ai-js">
+(function(){'use strict';
+ function el(id){return document.getElementById(id)}
+ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+ function endpoint(){try{return (acaAIConnectionReadSettings().endpoint||'').trim()}catch(_){return''}}
+ function healthUrl(url){return url.replace(/\/+$/,'').replace(/\/analyze$/,'')+'/health'}
+ window.acaTestRealAIBackend=async function(){var box=el('acaBackendHealthStatus'),url=endpoint();if(!url||!/^https:\/\//i.test(url)){if(box){box.className='panel bad';box.innerHTML='<b>Gerçek AI backend:</b> Önce HTTPS endpoint adresini kaydedin.'}return}if(box){box.className='panel busy';box.innerHTML='<b>Gerçek AI backend:</b> Bağlantı sınanıyor…'}try{var c=new AbortController(),t=setTimeout(function(){c.abort()},12000),r=await fetch(healthUrl(url),{headers:{Accept:'application/json'},signal:c.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});clearTimeout(t);var b=await r.json().catch(function(){return{}});if(!r.ok||!b.ok)throw new Error((b&&b.message)||('HTTP '+r.status));if(box){box.className='panel ok';box.innerHTML='<b>Gerçek AI backend hazır.</b><br>Model: '+esc(b.model||'yapılandırılmış')+' · Görüntü analizi: '+(b.vision?'aktif':'pasif')+' · Anahtar: '+(b.key_configured?'gizli değişkende kayıtlı':'eksik')}}catch(e){if(box){box.className='panel bad';box.innerHTML='<b>Gerçek AI backend bağlantısı başarısız:</b> '+esc(e.message)}}};
+ function list(v){return Array.isArray(v)?v:(v?[String(v)]:[])}
+ window.acaRenderClinicalAIResult=function(target,data){var out=typeof target==='string'?el(target):target;if(!out)return;var d=data&&data.result?data.result:data;if(!d||typeof d!=='object'){out.textContent=typeof d==='string'?d:JSON.stringify(d,null,2);return}var sections=[['Teknik kalite',list(d.technical_quality||d.image_quality)],['Bulgular',list(d.findings)],['Kritik uyarılar',list(d.critical_alerts||d.red_flags)],['Olası yorum',list(d.impression||d.possible_interpretation)],['Belirsizlikler',list(d.uncertainties||d.limitations)],['Doğrulama / öneri',list(d.recommended_verification||d.recommendations)]];out.classList.add('ai-result-clinical');out.innerHTML=sections.map(function(x){return'<div class="ai-section"><h4>'+esc(x[0])+'</h4>'+(x[1].length?'<ul>'+x[1].map(function(y){return'<li>'+esc(y)+'</li>'}).join('')+'</ul>':'<div class="muted">Belirtilmedi.</div>')+'</div>'}).join('')+'<div class="muted" style="margin-top:10px">AI ikinci görüşüdür; tanı veya tedavi emri değildir. Hekim doğrulaması zorunludur.</div>'};
+ // Intercept result assignments after existing functions complete, preserving existing send logic.
+ function observe(id){var node=el(id);if(!node)return;new MutationObserver(function(){var text=node.textContent.trim();if(!text||text==='Henüz AI yanıtı yok.'||text==='Yanıt alınamadı.'||node.querySelector('.ai-section'))return;try{var data=JSON.parse(text);window.acaRenderClinicalAIResult(node,data)}catch(_){}}).observe(node,{childList:true,subtree:true,characterData:true})}
+ function init(){observe('ecgPhotoAiResult');observe('xrayPhotoAiResult');var box=el('acaBackendHealthStatus');if(box&&endpoint())setTimeout(window.acaTestRealAIBackend,700)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 
