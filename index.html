@@ -131,10 +131,14 @@ html,body{max-width:100%;overflow-x:hidden}img,svg,canvas,video{max-width:100%;h
 .system-advanced-tests .system-hub-grid{padding:0 12px 12px}
 @media(max-width:560px){.module-collection-grid{grid-template-columns:1fr}}
 
+
+/* v6.9.4-alpha.1 güvenlik temel görünümü */
+#identitySafetyStatus small{display:inline-block;margin-top:5px}
+
 </style>
 </head>
 <body>
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.9.3 Stable • Sade Klinik Akış</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Hızlı klinik karar, akıllı tetkik seçimi ve güvenli sonlandırma</p></div><div class="status">v6.9.4-alpha.1 • Kimlik ve Kayıt Uyumluluğu</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <div id="dashboardShell" class="dashboard-shell no-print">
@@ -849,7 +853,7 @@ function quickOneScreenHTML(){
  return `<div class="quick-note"><b>Tek ekran hızlı acil:</b> Temel veri, kırmızı bayrak, en fazla 5 soru ve tetkik durumu aynı ekranda. Ayrıntılar gerektiğinde açılır.</div>
  <div class="panel info"><div class="section-title"><h3>1 · Hasta ve ana şikâyet</h3><span class="phase-badge">≈ 10 sn</span></div><div class="grid3">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${complaints.map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label></div><label style="margin-top:9px">Tek cümle hasta ifadesi<textarea id="notes" rows="2" placeholder="Örn. 45 dakikadır baskı tarzında göğüs ağrısı">${esc(S.notes)}</textarea></label></div>
  <div class="panel neutral"><div class="section-title"><h3>2 · Vital ve ilk bakış</h3><span class="phase-badge">≈ 15 sn</span></div><div class="compact-actions"><button class="primary" onclick="applyVitalPreset('stable')">✓ Stabil profil</button><button class="danger" onclick="applyVitalPreset('critical')">⚠ Kritik profil</button></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('SS','rr','number','16')}${input('SpO₂','spo2','number','97')}${input('Ateş','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><details style="margin-top:9px"><summary><b>Kırmızı bayrak ekle</b></summary>${choices('redFlags',redFlagItems())}</details></div>
- <div class="panel neutral" id="smartAnamnesisContainer"><div class="section-title"><h3>3 · Şikâyete özel kritik sorular</h3><span class="phase-badge">en fazla 5</span></div>${renderSmartAnamnesis()}</div>
+ <div class="panel neutral" id="smartAnamnesisQuick"><div class="section-title"><h3>3 · Şikâyete özel kritik sorular</h3><span class="phase-badge">en fazla 5</span></div>${renderSmartAnamnesis()}</div>
  <div class="panel neutral"><div class="section-title"><h3>4 · Tetkik ve çıkan sonuç</h3><button onclick="recommendTests()">Önerilenleri seç</button></div><div class="choices">${tests.map(t=>`<label class="choice"><input type="checkbox" name="orderedTests" value="${esc(t)}" ${(S.orderedTests||[]).includes(t)?'checked':''}>${esc(t)}</label>`).join('')}</div><details style="margin-top:10px"><summary><b>Çıkan sonuçları ekle</b> <span class="muted">(gelmeyenler bekleniyor kalabilir)</span></summary><div class="grid" style="margin-top:9px">${select('EKG','ecg',['Bekleniyor','Normal / akut iskemi yok','ST elevasyonu','ST depresyonu/T negatifliği','Taşikardi/aritmi','Bradikardi/iletim bozukluğu','Diğer anormal'])}${select('İlk troponin','troponin',['Bekleniyor','Normal','Yüksek','Sınırda'])}${select('D-dimer','ddimer',['Bekleniyor','Normal','Yüksek'])}${select('Akciğer grafisi','cxr',['Bekleniyor','Normal','İnfiltrasyon','Konjesyon/ödem','Pnömotoraks','Mediasten geniş','Diğer anormal'])}${input('Glukoz','glucose','number','mg/dL')}${input('Laktat','lactate','number','mmol/L')}</div></details></div>
  <details class="risk-inputs"><summary>Risk skorları için ek kısa veri (gerektiğinde)</summary><div class="grid" style="margin-top:9px">${select('HEART öykü şüphesi','heartHistory',[['','Seçiniz'],['0','Az şüpheli'],['1','Orta şüpheli'],['2','Yüksek şüpheli']])}${select('HEART risk faktörü sayısı','heartRiskCount',[['','Seçiniz'],['0','0'],['1','1–2'],['2','≥3 veya bilinen ateroskleroz']])}${select('Ek oksijen alıyor mu?','newsOxygen',['Hayır','Evet'])}</div><div class="tiny-checks">${choices('peRisk',[["Klinik DVT bulgusu","Klinik DVT bulgusu"],["PE en olası tanı","PE en olası tanı"],["Yakın cerrahi/immobilizasyon","Son 4 haftada cerrahi/immobilizasyon"],["Önceki DVT/PE","Önceki DVT/PE"],["Hemoptizi","Hemoptizi"],["Aktif malignite","Aktif malignite"],["Östrojen kullanımı","Östrojen kullanımı"]])}</div></details><div class="panel info"><h3>Canlı ilk karar</h3>${quickConsultantHTML()}</div>`;
 }
@@ -861,7 +865,7 @@ function render(){
  const c=el('stepContent');
  if(page===0)c.innerHTML=quickMode?safeQuickOneScreenHTML():`<div class="panel info"><h3>Ayrıntılı hasta girişi</h3><p>Hızlı moddaki tüm bilgiler korunur. Burada ayrıntılı değerlendirme için temel hasta verilerini düzenleyebilirsin.</p></div><div class="grid">${input('Yaş <span class="required">*</span>','age','number','58')}${select('Cinsiyet','sex',[['','Seçiniz'],['Erkek','Erkek'],['Kadın','Kadın']])}<label>Ana şikâyet<select id="complaint" onchange="changeComplaint(this.value)">${['Göğüs ağrısı','Nefes darlığı','Karın ağrısı','Baş ağrısı','Ateş','Bilinç değişikliği','Travma','Çarpıntı','Senkop / presenkop','Bulantı-kusma / ishal','Bel-sırt ağrısı','İdrar yakınması','Döküntü / alerjik reaksiyon','Nöbet'].map(x=>`<option ${S.complaint===x?'selected':''}>${x}</option>`).join('')}</select></label>${input('Şiddet (0–10)','severity','number','7')}</div><label style="margin-top:11px">Hastanın kendi ifadesi<textarea id="notes" rows="4">${esc(S.notes)}</textarea></label>`;
  if(page===1)c.innerHTML=`<div class="panel warn"><h3>Önce yaşamı tehdit eden durumları kontrol et</h3><p>Vital bulguları ve kırmızı bayrakları gir. Kritik veri saptanırsa rutin akış bekletilmez.</p><div class="actions"><button class="primary big-action" onclick="applyVitalPreset(\'stable\')">✓ Stabil / normal vitaller</button><button class="danger big-action" onclick="applyVitalPreset(\'critical\')">⚠ Kritik hasta profili</button></div></div><div class="grid3">${input('Sistolik TA','sbp','number','120')}${input('Diyastolik TA','dbp','number','80')}${input('Nabız','pulse','number','82')}${input('Solunum sayısı','rr','number','16')}${input('SpO₂ (%)','spo2','number','97')}${input('Ateş (°C)','temp','number','36.7')}${select('Bilinç','mental',['Normal','Konfüze','Somnolans','Yanıtsız'])}</div><div class="question"><div class="question-title">Kırmızı bayraklar</div>${choices('redFlags',redFlagItems())}</div>`;
- if(page===2)c.innerHTML=`<div id="smartAnamnesisContainer">${renderSmartAnamnesis()}</div>`;
+ if(page===2)c.innerHTML=`<div id="smartAnamnesisWizard">${renderSmartAnamnesis()}</div>`;
  if(page===3)c.innerHTML=`<div class="question"><div class="question-title">Kronik hastalık ve riskler</div>${choices('history',[["KAH/MI/PCI/CABG","KAH, MI, PCI veya CABG"],["Hipertansiyon","Hipertansiyon"],["Diyabet","Diyabet"],["Dislipidemi","Dislipidemi"],["Kalp yetersizliği","Kalp yetersizliği"],["Aort hastalığı","Aort hastalığı"],["DVT/PE","DVT veya PE öyküsü"],["Kanser","Aktif kanser"],["Böbrek hastalığı","Kronik böbrek hastalığı"],["Kanama öyküsü","Önemli kanama öyküsü"],["Erken aile KAH","Erken aile koroner hastalık öyküsü"],["Yakın cerrahi/immobilizasyon","Yakın cerrahi veya immobilizasyon"]])}</div><div class="grid">${select('Sigara','smoking',[['','Seçiniz'],['Yok','Yok'],['Aktif','Aktif'],['Bırakmış','Bırakmış']])}${select('Madde kullanımı','substance',[['','Seçiniz'],['Yok','Yok'],['Kokain/amfetamin','Kokain veya amfetamin'],['Diğer','Diğer']])}</div><label style="margin-top:11px">Düzenli ilaçlar<textarea id="meds" rows="3" placeholder="Antikoagülan, antiagregan, PDE-5 inhibitörü vb.">${esc(S.meds)}</textarea></label><div class="grid" style="margin-top:11px">${input('İlaç/kontrast alerjisi','allergy','text','Yok')}${input('Geçirilmiş ameliyatlar','surgery','text','Yok')}</div><div class="question"><div class="question-title">Tedavi güvenlik kontrolü</div>${choices('treatmentSafety',[["ASA/NSAİİ alerjisi","Aspirin/NSAİİ alerjisi veya ciddi intoleransı"],["Aktif ciddi kanama","Aktif ciddi kanama"],["Oral antikoagülan","Oral antikoagülan kullanıyor"],["PDE5 yakın kullanım","Yakın zamanda PDE-5 inhibitörü kullanımı"],...pregnancySafetyChoice(),["Bilinen ciddi trombositopeni","Bilinen ciddi trombositopeni"]])}</div>`;
  if(page===4)c.innerHTML=`<div class="panel info"><h3>Şikâyete uygun hedefli muayene</h3><p>Her bulguyu gerçekten değerlendirdikten sonra işaretle. Kritik bulgular rutin akışı keser.</p></div>${choices('exam',[["Genel durum kötü/soğuk-soluk-terli","Genel durum kötü, soğuk-soluk-terli"],["Yeni üfürüm","Yeni üfürüm"],["Perikardiyal frotman","Perikardiyal frotman"],["Raller/S3/periferik ödem","Ral, S3 veya periferik ödem"],["Tek taraflı solunum sesi azalması","Tek taraflı solunum sesi azalması"],["Göğüs duvarında hassasiyet","Palpasyonla ağrı/hassasiyet"],["DVT bulgusu","Tek taraflı DVT bulgusu"],["Nabız defisiti","Periferik nabız defisiti"],["Yeni nörolojik defisit","Yeni nörolojik defisit"],["Epigastrik hassasiyet","Epigastrik hassasiyet"],["Muayene belirgin özellik göstermiyor","Muayene belirgin özellik göstermiyor"]])}`;
  if(page===5)c.innerHTML=`<div class="panel info"><h3>Tetkik sonuçları ve EKG modülü</h3><p>Tetkikler henüz çıkmamış olabilir. Önce istenen tetkikleri işaretleyin; sonuç geldikçe yalnız ilgili alanı güncelleyin. Karar desteği bekleyen sonucu varmış gibi yorumlamaz.</p></div><div class="card" style="background:#f8fafc"><div class="section-title"><h3>Akıllı tetkik istem motoru</h3><span class="phase-badge">v2.5</span></div>${testRecommendationHTML(false)}</div><div class="question"><div class="question-title">İstenen / planlanan tetkikler</div><div class="compact-actions"><button class="primary" onclick="applySuggestedTests()">Şikâyete göre önerilenleri seç</button><button onclick="clearOrderedTests()">Seçimi temizle</button></div><div id="suggestedTestLine" class="muted">${esc(S.complaint)} için öneri: ${suggestedTests(S.complaint).join(', ')||'Klinik değerlendirmeye göre seçin'}</div>${choices('orderedTests',[["12 derivasyon EKG","12 derivasyon EKG"],["Seri EKG","Seri EKG"],["Troponin","Troponin"],["Hemogram","Hemogram"],["Biyokimya-elektrolit","Biyokimya ve elektrolitler"],["Kan gazı-laktat","Kan gazı ve laktat"],["D-dimer","D-dimer"],["Akciğer grafisi","Akciğer grafisi"],["Beyin BT","Beyin BT"],["BT anjiyografi","BT anjiyografi"],["Kültürler","Kan/uygun kültürler"]])}</div><div class="grid">${select('Genel EKG sonucu','ecg',['Bekleniyor','Normal/noniskemik','Nonspesifik ST-T','ST depresyonu/T inversiyonu','ST elevasyonu','Yaygın ST elevasyonu/PR depresyonu','Taşikardi/aritmi'])}${select('İlk troponin','troponin',['Bekleniyor','Normal','Üst sınırın 1–3 katı','Üst sınırın >3 katı'])}${select('Seri troponin','repeatTroponin',['Bekleniyor','Negatif/değişiklik yok','Anlamlı yükseliş/düşüş'])}${select('D-dimer','ddimer',['Bekleniyor','İstenmedi','Negatif','Pozitif'])}${select('Akciğer grafisi','cxr',['Bekleniyor','İstenmedi','Normal','Pnömoni/infiltrasyon','Pnömotoraks','Konjesyon/ödem','Mediasten genişliği'])}${input('Hemoglobin','hb','number','14')}${input('Kreatinin','creatinine','number','0.9')}</div>
@@ -1601,8 +1605,8 @@ function loadRandomEmergencyCase(){
 /* v6.9.2 yalnızca görünüm düzenlemesi:
    Mevcut localStorage anahtarları ve kayıtlı vaka yapısı değiştirilmez. */
 try{
- if(!localStorage.getItem('aca_layout_version'))localStorage.setItem('aca_layout_version','6.9.3');
- else localStorage.setItem('aca_layout_version','6.9.3');
+ if(!localStorage.getItem('aca_layout_version'))localStorage.setItem('aca_layout_version','6.9.4-alpha.1');
+ else localStorage.setItem('aca_layout_version','6.9.4-alpha.1');
 }catch(e){}
 
 var ACTIVE_TEST_CASE=null;
@@ -2817,7 +2821,7 @@ function renderProfessionalDocs(){
  const box=el('professionalDoc');if(!box)return;
  const type=el('docType')?el('docType').value:'consult';
  box.value=professionalDocument(type);
- const q=el('documentationQuality');if(q)q.outerHTML=`<div id="documentationQuality">${documentationQualityHTML(type)}</div>`;
+ const q=el('documentationQuality');if(q){q.className='';q.innerHTML=documentationQualityHTML(type)};
 }
 async function copyProfessionalDoc(){
  renderProfessionalDocs();const text=el('professionalDoc')?.value||'';
@@ -4534,6 +4538,77 @@ var APP_REGISTRY={
 };
 window.APP_REGISTRY=APP_REGISTRY;
 function safeCall(name,fn){try{return fn()}catch(e){var registry=ensureAppRegistry();registry.initErrors.push(name+': '+(e&&e.message?e.message:e));console.error(name,e);return null}}
+
+/* v6.9.4-alpha.1 — güvenli kimlik ve kayıt uyumluluğu katmanı */
+var ACA_SCHEMA_VERSION='1.0';
+var ACA_LAYOUT_VERSION='6.9.4-alpha.1';
+var ACA_LEGACY_STORAGE_KEYS=[
+ 'aca_cases','aca_current_case','aca_settings','aca_drafts','aca_validation_log',
+ 'aca_layout_version'
+];
+
+function acaSafeJsonParse(raw,fallback){
+ try{return raw==null?fallback:JSON.parse(raw)}
+ catch(err){return fallback}
+}
+function acaStorageSnapshot(){
+ var out={schema:ACA_SCHEMA_VERSION,layout:ACA_LAYOUT_VERSION,createdAt:new Date().toISOString(),keys:{}};
+ ACA_LEGACY_STORAGE_KEYS.forEach(function(key){
+  try{
+   var value=localStorage.getItem(key);
+   if(value!==null)out.keys[key]=value;
+  }catch(err){}
+ });
+ return out;
+}
+function acaInitializeCompatibility(){
+ try{
+  if(!localStorage.getItem('aca_schema_version'))localStorage.setItem('aca_schema_version',ACA_SCHEMA_VERSION);
+  localStorage.setItem('aca_layout_version',ACA_LAYOUT_VERSION);
+  if(!localStorage.getItem('aca_compatibility_initialized_at')){
+   localStorage.setItem('aca_compatibility_initialized_at',new Date().toISOString());
+  }
+  return true;
+ }catch(err){return false}
+}
+function acaLiveDuplicateIds(root){
+ var seen=Object.create(null),duplicates=[];
+ (root||document).querySelectorAll('[id]').forEach(function(node){
+  var id=node.id;
+  if(!id)return;
+  if(seen[id])duplicates.push({id:id,first:seen[id],duplicate:node});
+  else seen[id]=node;
+ });
+ return duplicates;
+}
+function acaRepairKnownDuplicateIds(){
+ var duplicates=acaLiveDuplicateIds(document),repaired=[];
+ duplicates.forEach(function(item,index){
+  var node=item.duplicate,id=item.id;
+  /* Klinik alan kimlikleri otomatik değiştirilmez; veri bağları korunur.
+     Yalnızca sunum amaçlı ve güvenle adlandırılabilen kapsayıcılar düzeltilir. */
+  if(id==='smartAnamnesisContainer'||id==='documentationQuality'){
+   var next=id+'__'+(index+2);
+   node.id=next;
+   node.setAttribute('data-legacy-id',id);
+   repaired.push({from:id,to:next});
+  }
+ });
+ return {duplicates:duplicates.map(function(x){return x.id}),repaired:repaired,remaining:acaLiveDuplicateIds(document).map(function(x){return x.id})};
+}
+function acaIdentityHealth(){
+ var live=acaLiveDuplicateIds(document);
+ return {
+  ok:live.length===0,
+  duplicateCount:live.length,
+  duplicateIds:live.map(function(x){return x.id}),
+  schemaVersion:ACA_SCHEMA_VERSION,
+  layoutVersion:ACA_LAYOUT_VERSION,
+  storageAvailable:(function(){try{var k='__aca_test__';localStorage.setItem(k,'1');localStorage.removeItem(k);return true}catch(e){return false}})()
+ };
+}
+acaInitializeCompatibility();
+
 function ensureAppRegistry(){
  if(typeof APP_REGISTRY==='object'&&APP_REGISTRY&&APP_REGISTRY.groups)return APP_REGISTRY;
  if(window.APP_REGISTRY&&window.APP_REGISTRY.groups)return window.APP_REGISTRY;
@@ -4643,7 +4718,15 @@ function openModuleGroup(group){
  }catch(err){console.error('Kategori açma hatası',err);alert('Bölüm açılırken hata oluştu: '+(err.message||err))}
 }
 function openSingleModule(id){try{enterModuleView();hideAllModules();var el=document.getElementById(id);if(!el)throw new Error('Araç bulunamadı: '+id);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;var titleEl=el.querySelector('h2,h3,summary');updateModuleHeading(titleEl?titleEl.textContent.trim():'Araç');setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}catch(err){console.error('Araç açma hatası',err);alert('Araç açılırken hata oluştu: '+(err.message||err))}}
-function buildSystemHub(){var box=document.getElementById('systemHubButtons'),entry=getGroup('system');if(!box||!entry)return;box.innerHTML=entry.ids.filter(function(id){return id!=='systemHubCard'&&document.getElementById(id)}).map(function(id){return '<button type="button" data-system-test="'+id+'">🧪 '+esc(ensureAppRegistry().testNames[id]||id)+'</button>'}).join('');box.querySelectorAll('[data-system-test]').forEach(function(btn){btn.addEventListener('click',function(){openSystemTest(btn.getAttribute('data-system-test'))})})}
+function buildSystemHub(){
+ var health=acaIdentityHealth(),status=document.getElementById('identitySafetyStatus');
+ if(status){
+  status.className='panel '+(health.ok&&health.storageAvailable?'ok':'warn');
+  status.innerHTML='<b>Kimlik ve kayıt uyumluluğu</b><br>'+
+   (health.ok?'Canlı ekranda yinelenen HTML kimliği yok.':'Yinelenen kimlik: '+health.duplicateIds.map(esc).join(', '))+
+   '<br><small>Şema '+esc(health.schemaVersion)+' · Düzen '+esc(health.layoutVersion)+' · Eski kayıt anahtarları korunuyor.</small>';
+ }
+ var box=document.getElementById('systemHubButtons'),entry=getGroup('system');if(!box||!entry)return;box.innerHTML=entry.ids.filter(function(id){return id!=='systemHubCard'&&document.getElementById(id)}).map(function(id){return '<button type="button" data-system-test="'+id+'">🧪 '+esc(ensureAppRegistry().testNames[id]||id)+'</button>'}).join('');box.querySelectorAll('[data-system-test]').forEach(function(btn){btn.addEventListener('click',function(){openSystemTest(btn.getAttribute('data-system-test'))})})}
 function openSystemTest(id){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(x){return x!=='systemHubCard'}).forEach(function(x){setModuleVisible(document.getElementById(x),false)});var el=document.getElementById(id);if(!el){alert('Test paneli bulunamadı: '+id);return}setModuleVisible(document.getElementById('systemHubCard'),true);setModuleVisible(el,true);if(el.tagName==='DETAILS')el.open=true;setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'})},20)}
 function showAllSystemTests(){var entry=getGroup('system');if(entry)entry.ids.forEach(function(id){setModuleVisible(document.getElementById(id),true)})}
 function closeAllSystemTests(){var entry=getGroup('system');if(!entry)return;entry.ids.filter(function(id){return id!=='systemHubCard'}).forEach(function(id){var el=document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=false;setModuleVisible(el,false)});setModuleVisible(document.getElementById('systemHubCard'),true)}
@@ -4659,7 +4742,7 @@ function runStabilityChecks(showDetails){
  add('Sistem kontrol merkezi',!!document.getElementById('systemHubCard'));
  var registry=ensureAppRegistry();Object.keys(registry.groups).forEach(function(key){var g=registry.groups[key];add('Kategori: '+g.title,g.ids.some(function(id){return !!document.getElementById(id)}),'Tanımlı kart: '+g.ids.length)});
  var ids=Array.from(document.querySelectorAll('[id]')).map(function(el){return el.id}),dups=ids.filter(function(id,i){return ids.indexOf(id)!==i});add('Benzersiz HTML kimlikleri',dups.length===0,dups.length?dups.join(', '):'Çakışma yok');
- ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm','renderSmartQuestions','applySmartQuestionAnswers','renderTriageAlert','loadRandomEmergencyCase','renderCaseScorePanel','evaluateActiveTestCase','openModuleGroup','renderModuleCollection','openCollectionTool'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
+ ['openModuleGroup','openSingleModule','showDashboardHome','runModuleSearch','render','saveCase','renderTreatmentEngine','renderPrescriptionEngine','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','renderWorkflowSummary','analyzeNaturalCase','applyNaturalCaseToForm','renderSmartQuestions','applySmartQuestionAnswers','renderTriageAlert','loadRandomEmergencyCase','renderCaseScorePanel','evaluateActiveTestCase','openModuleGroup','renderModuleCollection','openCollectionTool','acaIdentityHealth','acaStorageSnapshot'].forEach(function(fn){add('Fonksiyon: '+fn,typeof window[fn]==='function')});
  var stableRegistry=ensureAppRegistry();add('Başlatma hatası',stableRegistry.initErrors.length===0,stableRegistry.initErrors.join(' | '));
  add('Çalışma zamanı hatası',stableRegistry.runtimeErrors.length===0,stableRegistry.runtimeErrors.slice(-5).join(' | '));
  var ux=typeof runUsabilityChecks==='function'?runUsabilityChecks():null;if(ux)ux.checks.forEach(function(c){checks.push({name:'Kullanılabilirlik: '+c.name,ok:c.ok,detail:c.detail})});var passed=checks.filter(function(c){return c.ok}).length,total=checks.length,box=document.getElementById('stabilitySummary');
@@ -4761,7 +4844,7 @@ function initAppStable(){
 }
 window.addEventListener('error',function(e){ensureAppRegistry().runtimeErrors.push((e.message||'Hata')+(e.filename?' @ '+e.filename+':'+e.lineno:''))});
 window.addEventListener('unhandledrejection',function(e){ensureAppRegistry().runtimeErrors.push('Promise: '+(e.reason&&e.reason.message?e.reason.message:e.reason))});
-Object.assign(window,{openCollectionTool:openCollectionTool,renderModuleCollection:renderModuleCollection,renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
+Object.assign(window,{acaIdentityHealth:acaIdentityHealth,acaStorageSnapshot:acaStorageSnapshot,acaRepairKnownDuplicateIds:acaRepairKnownDuplicateIds,openCollectionTool:openCollectionTool,renderModuleCollection:renderModuleCollection,renderCaseScorePanel:renderCaseScorePanel,evaluateActiveTestCase:evaluateActiveTestCase,resetCaseScoreForm:resetCaseScoreForm,renderTriageAlert:renderTriageAlert,deriveTriageAssessment:deriveTriageAssessment,renderTestCasePanel:renderTestCasePanel,loadEmergencyCaseById:loadEmergencyCaseById,loadRandomEmergencyCase:loadRandomEmergencyCase,renderSmartQuestions:renderSmartQuestions,applySmartQuestionAnswers:applySmartQuestionAnswers,clearSmartQuestionAnswers:clearSmartQuestionAnswers,renderSmartClinicalAssessment:renderSmartClinicalAssessment,buildSmartClinicalAssessment:buildSmartClinicalAssessment,openModuleGroup:openModuleGroup,openSingleModule:openSingleModule,openSystemTest:openSystemTest,showAllSystemTests:showAllSystemTests,closeAllSystemTests:closeAllSystemTests,showDashboard:showDashboard,showDashboardHome:showDashboardHome,showCaseWorkspace:showCaseWorkspace,showWorkflowSummary:showWorkflowSummary,showToolsWorkspace:showToolsWorkspace,renderWorkflowSummary:renderWorkflowSummary,copyWorkflowSummary:copyWorkflowSummary,analyzeNaturalCase:analyzeNaturalCase,applyNaturalCaseToForm:applyNaturalCaseToForm,clearNaturalCase:clearNaturalCase,runModuleSearch:runModuleSearch,filterDashboard:filterDashboard,runStabilityChecks:runStabilityChecks,runStabilityChecksSafe:runStabilityChecksSafe,toggleModeSafe:toggleModeSafe,applyUsabilityGuards:applyUsabilityGuards,runUsabilityChecks:runUsabilityChecks});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppStable,{once:true});else setTimeout(initAppStable,0);
 
 
