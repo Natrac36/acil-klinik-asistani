@@ -8975,5 +8975,90 @@ function init(){ensure();try{sync();inject();mark()}catch(e){console.warn('v10.2
 })();
 </script>
 
+
+<style id="tox-v1022-style">
+/* v10.22.0 İleri Toksikoloji Algoritmaları — Zehirlenmeler akışını derinleştirir */
+.tox-v1022-card{border-left:4px solid #7c3aed}
+.tox-v1022-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tox-v1022-section{padding:12px;border:1px solid var(--border,#dbe3ee);border-radius:12px;background:var(--card,#fff)}
+.tox-v1022-section h4{margin:0 0 9px}
+.tox-v1022-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tox-v1022-check{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid var(--border,#dbe3ee);border-radius:9px}
+.tox-v1022-check input{margin-top:3px}
+.tox-v1022-hero{padding:12px;border-radius:12px;margin:8px 0 12px;background:#eef2ff;border:1px solid #c7d2fe}
+.tox-v1022-hero.critical{background:#fff1f2;border-color:#fda4af}
+.tox-v1022-hero.watch{background:#fffbeb;border-color:#fcd34d}
+.tox-v1022-hero.stable{background:#ecfdf5;border-color:#86efac}
+.tox-v1022-result{padding:10px;border-radius:10px;border:1px solid var(--border,#dbe3ee);margin:7px 0}
+.tox-v1022-result.critical{border-color:#fb7185;background:#fff1f2}
+.tox-v1022-result.warn{border-color:#fbbf24;background:#fffbeb}
+.tox-v1022-list{margin:7px 0 0;padding-left:20px}
+.tox-v1022-note{margin-top:9px;padding:9px;border-radius:9px;background:#f8fafc;border:1px solid #dbe3ee;font-size:.92em}
+.tox-v1022-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.tox-v1022-kpi{padding:9px;border:1px solid var(--border,#dbe3ee);border-radius:10px;text-align:center}
+.tox-v1022-kpi span{display:block;font-size:.78em;opacity:.72}.tox-v1022-kpi b{display:block;font-size:1.05em;margin-top:3px}
+@media(max-width:760px){.tox-v1022-grid,.tox-v1022-checks{grid-template-columns:1fr}.tox-v1022-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script id="tox-v1022-script">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id)}
+function A(x){return Array.isArray(x)?x:[]}
+function H(x){return typeof esc==='function'?esc(String(x==null?'':x)):String(x==null?'':x).replace(/[&<>\"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'})[c]})}
+function n(x){var v=parseFloat(x);return Number.isFinite(v)?v:null}
+function ensure(){
+ var d={tox22ParacetamolLevel:'',tox22ParacetamolHour:'',tox22SalicylateLevel:'',tox22MeasuredOsm:'',tox22Na:'',tox22Glucose:'',tox22Bun:'',tox22Ethanol:'',tox22K:'',tox22Mg:'',tox22Ca:'',tox22SerialPlan:[],tox22Antidotes:[],tox22HighRisk:[],tox22Disposition:''};
+ Object.keys(d).forEach(function(k){if(S[k]===undefined)S[k]=d[k]})
+}
+function inp(f,l,t,step,u,ph){return '<label>'+l+'<input data-tox22-field="'+f+'" type="'+(t||'text')+'" '+(step?'step="'+step+'"':'')+' value="'+H(S[f]||'')+'" placeholder="'+H(ph||'')+'">'+(u?'<small>'+H(u)+'</small>':'')+'</label>'}
+function sel(f,l,opts){return '<label>'+l+'<select data-tox22-field="'+f+'">'+opts.map(function(o){return '<option value="'+H(o)+'" '+(S[f]===o?'selected':'')+'>'+H(o)+'</option>'}).join('')+'</select></label>'}
+function chk(f,v){return '<label class="tox-v1022-check"><input data-tox22-field="'+f+'" type="checkbox" value="'+H(v)+'" '+(A(S[f]).includes(v)?'checked':'')+'><span>'+H(v)+'</span></label>'}
+function calc(){
+ ensure();
+ var qrs=n(S.toxQrs),qtc=n(S.toxQtc),ph=n(S.toxPh),k=n(S.tox22K),mg=n(S.tox22Mg),ca=n(S.tox22Ca);
+ var na=n(S.tox22Na),glu=n(S.tox22Glucose),bun=n(S.tox22Bun),eth=n(S.tox22Ethanol),mosm=n(S.tox22MeasuredOsm);
+ var calcOsm=null,osmGap=null;
+ if(na!==null&&glu!==null&&bun!==null){calcOsm=2*na+glu/18+bun/2.8+(eth!==null?eth/4.6:0);if(mosm!==null)osmGap=mosm-calcOsm}
+ var crit=[],warn=[],actions=[],serial=[];
+ if(qrs!==null&&qrs>=100){crit.push('QRS ≥100 ms: sodyum kanal blokajı olası');actions.push('TCA/sodyum kanal blokeri olasılığında sodyum bikarbonat protokolünü ve seri EKG/kan gazını değerlendir')}
+ if(qtc!==null&&qtc>=500){crit.push('QTc ≥500 ms: torsades riski');actions.push('QT uzatan ajanları kes; potasyum, magnezyum ve kalsiyumu düzelt; sürekli ritim izlemi sağla')}
+ if(ph!==null&&ph<7.20){crit.push('Ciddi asidemi');actions.push('Ajan-spesifik yaklaşım, ventilasyon/perfüzyon optimizasyonu ve erken yoğun bakım/toksikoloji görüşü')}
+ if(osmGap!==null&&osmGap>10){warn.push('Artmış osmolar açıklık ('+osmGap.toFixed(1)+')');actions.push('Toksik alkol olasılığını anyon açıklığı, kan gazı, böbrek fonksiyonu ve klinikle birlikte değerlendir')}
+ if(k!==null&&(k<3||k>6)){crit.push('Kritik potasyum değeri');actions.push('EKG eşliğinde acil potasyum bozukluğu yönetimi')}
+ if(mg!==null&&mg<1.5)warn.push('Hipomagnezemi');
+ if(ca!==null&&ca<7.5)warn.push('Belirgin hipokalsemi');
+ var agent=S.toxAgent||'';
+ if(agent==='Parasetamol'){
+   serial.push('Tek akut alım ve zaman güvenilir ise 4. saat veya sonrasında serum parasetamol düzeyi; uzatılmış salım/belirsiz zamanda seri düzey ve karaciğer testleri');
+   if(A(S.tox22HighRisk).includes('Alım zamanı belirsiz')||A(S.tox22HighRisk).includes('Gecikmiş başvuru >8 saat'))actions.push('N-asetilsisteini laboratuvar sonucunu beklemeden başlama gereğini değerlendir');
+ }
+ if(agent==='Salisilat'){
+   serial.push('Seri salisilat düzeyi, kan gazı, glukoz, elektrolitler ve klinik durum; düşüş eğilimi doğrulanana kadar izlem');
+   actions.push('Asidemi, bilinç değişikliği, akciğer ödemi veya kötüleşmede erken nefroloji/hemodiyaliz değerlendirmesi');
+ }
+ if(agent==='TCA/Na kanal blokeri')serial.push('Seri EKG (QRS/QTc), kan gazı, sodyum ve hemodinami');
+ if(agent==='Toksik alkol')serial.push('Seri anyon açıklığı, osmolar açıklık, pH, kreatinin ve görsel/nörolojik bulgular');
+ if(agent==='Beta bloker/KKB')serial.push('Sık glukoz, potasyum, laktat, EKG ve hemodinamik izlem');
+ if(agent==='Opioid')serial.push('Nalokson yanıtı sonrası yeniden sedasyon/solunum depresyonu açısından ajana göre yeterli gözlem');
+ A(S.tox22SerialPlan).forEach(function(x){serial.push(x)});
+ if(!actions.length)actions.push('ABCDE desteği, seri vital/mental durum/EKG ve ajan-spesifik toksikoloji danışmanlığı');
+ var level=crit.length?'critical':warn.length?'watch':'stable';
+ return{crit:crit,warn:warn,actions:Array.from(new Set(actions)),serial:Array.from(new Set(serial)),calcOsm:calcOsm,osmGap:osmGap,level:level,disp:level==='critical'?'İleri toksikoloji alarmı: monitörlü resüsitasyon ve erken uzman görüşü':level==='watch'?'Yakın seri izlem ve ajan-spesifik değerlendirme':'İleri alarm ölçütü saptanmadı; klinik ve ajan riskine göre izlem'}
+}
+function advanced(){var h=E('stepContent');if(!h||E('toxV1022Advanced')||S.complaint!=='Zehirlenmeler')return;var q=calc(),d=document.createElement('div');d.id='toxV1022Advanced';d.className='card tox-v1022-card';d.innerHTML='<div class="section-title"><h3>Zehirlenmeler — ileri algoritmalar</h3><span class="phase-badge">v10.22</span></div><div class="tox-v1022-hero '+q.level+'"><b>'+H(q.disp)+'</b></div><div class="tox-v1022-grid"><div class="tox-v1022-section"><h4>Parasetamol / salisilat</h4><div class="grid">'+inp('tox22ParacetamolHour','Alımdan geçen süre','number','0.1','saat')+inp('tox22ParacetamolLevel','Parasetamol düzeyi','number','0.1','µg/mL')+inp('tox22SalicylateLevel','Salisilat düzeyi','number','0.1','mg/dL')+'</div><div class="tox-v1022-note">Nomogram yalnız tek, akut, zamanı güvenilir parasetamol alımında ve 4. saatten sonra anlamlıdır. Klinik karar gecikmiş veya belirsiz alımlarda nomograma bağlanmamalıdır.</div></div><div class="tox-v1022-section"><h4>Osmolar açıklık</h4><div class="grid">'+inp('tox22MeasuredOsm','Ölçülen osmolalite','number','0.1','mOsm/kg')+inp('tox22Na','Sodyum','number','0.1','mmol/L')+inp('tox22Glucose','Glukoz','number','0.1','mg/dL')+inp('tox22Bun','BUN','number','0.1','mg/dL')+inp('tox22Ethanol','Etanol','number','0.1','mg/dL')+'</div><div class="tox-v1022-kpis"><div class="tox-v1022-kpi"><span>Hesaplanan osm.</span><b>'+(q.calcOsm===null?'—':q.calcOsm.toFixed(1))+'</b></div><div class="tox-v1022-kpi"><span>Osmolar açıklık</span><b>'+(q.osmGap===null?'—':q.osmGap.toFixed(1))+'</b></div></div></div></div>';h.prepend(d)}
+function monitoring(){var h=E('stepContent');if(!h||E('toxV1022Monitoring')||S.complaint!=='Zehirlenmeler')return;var q=calc(),d=document.createElement('div');d.id='toxV1022Monitoring';d.className='card tox-v1022-card';d.innerHTML='<div class="section-title"><h3>Zehirlenmeler — ritim, elektrolit ve seri izlem</h3><span class="phase-badge">v10.22</span></div><div class="tox-v1022-grid"><div class="tox-v1022-section"><div class="grid">'+inp('tox22K','Potasyum','number','0.1','mmol/L')+inp('tox22Mg','Magnezyum','number','0.1','mg/dL')+inp('tox22Ca','Kalsiyum','number','0.1','mg/dL')+'</div><h4 style="margin-top:10px">Yüksek risk özellikleri</h4><div class="tox-v1022-checks">'+['Alım zamanı belirsiz','Gecikmiş başvuru >8 saat','Uzatılmış salımlı preparat','Çoklu ajan alımı','Böbrek/karaciğer hastalığı','Gebelik','Tekrarlayan nöbet','Persistan şok/aritmi'].map(function(x){return chk('tox22HighRisk',x)}).join('')+'</div></div><div class="tox-v1022-section"><h4>Önerilen seri izlem</h4><ul class="tox-v1022-list">'+q.serial.map(function(x){return'<li>'+H(x)+'</li>'}).join('')+'</ul><h4 style="margin-top:12px">Öncelikli eylemler</h4>'+q.actions.map(function(x,i){return'<div class="tox-v1022-result '+(i===0&&q.level==='critical'?'critical':'')+'"><b>'+(i+1)+'. adım</b><div>'+H(x)+'</div></div>'}).join('')+'</div></div>';h.prepend(d)}
+function antidotes(){var h=E('stepContent');if(!h||E('toxV1022Antidotes')||S.complaint!=='Zehirlenmeler')return;var q=calc(),d=document.createElement('div');d.id='toxV1022Antidotes';d.className='card tox-v1022-card';d.innerHTML='<div class="section-title"><h3>Zehirlenmeler — antidot ve ileri sonlandırma kontrolü</h3><span class="phase-badge">v10.22</span></div><div class="tox-v1022-grid"><div class="tox-v1022-section"><h4>Antidot/özel tedavi kontrolü</h4><div class="tox-v1022-checks">'+['N-asetilsistein','Nalokson','Sodyum bikarbonat','Atropin ± oksim','Fomepizol / etanol protokolü','Digoksin immün Fab','Glukagon / yüksek doz insülin','Metilen mavisi','Hidroksikobalamin','Lipid emülsiyonu','Piridoksin','Deferoksamin'].map(function(x){return chk('tox22Antidotes',x)}).join('')+'</div><div class="tox-v1022-note">Antidot dozu ve endikasyonu hastanın kilosu, ajan, klinik ve yerel protokole göre doğrulanmalıdır. Destek tedavisi antidot hazırlığını beklememelidir.</div></div><div class="tox-v1022-section"><h4>Karar özeti</h4>'+(q.crit.length?q.crit.map(function(x){return'<div class="tox-v1022-result critical"><b>Kritik</b><div>'+H(x)+'</div></div>'}).join(''):'')+(q.warn.length?q.warn.map(function(x){return'<div class="tox-v1022-result warn"><b>Uyarı</b><div>'+H(x)+'</div></div>'}).join(''):'<div class="tox-v1022-result"><b>Durum</b><div>İleri ölçümlerde ek alarm yok; klinik gözlem ajan riskine göre sürdürülmeli.</div></div>')+sel('tox22Disposition','İleri toksikoloji son kararı',['','Yoğun bakım / resüsitasyon','Acil hemodiyaliz değerlendirmesi','Monitörlü yatış / uzamış gözlem','Toksikoloji danışmanlığıyla gözlem','Psikiyatri güvenlik değerlendirmesi','Güvenli taburculuk'])+'</div></div>';h.prepend(d)}
+function inject(){ensure();if(S.complaint!=='Zehirlenmeler')return;var page=typeof order==='function'?order()[currentStep]:null;if(page===5)advanced();if(page===6||page===7)monitoring();if([8,9,10,11].includes(page))antidotes()}
+document.addEventListener('change',function(e){var f=e.target&&e.target.getAttribute('data-tox22-field');if(!f)return;if(e.target.type==='checkbox'){var a=A(S[f]).slice(),v=e.target.value,i=a.indexOf(v);if(e.target.checked&&i<0)a.push(v);if(!e.target.checked&&i>=0)a.splice(i,1);S[f]=a}else S[f]=e.target.value;if(typeof updateAll==='function')updateAll()});
+document.addEventListener('input',function(e){var f=e.target&&e.target.getAttribute('data-tox22-field');if(!f||e.target.type==='checkbox')return;S[f]=e.target.value});
+var oc=window.collect;if(typeof oc==='function')window.collect=function(){var z=oc.apply(this,arguments);ensure();return z};
+var or=window.render;if(typeof or==='function')window.render=function(){var z=or.apply(this,arguments);try{inject()}catch(e){console.warn('v10.22 ileri toksikoloji render',e)}return z};
+var ou=window.updateAll;if(typeof ou==='function')window.updateAll=function(){var z=ou.apply(this,arguments);try{['toxV1022Advanced','toxV1022Monitoring','toxV1022Antidotes'].forEach(function(id){var x=E(id);if(x)x.remove()});inject()}catch(e){console.warn('v10.22 ileri toksikoloji update',e)}return z};
+function mark(){window.ACA_APP_VERSION='v10.22.0';window.ACA_UPDATE_NAME='İleri Toksikoloji Algoritmaları';document.title='Acil Klinik Asistanı v10.22.0';var st=document.querySelector('.status');if(st)st.textContent='v10.22.0 • İleri Toksikoloji Algoritmaları';document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.22.0'});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='İleri Toksikoloji Algoritmaları'})}
+function init(){ensure();try{inject();mark()}catch(e){console.warn('v10.22 ileri toksikoloji init',e)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,30)});else setTimeout(init,30);setTimeout(mark,700);
+})();
+</script>
+
 </body>
 </html>
