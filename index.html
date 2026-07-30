@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı</title>
+<title>Acil Klinik Asistanı v10.0.1</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -456,7 +456,7 @@ body.module-view .layout{display:grid!important}
 </style>
 </head>
 <body class="dashboard-home">
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">Yerel çalışma alanı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v10.0.1 • Gelişmiş Dispne Modülü</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell professional-home-panel no-print">
@@ -472,7 +472,7 @@ body.module-view .layout{display:grid!important}
       <div class="professional-status-strip">
         <div><span class="status-dot online"></span><b>Sistem hazır</b><small>Yerel çalışma etkin</small></div>
         <div><b id="commercialOfflineState">Hazır</b><small>Çevrimdışı durum</small></div>
-        <div><b data-app-version>v9.3.2</b><small>Güncel sürüm</small></div>
+        <div><b data-app-version>v10.0.1</b><small>Güncel sürüm</small></div>
       </div>
       <div class="commercial-stats professional-stats">
         <div class="commercial-stat"><b id="commercialTodayCount">0</b><span>Bugünkü vaka</span></div>
@@ -3815,116 +3815,7 @@ function printProfessionalDoc(){
  const text=el('professionalDoc')?.value||'';
  const w=window.open('','_blank');
  if(!w){alert('Yazdırma penceresi açılamadı. Tarayıcı açılır pencere iznini kontrol edin.');return;}
- w.document.write('<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111}@media print{body{padding:0}}</style></head><body>'+esc(text)+'
-<style id="aca-v1000-dyspnea-css">
-.dyspnea-v10-card{border:2px solid #38bdf8;background:linear-gradient(180deg,#f0f9ff,#fff);margin-top:12px}
-.dyspnea-v10-card h3{color:#0369a1}.dyspnea-v10-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dyspnea-v10-section{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.dyspnea-v10-section h4{margin:0 0 8px;font-size:14px}.dyspnea-v10-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.dyspnea-v10-check{display:flex;align-items:flex-start;gap:7px;border:1px solid var(--line);border-radius:10px;padding:8px;background:#f8fafc;font-size:12px;font-weight:700}.dyspnea-v10-check:has(input:checked){border-color:#38bdf8;background:#f0f9ff}.dyspnea-v10-check input{width:17px;height:17px;min-height:0;margin-top:1px;accent-color:#0284c7}.dyspnea-v10-hero{border-radius:14px;padding:13px;color:#fff;background:linear-gradient(135deg,#075985,#0f766e);margin:10px 0}.dyspnea-v10-hero.critical{background:linear-gradient(135deg,#7f1d1d,#dc2626)}.dyspnea-v10-hero.high{background:linear-gradient(135deg,#9a3412,#ea580c)}.dyspnea-v10-hero.watch{background:linear-gradient(135deg,#854d0e,#ca8a04)}.dyspnea-v10-score{font-size:28px;font-weight:950;line-height:1}.dyspnea-v10-list{margin:7px 0 0;padding-left:18px}.dyspnea-v10-list li{margin:4px 0;font-size:12px}.dyspnea-v10-chip{display:inline-block;padding:4px 7px;border-radius:99px;background:#e0f2fe;color:#075985;font-size:10px;font-weight:900;margin:2px}.dyspnea-v10-alert{border-left:5px solid #0284c7;border-radius:11px;padding:10px;background:#f0f9ff;margin-top:9px;font-size:12px}.dyspnea-v10-alert.critical{border-color:#dc2626;background:#fff1f2}.dyspnea-v10-alert.warn{border-color:#f59e0b;background:#fffbeb}.dyspnea-v10-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.dyspnea-v10-metric{border:1px solid var(--line);border-radius:11px;padding:9px;text-align:center;background:#fff}.dyspnea-v10-metric b{display:block;font-size:17px}.dyspnea-v10-note{font-size:11px;color:var(--muted);margin-top:7px}@media(max-width:700px){.dyspnea-v10-grid{grid-template-columns:1fr}.dyspnea-v10-metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.dyspnea-v10-checks{grid-template-columns:1fr}}
-</style>
-<script id="aca-v1000-dyspnea-js">
-(function(){
-'use strict';
-window.ACA_APP_VERSION='10.0.0';
-window.ACA_UPDATE_NAME='Gelişmiş Dispne Karar Yolu';
-function E(id){return document.getElementById(id)}
-function H(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
-function N(v){var x=parseFloat(v);return Number.isFinite(x)?x:null}
-function A(v){return Array.isArray(v)?v:[]}
-function ensure(){
- if(typeof S!=='object'||!S)return;
- var defs={dyspneaPattern:[],dyspneaAssociated:[],dyspneaRisks:[],dyspneaAbc:[],dyspneaExam:[],dyspneaOnsetDetail:'',dyspneaBaseline:'',dyspneaSpeech:'Tam cümle',dyspneaWork:'Yok',dyspneaAirEntry:'Bilateral eşit',dyspneaLungSound:'Normal',dyspneaJvp:'Değerlendirilmedi',dyspneaEdema:'Yok',dyspneaEtco2:'',dyspneaPao2:'',dyspneaPaco2:'',dyspneaPh:'',dyspneaHco3:'',dyspneaLactate:'',dyspneaCxr:'Bekleniyor',dyspneaBnp:'',dyspneaDimer:'',dyspneaPocus:[],dyspneaOxygenDevice:'Oda havası',dyspneaOxygenFlow:'',dyspneaResponse:'Değerlendirilmedi'};
- Object.keys(defs).forEach(function(k){if(S[k]===undefined)S[k]=Array.isArray(defs[k])?[]:defs[k]});
-}
-window.acaDyspnea1000Set=function(k,v){ensure();S[k]=v;try{syncLegacy();if(typeof updateAll==='function')updateAll()}catch(e){console.warn(e)}};
-window.acaDyspnea1000Check=function(k,v,on){ensure();var arr=A(S[k]).slice();if(on&&!arr.includes(v))arr.push(v);if(!on)arr=arr.filter(function(x){return x!==v});S[k]=arr;try{syncLegacy();if(typeof updateAll==='function')updateAll()}catch(e){console.warn(e)}};
-function opt(v,label,cur){return '<option value="'+H(v)+'" '+(String(cur)===String(v)?'selected':'')+'>'+H(label||v)+'</option>'}
-function check(k,v,label){return '<label class="dyspnea-v10-check"><input type="checkbox" '+(A(S[k]).includes(v)?'checked':'')+' onchange="acaDyspnea1000Check(\''+k+'\',\''+v.replace(/'/g,"\\'")+'\',this.checked)">'+H(label)+'</label>'}
-function selectHtml(k,label,values){return '<label>'+H(label)+'<select onchange="acaDyspnea1000Set(\''+k+'\',this.value)">'+values.map(function(v){return opt(v,v,S[k])}).join('')+'</select></label>'}
-function inputHtml(k,label,type,step,ph){return '<label>'+H(label)+'<input type="'+(type||'text')+'" '+(step?'step="'+step+'"':'')+' value="'+H(S[k])+'" placeholder="'+H(ph||'')+'" onchange="acaDyspnea1000Set(\''+k+'\',this.value)"></label>'}
-function risk(){
- ensure();var points=0,reasons=[],critical=[];var spo=N(S.spo2),rr=N(S.rr),sbp=N(S.sbp),pulse=N(S.pulse),mental=String(S.mental||'');
- if(spo!==null&&spo<90){points+=4;critical.push('SpO₂ <%90')}else if(spo!==null&&spo<94){points+=2;reasons.push('Hipoksemi')}
- if(rr!==null&&rr>=30){points+=3;critical.push('SS ≥30/dk')}else if(rr!==null&&rr>=22){points+=2;reasons.push('Takipne')}
- if(sbp!==null&&sbp<90){points+=4;critical.push('Hipotansiyon')}else if(sbp!==null&&sbp<100){points+=2;reasons.push('Sınırda TA')}
- if(pulse!==null&&pulse>=130){points+=2;reasons.push('Belirgin taşikardi')}
- if(['Konfüze','Somnolans','Yanıtsız'].includes(mental)){points+=4;critical.push('Bilinç bozukluğu')}
- if(S.dyspneaSpeech==='Tek kelime / konuşamıyor'){points+=4;critical.push('Konuşamama')}
- if(['Belirgin','Tükenme / paradoksal'].includes(S.dyspneaWork)){points+=4;critical.push('Ağır solunum işi')}
- A(S.dyspneaAbc).forEach(function(x){if(['Stridor / havayolu tehdidi','Siyanoz','Sessiz akciğer','Trakea deviasyonu','Şok / hipoperfüzyon'].includes(x)){points+=4;critical.push(x)}else{points+=2;reasons.push(x)}});
- if(S.dyspneaAirEntry==='Tek taraflı belirgin azalmış/yok'){points+=4;critical.push('Tek taraflı hava girişi kaybı')}
- var level=critical.length||points>=8?'critical':points>=4?'high':points>=2?'watch':'stable';
- return{points:points,level:level,critical:[...new Set(critical)],reasons:[...new Set(reasons)]};
-}
-function differentials(){
- var out=[];function add(name,why,urg){out.push({name:name,why:why,urg:urg||'orta'})}
- var p=A(S.dyspneaPattern),a=A(S.dyspneaAssociated),r=A(S.dyspneaRisks),e=A(S.dyspneaExam),po=A(S.dyspneaPocus);var onset=String(S.onset||'')+' '+String(S.dyspneaOnsetDetail||'');
- if(a.includes('Hırıltı')||S.dyspneaLungSound==='Wheezing'||r.includes('Astım/KOAH'))add('Astım / KOAH alevlenmesi','Hırıltı, obstrüktif öykü veya wheezing','yüksek');
- if(p.includes('Ortopne/PND')||e.includes('Bilateral ral')||e.includes('Periferik ödem')||po.includes('B çizgileri')||r.includes('Kalp yetersizliği'))add('Akut kalp yetersizliği / pulmoner ödem','Ortopne, konjesyon veya B çizgileri','yüksek');
- if((/Ani/.test(onset)||a.includes('Plevritik göğüs ağrısı')||a.includes('Hemoptizi'))&&(r.includes('VTE öyküsü')||r.includes('İmmobilizasyon/cerrahi')||r.includes('Aktif malignite')||r.includes('Östrojen/gebelik')||a.includes('Tek taraflı bacak şişliği')))add('Pulmoner emboli','Ani başlangıç ve VTE lehine bulgular','kritik');
- if(S.dyspneaAirEntry==='Tek taraflı belirgin azalmış/yok'||po.includes('Akciğer kayması yok'))add('Pnömotoraks','Tek taraflı hava girişi kaybı veya POCUS bulgusu','kritik');
- if(a.includes('Ateş')||a.includes('Pürülan balgam')||S.dyspneaLungSound==='Fokal ral/bronşiyal solunum')add('Pnömoni / alt solunum yolu enfeksiyonu','Ateş, balgam veya fokal akciğer bulgusu','orta');
- if(A(S.dyspneaAbc).includes('Stridor / havayolu tehdidi')||a.includes('Ürtiker/anjiyoödem'))add('Anafilaksi / üst havayolu obstrüksiyonu','Stridor, ödem veya çoklu sistem tutulumu','kritik');
- if(a.includes('Göğüs ağrısı')||r.includes('KAH/MI'))add('Akut koroner sendrom / kardiyak neden','Göğüs ağrısı veya koroner risk','yüksek');
- if(N(S.dyspneaPh)!==null&&N(S.dyspneaPh)<7.30)add('Metabolik/respiratuvar asidoz','Kan gazında belirgin asidemi','yüksek');
- if(!out.length)add('Nedeni belirsiz dispne','Kardiyak, pulmoner, metabolik ve psikojenik nedenleri sistematik dışla','orta');
- return out;
-}
-function recommendations(){
- var q=risk(),dx=differentials(),tests=['EKG','Akciğer grafisi','Hemogram','Biyokimya'];var tx=[],disp='Gözlem / seri yeniden değerlendirme';
- if(N(S.spo2)!==null&&N(S.spo2)<94)tests.push('Kan gazı');
- if(dx.some(function(x){return x.name.includes('Pulmoner emboli')}))tests.push('Klinik olasılığa göre D-dimer / BT pulmoner anjiyografi');
- if(dx.some(function(x){return x.name.includes('kalp yetersizliği')}))tests.push('BNP/NT-proBNP, troponin ve akciğer POCUS');
- if(dx.some(function(x){return x.name.includes('Pnömoni')}))tests.push('CRP ± prokalsitonin; uygun hastada kültür');
- if(dx.some(function(x){return x.name.includes('koroner')}))tests.push('Seri EKG ve troponin');
- if(N(S.spo2)!==null&&N(S.spo2)<94)tx.push('Hipoksemi varsa kontrollü oksijen; KOAH/hiperkapni riski olanlarda hedef genellikle %88–92, diğerlerinde çoğunlukla %94–98');
- if(dx.some(function(x){return /Astım|KOAH/.test(x.name)}))tx.push('Bronkodilatör tedavi ve uygun hastada sistemik kortikosteroid; ağır atakta erken ventilasyon değerlendirmesi');
- if(dx.some(function(x){return x.name.includes('pulmoner ödem')}))tx.push('CPAP/NIV uygunluğunu, diüretik ve vazodilatör gereksinimini hemodinamiye göre değerlendir');
- if(dx.some(function(x){return x.name.includes('Anafilaksi')}))tx.push('Anafilaksi düşünülüyorsa gecikmeden IM adrenalin ve havayolu planı');
- if(dx.some(function(x){return x.name.includes('Pnömotoraks')}))tx.push('Tansiyon pnömotoraksta görüntüleme beklemeden acil dekompresyon');
- if(q.level==='critical'){disp='Resüsitasyon alanı / yoğun bakım veya acil sevk';tx.unshift('ABCDE, monitörizasyon, damar yolu, erken kıdemli destek ve ileri havayolu hazırlığı')}
- else if(q.level==='high')disp='Acil müdahale alanı ve yakın monitörizasyon';
- else if(q.level==='stable'&&N(S.spo2)>=94&&N(S.rr)<22)disp='Neden ve tedavi yanıtına göre gözlem veya güvenli taburculuk değerlendirilebilir';
- return{risk:q,dx:dx,tests:[...new Set(tests)],tx:[...new Set(tx)],disp:disp};
-}
-function panelId(id){var x=E(id);if(x)x.remove()}
-function abcPanel(){
- var host=E('stepContent');if(!host||E('dyspneaV10Abc')||S.complaint!=='Nefes darlığı')return;var q=risk(),d=document.createElement('div');d.id='dyspneaV10Abc';d.className='card dyspnea-v10-card';
- d.innerHTML='<div class="section-title"><h3>Dispne — ABC ve kritik solunum değerlendirmesi</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-hero '+q.level+'"><div class="dyspnea-v10-score">'+q.points+' puan</div><b>'+(q.level==='critical'?'Kritik solunum riski':q.level==='high'?'Yüksek risk':q.level==='watch'?'Yakın izlem':'Şu an belirgin instabilite sinyali yok')+'</b><div class="dyspnea-v10-note" style="color:#e0f2fe">Bu puan doğrulanmış bir klinik skor değildir; kırmızı bayrakları görünür kılan güvenlik katmanıdır.</div></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Havayolu, solunum ve dolaşım alarm bulguları</h4><div class="dyspnea-v10-checks">'+
- ['Stridor / havayolu tehdidi','Siyanoz','Sessiz akciğer','Trakea deviasyonu','Şok / hipoperfüzyon','Ajitasyon / tükenme'].map(function(x){return check('dyspneaAbc',x,x)}).join('')+'</div></div><div class="dyspnea-v10-section"><h4>Solunum işi</h4><div class="grid">'+selectHtml('dyspneaSpeech','Konuşma kapasitesi',['Tam cümle','Kısa cümle','Tek kelime / konuşamıyor'])+selectHtml('dyspneaWork','Yardımcı kas / solunum işi',['Yok','Hafif','Belirgin','Tükenme / paradoksal'])+'</div></div></div>'+(q.critical.length?'<div class="dyspnea-v10-alert critical"><b>Acil sinyaller:</b> '+H(q.critical.join(', '))+'<br>ABCDE, monitörizasyon, erken kıdemli destek ve ileri havayolu hazırlığını geciktirme.</div>':'');host.prepend(d);
-}
-function historyPanel(){
- var host=E('stepContent');if(!host||E('dyspneaV10History')||S.complaint!=='Nefes darlığı')return;var d=document.createElement('div');d.id='dyspneaV10History';d.className='card dyspnea-v10-card';
- d.innerHTML='<div class="section-title"><h3>Dispne — ayrıntılı semptom örüntüsü</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Başlangıç ve fonksiyonel durum</h4><div class="grid">'+inputHtml('dyspneaOnsetDetail','Başlangıç ayrıntısı','text','','Örn. saniyeler içinde, 3 gündür artan')+selectHtml('dyspneaBaseline','Dispne düzeyi',['İstirahatte yok','Eforla','Günlük aktivitede','İstirahatte','Yatar pozisyonda'])+'</div><div class="dyspnea-v10-checks" style="margin-top:8px">'+['Ani başlangıç','Kademeli kötüleşme','Eforla artış','İstirahat dispnesi','Ortopne/PND','Gece uyanma'].map(function(x){return check('dyspneaPattern',x,x)}).join('')+'</div></div><div class="dyspnea-v10-section"><h4>Eşlik eden bulgular</h4><div class="dyspnea-v10-checks">'+['Göğüs ağrısı','Plevritik göğüs ağrısı','Hırıltı','Stridor','Öksürük','Pürülan balgam','Hemoptizi','Ateş','Senkop/presenkop','Tek taraflı bacak şişliği','Ürtiker/anjiyoödem','Kilo artışı/ödem'].map(function(x){return check('dyspneaAssociated',x,x)}).join('')+'</div></div></div>';host.appendChild(d);
-}
-function riskPanel(){
- var host=E('stepContent');if(!host||E('dyspneaV10Risk')||S.complaint!=='Nefes darlığı')return;var d=document.createElement('div');d.id='dyspneaV10Risk';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — risk profili</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-checks">'+['Astım/KOAH','Kalp yetersizliği','KAH/MI','VTE öyküsü','İmmobilizasyon/cerrahi','Aktif malignite','Östrojen/gebelik','Enfeksiyon/immünsüpresyon','Sigara','Mesleki maruziyet','Böbrek yetmezliği','Nöromüsküler hastalık'].map(function(x){return check('dyspneaRisks',x,x)}).join('')+'</div>';host.appendChild(d);
-}
-function examPanel(){
- var host=E('stepContent');if(!host||E('dyspneaV10Exam')||S.complaint!=='Nefes darlığı')return;var d=document.createElement('div');d.id='dyspneaV10Exam';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — hedefli fizik muayene</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><div class="grid">'+selectHtml('dyspneaAirEntry','Hava girişi',['Bilateral eşit','Bilateral azalmış','Tek taraflı belirgin azalmış/yok'])+selectHtml('dyspneaLungSound','Akciğer sesi',['Normal','Wheezing','Bilateral ral','Fokal ral/bronşiyal solunum','Stridor','Sessiz akciğer'])+selectHtml('dyspneaJvp','JVP',['Değerlendirilmedi','Normal','Yüksek'])+selectHtml('dyspneaEdema','Periferik ödem',['Yok','Tek taraflı','Bilateral'])+'</div></div><div class="dyspnea-v10-section"><h4>Ek muayene bulguları</h4><div class="dyspnea-v10-checks">'+['Bilateral ral','Fokal ral','Ronküs/wheezing','Periferik ödem','JVP yüksek','DVT bulgusu','Üfürüm/ritim düzensizliği','Döküntü/anjiyoödem'].map(function(x){return check('dyspneaExam',x,x)}).join('')+'</div></div></div>';host.appendChild(d);
-}
-function testsPanel(){
- var host=E('stepContent');if(!host||E('dyspneaV10Tests')||S.complaint!=='Nefes darlığı')return;var rec=recommendations(),d=document.createElement('div');d.id='dyspneaV10Tests';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — kan gazı, görüntüleme ve olasılık yönlendirmesi</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Kan gazı / biyobelirteç</h4><div class="grid">'+inputHtml('dyspneaPh','pH','number','0.01','7.40')+inputHtml('dyspneaPao2','PaO₂','number','0.1','mmHg')+inputHtml('dyspneaPaco2','PaCO₂','number','0.1','mmHg')+inputHtml('dyspneaHco3','HCO₃','number','0.1','mmol/L')+inputHtml('dyspneaLactate','Laktat','number','0.1','mmol/L')+inputHtml('dyspneaEtco2','EtCO₂','number','0.1','mmHg')+inputHtml('dyspneaBnp','BNP/NT-proBNP','number','any','')+inputHtml('dyspneaDimer','D-dimer','number','any','')+'</div></div><div class="dyspnea-v10-section"><h4>Görüntüleme / POCUS</h4>'+selectHtml('dyspneaCxr','Akciğer grafisi',['Bekleniyor','Normal','İnfiltrasyon','Konjesyon/ödem','Pnömotoraks','Plevral efüzyon','Diğer'])+'<div class="dyspnea-v10-checks" style="margin-top:8px">'+['B çizgileri','Akciğer kayması yok','Sağ ventrikül yüklenmesi','Plevral efüzyon','Konsolidasyon','IVC dolgun'].map(function(x){return check('dyspneaPocus',x,x)}).join('')+'</div></div></div><div class="dyspnea-v10-alert"><b>Önerilen hedefli tetkikler:</b><ul class="dyspnea-v10-list">'+rec.tests.map(function(x){return '<li>'+H(x)+'</li>'}).join('')+'</ul></div>';host.prepend(d);
-}
-function decisionPanel(){
- var host=E('stepContent');if(!host||E('dyspneaV10Decision')||S.complaint!=='Nefes darlığı')return;var rec=recommendations(),q=rec.risk,d=document.createElement('div');d.id='dyspneaV10Decision';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — tedavi ve sonlandırma desteği</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-hero '+q.level+'"><div class="dyspnea-v10-score">'+H(rec.disp)+'</div><div style="margin-top:5px">Dinamik klinik değerlendirme; tek başına otomatik karar değildir.</div></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Ön plandaki ayırıcı tanılar</h4>'+rec.dx.map(function(x){return '<div class="dyspnea-v10-alert '+(x.urg==='kritik'?'critical':x.urg==='yüksek'?'warn':'')+'"><b>'+H(x.name)+'</b><div>'+H(x.why)+'</div></div>'}).join('')+'</div><div class="dyspnea-v10-section"><h4>İlk tedavi / güvenlik adımları</h4><ul class="dyspnea-v10-list">'+(rec.tx.length?rec.tx:['Nedene yönelik tedaviyi vital, muayene ve tetkiklerle eşleştir.']).map(function(x){return '<li>'+H(x)+'</li>'}).join('')+'</ul><div class="grid" style="margin-top:9px">'+selectHtml('dyspneaOxygenDevice','Oksijen/ventilasyon',['Oda havası','Nazal kanül','Basit maske','Rezervuarlı maske','HFNO','CPAP/BiPAP','İnvaziv ventilasyon'])+inputHtml('dyspneaOxygenFlow','Akım / ayar','text','','Örn. 4 L/dk')+selectHtml('dyspneaResponse','Tedavi yanıtı',['Değerlendirilmedi','Belirgin düzeldi','Kısmi düzeldi','Değişmedi','Kötüleşti'])+'</div></div></div>';host.prepend(d);
-}
-function syncLegacy(){
- ensure();if(S.complaint!=='Nefes darlığı')return;var a=A(S.dyspneaAssociated),p=A(S.dyspneaPattern),r=A(S.dyspneaRisks),abc=A(S.dyspneaAbc);
- if(p.includes('Ani başlangıç'))S.onset='Ani';else if(p.includes('Kademeli kötüleşme'))S.onset='Kademeli';
- [['Göğüs ağrısı','Göğüs ağrısı'],['Hırıltı','Hırıltı'],['Ateş','Ateş/öksürük'],['Öksürük','Ateş/öksürük'],['Hemoptizi','Hemoptizi'],['Ortopne/PND','Ortopne/PND'],['Tek taraflı bacak şişliği','VTE bulgusu']].forEach(function(m){if((a.includes(m[0])||p.includes(m[0]))&&!A(S.symptoms).includes(m[1]))S.symptoms.push(m[1])});
- if(abc.some(function(x){return ['Siyanoz','Sessiz akciğer','Stridor / havayolu tehdidi'].includes(x)})&&!A(S.symptoms).includes('Ağır solunum bulgusu'))S.symptoms.push('Ağır solunum bulgusu');
- if(r.includes('Astım/KOAH')&&!A(S.history).includes('Astım/KOAH'))S.history.push('Astım/KOAH');if(r.includes('Kalp yetersizliği')&&!A(S.history).includes('Kalp yetersizliği'))S.history.push('Kalp yetersizliği');if(r.includes('VTE öyküsü')&&!A(S.history).includes('VTE'))S.history.push('VTE');if(r.includes('Aktif malignite')&&!A(S.history).includes('Kanser'))S.history.push('Kanser');
- if(S.dyspneaCxr&&S.dyspneaCxr!=='Bekleniyor')S.cxr=S.dyspneaCxr;
-}
-function inject(){ensure();if(S.complaint!=='Nefes darlığı')return;var page=typeof order==='function'?order()[currentStep]:null;if(page===1)abcPanel();if(page===2)historyPanel();if(page===3)riskPanel();if(page===4)examPanel();if(page===5)testsPanel();if(page===8||page===9||page===10)decisionPanel();document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}
-var oldCollect=window.collect;if(typeof oldCollect==='function')window.collect=function(){var z=oldCollect.apply(this,arguments);syncLegacy();return z};
-var oldRender=window.render;if(typeof oldRender==='function')window.render=function(){var z=oldRender.apply(this,arguments);try{inject()}catch(e){console.warn('v10 dispne inject',e)}return z};
-var oldUpdate=window.updateAll;if(typeof oldUpdate==='function')window.updateAll=function(){syncLegacy();var z=oldUpdate.apply(this,arguments);try{['dyspneaV10Abc','dyspneaV10Tests','dyspneaV10Decision'].forEach(panelId);inject()}catch(e){console.warn('v10 dispne update',e)}return z};
-function init(){ensure();syncLegacy();try{inject();if(typeof updateAll==='function')updateAll()}catch(e){console.warn('v10 dispne init',e)}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0)});else setTimeout(init,0);
-})();
-</script>
-
-</body></html>');
+ w.document.write('<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Klinik Belge</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.5;padding:32px;color:#111}@media print{body{padding:0}}</style></head><body>'+esc(text)+'</body></html>');
  w.document.close();w.focus();setTimeout(function(){w.print()},150);
 }
 
@@ -8051,4 +7942,112 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<style id="aca-v1000-dyspnea-css">
+.dyspnea-v10-card{border:2px solid #38bdf8;background:linear-gradient(180deg,#f0f9ff,#fff);margin-top:12px}
+.dyspnea-v10-card h3{color:#0369a1}.dyspnea-v10-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dyspnea-v10-section{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.dyspnea-v10-section h4{margin:0 0 8px;font-size:14px}.dyspnea-v10-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.dyspnea-v10-check{display:flex;align-items:flex-start;gap:7px;border:1px solid var(--line);border-radius:10px;padding:8px;background:#f8fafc;font-size:12px;font-weight:700}.dyspnea-v10-check:has(input:checked){border-color:#38bdf8;background:#f0f9ff}.dyspnea-v10-check input{width:17px;height:17px;min-height:0;margin-top:1px;accent-color:#0284c7}.dyspnea-v10-hero{border-radius:14px;padding:13px;color:#fff;background:linear-gradient(135deg,#075985,#0f766e);margin:10px 0}.dyspnea-v10-hero.critical{background:linear-gradient(135deg,#7f1d1d,#dc2626)}.dyspnea-v10-hero.high{background:linear-gradient(135deg,#9a3412,#ea580c)}.dyspnea-v10-hero.watch{background:linear-gradient(135deg,#854d0e,#ca8a04)}.dyspnea-v10-score{font-size:28px;font-weight:950;line-height:1}.dyspnea-v10-list{margin:7px 0 0;padding-left:18px}.dyspnea-v10-list li{margin:4px 0;font-size:12px}.dyspnea-v10-chip{display:inline-block;padding:4px 7px;border-radius:99px;background:#e0f2fe;color:#075985;font-size:10px;font-weight:900;margin:2px}.dyspnea-v10-alert{border-left:5px solid #0284c7;border-radius:11px;padding:10px;background:#f0f9ff;margin-top:9px;font-size:12px}.dyspnea-v10-alert.critical{border-color:#dc2626;background:#fff1f2}.dyspnea-v10-alert.warn{border-color:#f59e0b;background:#fffbeb}.dyspnea-v10-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.dyspnea-v10-metric{border:1px solid var(--line);border-radius:11px;padding:9px;text-align:center;background:#fff}.dyspnea-v10-metric b{display:block;font-size:17px}.dyspnea-v10-note{font-size:11px;color:var(--muted);margin-top:7px}@media(max-width:700px){.dyspnea-v10-grid{grid-template-columns:1fr}.dyspnea-v10-metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.dyspnea-v10-checks{grid-template-columns:1fr}}
+</style>
+<script id="aca-v1000-dyspnea-js">
+(function(){
+'use strict';
+window.ACA_APP_VERSION='10.0.1';
+window.ACA_UPDATE_NAME='Gelişmiş Dispne Modülü';
+function E(id){return document.getElementById(id)}
+function H(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+function N(v){var x=parseFloat(v);return Number.isFinite(x)?x:null}
+function A(v){return Array.isArray(v)?v:[]}
+function ensure(){
+ if(typeof S!=='object'||!S)return;
+ var defs={dyspneaPattern:[],dyspneaAssociated:[],dyspneaRisks:[],dyspneaAbc:[],dyspneaExam:[],dyspneaOnsetDetail:'',dyspneaBaseline:'',dyspneaSpeech:'Tam cümle',dyspneaWork:'Yok',dyspneaAirEntry:'Bilateral eşit',dyspneaLungSound:'Normal',dyspneaJvp:'Değerlendirilmedi',dyspneaEdema:'Yok',dyspneaEtco2:'',dyspneaPao2:'',dyspneaPaco2:'',dyspneaPh:'',dyspneaHco3:'',dyspneaLactate:'',dyspneaCxr:'Bekleniyor',dyspneaBnp:'',dyspneaDimer:'',dyspneaPocus:[],dyspneaOxygenDevice:'Oda havası',dyspneaOxygenFlow:'',dyspneaResponse:'Değerlendirilmedi'};
+ Object.keys(defs).forEach(function(k){if(S[k]===undefined)S[k]=Array.isArray(defs[k])?[]:defs[k]});
+}
+window.acaDyspnea1000Set=function(k,v){ensure();S[k]=v;try{syncLegacy();if(typeof updateAll==='function')updateAll()}catch(e){console.warn(e)}};
+window.acaDyspnea1000Check=function(k,v,on){ensure();var arr=A(S[k]).slice();if(on&&!arr.includes(v))arr.push(v);if(!on)arr=arr.filter(function(x){return x!==v});S[k]=arr;try{syncLegacy();if(typeof updateAll==='function')updateAll()}catch(e){console.warn(e)}};
+function opt(v,label,cur){return '<option value="'+H(v)+'" '+(String(cur)===String(v)?'selected':'')+'>'+H(label||v)+'</option>'}
+function check(k,v,label){return '<label class="dyspnea-v10-check"><input type="checkbox" '+(A(S[k]).includes(v)?'checked':'')+' onchange="acaDyspnea1000Check(\''+k+'\',\''+v.replace(/'/g,"\\'")+'\',this.checked)">'+H(label)+'</label>'}
+function selectHtml(k,label,values){return '<label>'+H(label)+'<select onchange="acaDyspnea1000Set(\''+k+'\',this.value)">'+values.map(function(v){return opt(v,v,S[k])}).join('')+'</select></label>'}
+function inputHtml(k,label,type,step,ph){return '<label>'+H(label)+'<input type="'+(type||'text')+'" '+(step?'step="'+step+'"':'')+' value="'+H(S[k])+'" placeholder="'+H(ph||'')+'" onchange="acaDyspnea1000Set(\''+k+'\',this.value)"></label>'}
+function risk(){
+ ensure();var points=0,reasons=[],critical=[];var spo=N(S.spo2),rr=N(S.rr),sbp=N(S.sbp),pulse=N(S.pulse),mental=String(S.mental||'');
+ if(spo!==null&&spo<90){points+=4;critical.push('SpO₂ <%90')}else if(spo!==null&&spo<94){points+=2;reasons.push('Hipoksemi')}
+ if(rr!==null&&rr>=30){points+=3;critical.push('SS ≥30/dk')}else if(rr!==null&&rr>=22){points+=2;reasons.push('Takipne')}
+ if(sbp!==null&&sbp<90){points+=4;critical.push('Hipotansiyon')}else if(sbp!==null&&sbp<100){points+=2;reasons.push('Sınırda TA')}
+ if(pulse!==null&&pulse>=130){points+=2;reasons.push('Belirgin taşikardi')}
+ if(['Konfüze','Somnolans','Yanıtsız'].includes(mental)){points+=4;critical.push('Bilinç bozukluğu')}
+ if(S.dyspneaSpeech==='Tek kelime / konuşamıyor'){points+=4;critical.push('Konuşamama')}
+ if(['Belirgin','Tükenme / paradoksal'].includes(S.dyspneaWork)){points+=4;critical.push('Ağır solunum işi')}
+ A(S.dyspneaAbc).forEach(function(x){if(['Stridor / havayolu tehdidi','Siyanoz','Sessiz akciğer','Trakea deviasyonu','Şok / hipoperfüzyon'].includes(x)){points+=4;critical.push(x)}else{points+=2;reasons.push(x)}});
+ if(S.dyspneaAirEntry==='Tek taraflı belirgin azalmış/yok'){points+=4;critical.push('Tek taraflı hava girişi kaybı')}
+ var level=critical.length||points>=8?'critical':points>=4?'high':points>=2?'watch':'stable';
+ return{points:points,level:level,critical:[...new Set(critical)],reasons:[...new Set(reasons)]};
+}
+function differentials(){
+ var out=[];function add(name,why,urg){out.push({name:name,why:why,urg:urg||'orta'})}
+ var p=A(S.dyspneaPattern),a=A(S.dyspneaAssociated),r=A(S.dyspneaRisks),e=A(S.dyspneaExam),po=A(S.dyspneaPocus);var onset=String(S.onset||'')+' '+String(S.dyspneaOnsetDetail||'');
+ if(a.includes('Hırıltı')||S.dyspneaLungSound==='Wheezing'||r.includes('Astım/KOAH'))add('Astım / KOAH alevlenmesi','Hırıltı, obstrüktif öykü veya wheezing','yüksek');
+ if(p.includes('Ortopne/PND')||e.includes('Bilateral ral')||e.includes('Periferik ödem')||po.includes('B çizgileri')||r.includes('Kalp yetersizliği'))add('Akut kalp yetersizliği / pulmoner ödem','Ortopne, konjesyon veya B çizgileri','yüksek');
+ if((/Ani/.test(onset)||a.includes('Plevritik göğüs ağrısı')||a.includes('Hemoptizi'))&&(r.includes('VTE öyküsü')||r.includes('İmmobilizasyon/cerrahi')||r.includes('Aktif malignite')||r.includes('Östrojen/gebelik')||a.includes('Tek taraflı bacak şişliği')))add('Pulmoner emboli','Ani başlangıç ve VTE lehine bulgular','kritik');
+ if(S.dyspneaAirEntry==='Tek taraflı belirgin azalmış/yok'||po.includes('Akciğer kayması yok'))add('Pnömotoraks','Tek taraflı hava girişi kaybı veya POCUS bulgusu','kritik');
+ if(a.includes('Ateş')||a.includes('Pürülan balgam')||S.dyspneaLungSound==='Fokal ral/bronşiyal solunum')add('Pnömoni / alt solunum yolu enfeksiyonu','Ateş, balgam veya fokal akciğer bulgusu','orta');
+ if(A(S.dyspneaAbc).includes('Stridor / havayolu tehdidi')||a.includes('Ürtiker/anjiyoödem'))add('Anafilaksi / üst havayolu obstrüksiyonu','Stridor, ödem veya çoklu sistem tutulumu','kritik');
+ if(a.includes('Göğüs ağrısı')||r.includes('KAH/MI'))add('Akut koroner sendrom / kardiyak neden','Göğüs ağrısı veya koroner risk','yüksek');
+ if(N(S.dyspneaPh)!==null&&N(S.dyspneaPh)<7.30)add('Metabolik/respiratuvar asidoz','Kan gazında belirgin asidemi','yüksek');
+ if(!out.length)add('Nedeni belirsiz dispne','Kardiyak, pulmoner, metabolik ve psikojenik nedenleri sistematik dışla','orta');
+ return out;
+}
+function recommendations(){
+ var q=risk(),dx=differentials(),tests=['EKG','Akciğer grafisi','Hemogram','Biyokimya'];var tx=[],disp='Gözlem / seri yeniden değerlendirme';
+ if(N(S.spo2)!==null&&N(S.spo2)<94)tests.push('Kan gazı');
+ if(dx.some(function(x){return x.name.includes('Pulmoner emboli')}))tests.push('Klinik olasılığa göre D-dimer / BT pulmoner anjiyografi');
+ if(dx.some(function(x){return x.name.includes('kalp yetersizliği')}))tests.push('BNP/NT-proBNP, troponin ve akciğer POCUS');
+ if(dx.some(function(x){return x.name.includes('Pnömoni')}))tests.push('CRP ± prokalsitonin; uygun hastada kültür');
+ if(dx.some(function(x){return x.name.includes('koroner')}))tests.push('Seri EKG ve troponin');
+ if(N(S.spo2)!==null&&N(S.spo2)<94)tx.push('Hipoksemi varsa kontrollü oksijen; KOAH/hiperkapni riski olanlarda hedef genellikle %88–92, diğerlerinde çoğunlukla %94–98');
+ if(dx.some(function(x){return /Astım|KOAH/.test(x.name)}))tx.push('Bronkodilatör tedavi ve uygun hastada sistemik kortikosteroid; ağır atakta erken ventilasyon değerlendirmesi');
+ if(dx.some(function(x){return x.name.includes('pulmoner ödem')}))tx.push('CPAP/NIV uygunluğunu, diüretik ve vazodilatör gereksinimini hemodinamiye göre değerlendir');
+ if(dx.some(function(x){return x.name.includes('Anafilaksi')}))tx.push('Anafilaksi düşünülüyorsa gecikmeden IM adrenalin ve havayolu planı');
+ if(dx.some(function(x){return x.name.includes('Pnömotoraks')}))tx.push('Tansiyon pnömotoraksta görüntüleme beklemeden acil dekompresyon');
+ if(q.level==='critical'){disp='Resüsitasyon alanı / yoğun bakım veya acil sevk';tx.unshift('ABCDE, monitörizasyon, damar yolu, erken kıdemli destek ve ileri havayolu hazırlığı')}
+ else if(q.level==='high')disp='Acil müdahale alanı ve yakın monitörizasyon';
+ else if(q.level==='stable'&&N(S.spo2)>=94&&N(S.rr)<22)disp='Neden ve tedavi yanıtına göre gözlem veya güvenli taburculuk değerlendirilebilir';
+ return{risk:q,dx:dx,tests:[...new Set(tests)],tx:[...new Set(tx)],disp:disp};
+}
+function panelId(id){var x=E(id);if(x)x.remove()}
+function abcPanel(){
+ var host=E('stepContent');if(!host||E('dyspneaV10Abc')||S.complaint!=='Nefes darlığı')return;var q=risk(),d=document.createElement('div');d.id='dyspneaV10Abc';d.className='card dyspnea-v10-card';
+ d.innerHTML='<div class="section-title"><h3>Dispne — ABC ve kritik solunum değerlendirmesi</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-hero '+q.level+'"><div class="dyspnea-v10-score">'+q.points+' puan</div><b>'+(q.level==='critical'?'Kritik solunum riski':q.level==='high'?'Yüksek risk':q.level==='watch'?'Yakın izlem':'Şu an belirgin instabilite sinyali yok')+'</b><div class="dyspnea-v10-note" style="color:#e0f2fe">Bu puan doğrulanmış bir klinik skor değildir; kırmızı bayrakları görünür kılan güvenlik katmanıdır.</div></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Havayolu, solunum ve dolaşım alarm bulguları</h4><div class="dyspnea-v10-checks">'+
+ ['Stridor / havayolu tehdidi','Siyanoz','Sessiz akciğer','Trakea deviasyonu','Şok / hipoperfüzyon','Ajitasyon / tükenme'].map(function(x){return check('dyspneaAbc',x,x)}).join('')+'</div></div><div class="dyspnea-v10-section"><h4>Solunum işi</h4><div class="grid">'+selectHtml('dyspneaSpeech','Konuşma kapasitesi',['Tam cümle','Kısa cümle','Tek kelime / konuşamıyor'])+selectHtml('dyspneaWork','Yardımcı kas / solunum işi',['Yok','Hafif','Belirgin','Tükenme / paradoksal'])+'</div></div></div>'+(q.critical.length?'<div class="dyspnea-v10-alert critical"><b>Acil sinyaller:</b> '+H(q.critical.join(', '))+'<br>ABCDE, monitörizasyon, erken kıdemli destek ve ileri havayolu hazırlığını geciktirme.</div>':'');host.prepend(d);
+}
+function historyPanel(){
+ var host=E('stepContent');if(!host||E('dyspneaV10History')||S.complaint!=='Nefes darlığı')return;var d=document.createElement('div');d.id='dyspneaV10History';d.className='card dyspnea-v10-card';
+ d.innerHTML='<div class="section-title"><h3>Dispne — ayrıntılı semptom örüntüsü</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Başlangıç ve fonksiyonel durum</h4><div class="grid">'+inputHtml('dyspneaOnsetDetail','Başlangıç ayrıntısı','text','','Örn. saniyeler içinde, 3 gündür artan')+selectHtml('dyspneaBaseline','Dispne düzeyi',['İstirahatte yok','Eforla','Günlük aktivitede','İstirahatte','Yatar pozisyonda'])+'</div><div class="dyspnea-v10-checks" style="margin-top:8px">'+['Ani başlangıç','Kademeli kötüleşme','Eforla artış','İstirahat dispnesi','Ortopne/PND','Gece uyanma'].map(function(x){return check('dyspneaPattern',x,x)}).join('')+'</div></div><div class="dyspnea-v10-section"><h4>Eşlik eden bulgular</h4><div class="dyspnea-v10-checks">'+['Göğüs ağrısı','Plevritik göğüs ağrısı','Hırıltı','Stridor','Öksürük','Pürülan balgam','Hemoptizi','Ateş','Senkop/presenkop','Tek taraflı bacak şişliği','Ürtiker/anjiyoödem','Kilo artışı/ödem'].map(function(x){return check('dyspneaAssociated',x,x)}).join('')+'</div></div></div>';host.appendChild(d);
+}
+function riskPanel(){
+ var host=E('stepContent');if(!host||E('dyspneaV10Risk')||S.complaint!=='Nefes darlığı')return;var d=document.createElement('div');d.id='dyspneaV10Risk';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — risk profili</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-checks">'+['Astım/KOAH','Kalp yetersizliği','KAH/MI','VTE öyküsü','İmmobilizasyon/cerrahi','Aktif malignite','Östrojen/gebelik','Enfeksiyon/immünsüpresyon','Sigara','Mesleki maruziyet','Böbrek yetmezliği','Nöromüsküler hastalık'].map(function(x){return check('dyspneaRisks',x,x)}).join('')+'</div>';host.appendChild(d);
+}
+function examPanel(){
+ var host=E('stepContent');if(!host||E('dyspneaV10Exam')||S.complaint!=='Nefes darlığı')return;var d=document.createElement('div');d.id='dyspneaV10Exam';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — hedefli fizik muayene</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><div class="grid">'+selectHtml('dyspneaAirEntry','Hava girişi',['Bilateral eşit','Bilateral azalmış','Tek taraflı belirgin azalmış/yok'])+selectHtml('dyspneaLungSound','Akciğer sesi',['Normal','Wheezing','Bilateral ral','Fokal ral/bronşiyal solunum','Stridor','Sessiz akciğer'])+selectHtml('dyspneaJvp','JVP',['Değerlendirilmedi','Normal','Yüksek'])+selectHtml('dyspneaEdema','Periferik ödem',['Yok','Tek taraflı','Bilateral'])+'</div></div><div class="dyspnea-v10-section"><h4>Ek muayene bulguları</h4><div class="dyspnea-v10-checks">'+['Bilateral ral','Fokal ral','Ronküs/wheezing','Periferik ödem','JVP yüksek','DVT bulgusu','Üfürüm/ritim düzensizliği','Döküntü/anjiyoödem'].map(function(x){return check('dyspneaExam',x,x)}).join('')+'</div></div></div>';host.appendChild(d);
+}
+function testsPanel(){
+ var host=E('stepContent');if(!host||E('dyspneaV10Tests')||S.complaint!=='Nefes darlığı')return;var rec=recommendations(),d=document.createElement('div');d.id='dyspneaV10Tests';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — kan gazı, görüntüleme ve olasılık yönlendirmesi</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Kan gazı / biyobelirteç</h4><div class="grid">'+inputHtml('dyspneaPh','pH','number','0.01','7.40')+inputHtml('dyspneaPao2','PaO₂','number','0.1','mmHg')+inputHtml('dyspneaPaco2','PaCO₂','number','0.1','mmHg')+inputHtml('dyspneaHco3','HCO₃','number','0.1','mmol/L')+inputHtml('dyspneaLactate','Laktat','number','0.1','mmol/L')+inputHtml('dyspneaEtco2','EtCO₂','number','0.1','mmHg')+inputHtml('dyspneaBnp','BNP/NT-proBNP','number','any','')+inputHtml('dyspneaDimer','D-dimer','number','any','')+'</div></div><div class="dyspnea-v10-section"><h4>Görüntüleme / POCUS</h4>'+selectHtml('dyspneaCxr','Akciğer grafisi',['Bekleniyor','Normal','İnfiltrasyon','Konjesyon/ödem','Pnömotoraks','Plevral efüzyon','Diğer'])+'<div class="dyspnea-v10-checks" style="margin-top:8px">'+['B çizgileri','Akciğer kayması yok','Sağ ventrikül yüklenmesi','Plevral efüzyon','Konsolidasyon','IVC dolgun'].map(function(x){return check('dyspneaPocus',x,x)}).join('')+'</div></div></div><div class="dyspnea-v10-alert"><b>Önerilen hedefli tetkikler:</b><ul class="dyspnea-v10-list">'+rec.tests.map(function(x){return '<li>'+H(x)+'</li>'}).join('')+'</ul></div>';host.prepend(d);
+}
+function decisionPanel(){
+ var host=E('stepContent');if(!host||E('dyspneaV10Decision')||S.complaint!=='Nefes darlığı')return;var rec=recommendations(),q=rec.risk,d=document.createElement('div');d.id='dyspneaV10Decision';d.className='card dyspnea-v10-card';d.innerHTML='<div class="section-title"><h3>Dispne — tedavi ve sonlandırma desteği</h3><span class="phase-badge">v10.0</span></div><div class="dyspnea-v10-hero '+q.level+'"><div class="dyspnea-v10-score">'+H(rec.disp)+'</div><div style="margin-top:5px">Dinamik klinik değerlendirme; tek başına otomatik karar değildir.</div></div><div class="dyspnea-v10-grid"><div class="dyspnea-v10-section"><h4>Ön plandaki ayırıcı tanılar</h4>'+rec.dx.map(function(x){return '<div class="dyspnea-v10-alert '+(x.urg==='kritik'?'critical':x.urg==='yüksek'?'warn':'')+'"><b>'+H(x.name)+'</b><div>'+H(x.why)+'</div></div>'}).join('')+'</div><div class="dyspnea-v10-section"><h4>İlk tedavi / güvenlik adımları</h4><ul class="dyspnea-v10-list">'+(rec.tx.length?rec.tx:['Nedene yönelik tedaviyi vital, muayene ve tetkiklerle eşleştir.']).map(function(x){return '<li>'+H(x)+'</li>'}).join('')+'</ul><div class="grid" style="margin-top:9px">'+selectHtml('dyspneaOxygenDevice','Oksijen/ventilasyon',['Oda havası','Nazal kanül','Basit maske','Rezervuarlı maske','HFNO','CPAP/BiPAP','İnvaziv ventilasyon'])+inputHtml('dyspneaOxygenFlow','Akım / ayar','text','','Örn. 4 L/dk')+selectHtml('dyspneaResponse','Tedavi yanıtı',['Değerlendirilmedi','Belirgin düzeldi','Kısmi düzeldi','Değişmedi','Kötüleşti'])+'</div></div></div>';host.prepend(d);
+}
+function syncLegacy(){
+ ensure();if(S.complaint!=='Nefes darlığı')return;var a=A(S.dyspneaAssociated),p=A(S.dyspneaPattern),r=A(S.dyspneaRisks),abc=A(S.dyspneaAbc);
+ if(p.includes('Ani başlangıç'))S.onset='Ani';else if(p.includes('Kademeli kötüleşme'))S.onset='Kademeli';
+ [['Göğüs ağrısı','Göğüs ağrısı'],['Hırıltı','Hırıltı'],['Ateş','Ateş/öksürük'],['Öksürük','Ateş/öksürük'],['Hemoptizi','Hemoptizi'],['Ortopne/PND','Ortopne/PND'],['Tek taraflı bacak şişliği','VTE bulgusu']].forEach(function(m){if((a.includes(m[0])||p.includes(m[0]))&&!A(S.symptoms).includes(m[1]))S.symptoms.push(m[1])});
+ if(abc.some(function(x){return ['Siyanoz','Sessiz akciğer','Stridor / havayolu tehdidi'].includes(x)})&&!A(S.symptoms).includes('Ağır solunum bulgusu'))S.symptoms.push('Ağır solunum bulgusu');
+ if(r.includes('Astım/KOAH')&&!A(S.history).includes('Astım/KOAH'))S.history.push('Astım/KOAH');if(r.includes('Kalp yetersizliği')&&!A(S.history).includes('Kalp yetersizliği'))S.history.push('Kalp yetersizliği');if(r.includes('VTE öyküsü')&&!A(S.history).includes('VTE'))S.history.push('VTE');if(r.includes('Aktif malignite')&&!A(S.history).includes('Kanser'))S.history.push('Kanser');
+ if(S.dyspneaCxr&&S.dyspneaCxr!=='Bekleniyor')S.cxr=S.dyspneaCxr;
+}
+function inject(){ensure();if(S.complaint!=='Nefes darlığı')return;var page=typeof order==='function'?order()[currentStep]:null;if(page===1)abcPanel();if(page===2)historyPanel();if(page===3)riskPanel();if(page===4)examPanel();if(page===5)testsPanel();if(page===8||page===9||page===10)decisionPanel();document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}
+var oldCollect=window.collect;if(typeof oldCollect==='function')window.collect=function(){var z=oldCollect.apply(this,arguments);syncLegacy();return z};
+var oldRender=window.render;if(typeof oldRender==='function')window.render=function(){var z=oldRender.apply(this,arguments);try{inject()}catch(e){console.warn('v10 dispne inject',e)}return z};
+var oldUpdate=window.updateAll;if(typeof oldUpdate==='function')window.updateAll=function(){syncLegacy();var z=oldUpdate.apply(this,arguments);try{['dyspneaV10Abc','dyspneaV10Tests','dyspneaV10Decision'].forEach(panelId);inject()}catch(e){console.warn('v10 dispne update',e)}return z};
+function init(){ensure();syncLegacy();try{inject();if(typeof updateAll==='function')updateAll()}catch(e){console.warn('v10 dispne init',e)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0)});else setTimeout(init,0);
+})();
+</script>
 </body></html>
