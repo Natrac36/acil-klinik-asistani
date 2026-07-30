@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v10.1.1</title>
+<title>Acil Klinik Asistanı v10.1.2</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -456,7 +456,7 @@ body.module-view .layout{display:grid!important}
 </style>
 </head>
 <body class="dashboard-home">
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v10.1.1 • Vaka–Eğitim Alanı Ayrımı</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v10.1.2 • Kesin Vaka–Eğitim İzolasyonu</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell professional-home-panel no-print">
@@ -472,7 +472,7 @@ body.module-view .layout{display:grid!important}
       <div class="professional-status-strip">
         <div><span class="status-dot online"></span><b>Sistem hazır</b><small>Yerel çalışma etkin</small></div>
         <div><b id="commercialOfflineState">Hazır</b><small>Çevrimdışı durum</small></div>
-        <div><b data-app-version>v10.1.1</b><small>Güncel sürüm</small></div>
+        <div><b data-app-version>v10.1.2</b><small>Güncel sürüm</small></div>
       </div>
       <div class="commercial-stats professional-stats">
         <div class="commercial-stat"><b id="commercialTodayCount">0</b><span>Bugünkü vaka</span></div>
@@ -7953,8 +7953,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="aca-v1000-dyspnea-js">
 (function(){
 'use strict';
-window.ACA_APP_VERSION='10.0.1';
-window.ACA_UPDATE_NAME='Vaka–Eğitim Alanı Ayrımı';
+window.ACA_APP_VERSION='v10.0.1';
+window.ACA_UPDATE_NAME='Gelişmiş Dispne Modülü';
 function E(id){return document.getElementById(id)}
 function H(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
 function N(v){var x=parseFloat(v);return Number.isFinite(x)?x:null}
@@ -8063,8 +8063,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="abdominal-v101-module">
 (function(){
 'use strict';
-window.ACA_APP_VERSION='v10.1.1';
-window.ACA_UPDATE_NAME='Vaka–Eğitim Alanı Ayrımı';
+window.ACA_APP_VERSION='v10.1.2';
+window.ACA_UPDATE_NAME='Kesin Vaka–Eğitim İzolasyonu';
 var E=function(id){return document.getElementById(id)}, A=function(v){return Array.isArray(v)?v:[]}, H=function(v){return typeof esc==='function'?esc(v):String(v==null?'':v)};
 function ensure(){
  var defaults={abdLocation:[],abdMigration:'Yok',abdCharacter:[],abdAssociated:[],abdRisks:[],abdRedFlags:[],abdExam:[],abdTenderness:[],abdBowelSounds:'Değerlendirilmedi',abdRectal:'Değerlendirilmedi',abdPelvic:'Değerlendirilmedi',abdTesticular:'Değerlendirilmedi',abdUrine:'Bekleniyor',abdHcg:'Bekleniyor',abdUltrasound:'Bekleniyor',abdCt:'Bekleniyor',abdLactate:'',abdLipase:'',abdCrp:'',abdWbc:'',abdResponse:'Değerlendirilmedi'};
@@ -8112,34 +8112,58 @@ var oldUpdate=window.updateAll;if(typeof oldUpdate==='function')window.updateAll
 function init(){ensure();try{syncLegacy();inject()}catch(e){console.warn('v10.1 abdomen init',e)}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0)});else setTimeout(init,0);
 })();
 </script>
-</body></html>
 
-
-<!-- v10.1.1 Vaka–Eğitim Alanı Ayrımı -->
+<!-- v10.1.2 Kesin Vaka–Eğitim İzolasyonu -->
 <style>
-/* Eğitim vakaları yalnızca Eğitim ve Simülasyon sekmesinde görünür. */
+/* Eğitim merkezi yalnızca açıkça eğitim çalışma alanında görünür. */
 body:not([data-aca-workspace="education"]) #educationSimulationCard{display:none!important}
+body[data-aca-workspace="education"] #educationSimulationCard{display:block!important}
 </style>
 <script>
 (function(){
  'use strict';
- window.acaEnforceEducationIsolation=function(){
+ function isEducation(){return document.body && document.body.dataset.acaWorkspace==='education'}
+ function enforceEducationIsolation(){
   var card=document.getElementById('educationSimulationCard');
   if(!card)return;
-  var education=document.body.dataset.acaWorkspace==='education';
-  card.hidden=!education;
-  card.classList.toggle('module-hidden',!education);
-  card.style.setProperty('display',education?'block':'none','important');
- };
- document.addEventListener('DOMContentLoaded',function(){
+  var show=isEducation();
+  card.hidden=!show;
+  card.classList.toggle('module-hidden',!show);
+  card.setAttribute('aria-hidden',show?'false':'true');
+  card.style.setProperty('display',show?'block':'none','important');
+ }
+ window.acaEnforceEducationIsolation=enforceEducationIsolation;
+ function wrap(name){
+  var original=window[name];
+  if(typeof original!=='function'||original.__acaEducationWrapped)return;
+  var wrapped=function(){
+   var result=original.apply(this,arguments);
+   enforceEducationIsolation();
+   requestAnimationFrame(enforceEducationIsolation);
+   setTimeout(enforceEducationIsolation,30);
+   return result;
+  };
+  wrapped.__acaEducationWrapped=true;
+  window[name]=wrapped;
+ }
+ function init(){
   if(!document.body.dataset.acaWorkspace)document.body.dataset.acaWorkspace='home';
-  window.acaEnforceEducationIsolation();
- });
- document.addEventListener('change',function(e){
-  if(e.target&&e.target.matches('[data-field="complaint"],#complaintQuick,#complaintDetailed,#complaintFallback')){
-   requestAnimationFrame(window.acaEnforceEducationIsolation);
-  }
- },true);
- window.addEventListener('load',window.acaEnforceEducationIsolation);
+  ['openModuleGroup','openSingleModule','showDashboard','showDashboardHome','showCaseWorkspace','showWorkflowSummary','showToolsWorkspace','render','updateAll'].forEach(wrap);
+  enforceEducationIsolation();
+  var observer=new MutationObserver(function(mutations){
+   for(var i=0;i<mutations.length;i++){
+    var m=mutations[i];
+    if(m.type==='attributes'&&(m.attributeName==='data-aca-workspace'||m.attributeName==='class')){
+     enforceEducationIsolation();return;
+    }
+   }
+  });
+  observer.observe(document.body,{attributes:true,attributeFilter:['data-aca-workspace','class']});
+  document.addEventListener('change',function(e){
+   if(e.target&&e.target.matches('[data-field="complaint"],#complaintQuick,#complaintDetailed,#complaintFallback'))requestAnimationFrame(enforceEducationIsolation);
+  },true);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
+</body></html>
