@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v10.11.0</title>
+<title>Acil Klinik Asistanı v10.27.0</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -461,7 +461,7 @@ body.module-view .layout{display:grid!important}
 </style>
 </head>
 <body class="dashboard-home">
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v10.4.0 • Ateş ve Enfeksiyon Modülü</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v10.27.0 • Görüntüleme ve Rapor Yorumlama Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell professional-home-panel no-print">
@@ -9304,5 +9304,135 @@ function init(){ensure();card();mark()}if(document.readyState==='loading')docume
 })();
 </script>
 
+
+
+<style id="lab-v1026-style">
+.lab-v1026-card{border-left:4px solid var(--primary,#2563eb)}
+.lab-v1026-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:14px}
+.lab-v1026-section{background:var(--surface-2,#f8fafc);border:1px solid var(--border,#dbe3ee);border-radius:14px;padding:14px}
+.lab-v1026-section h4{margin:0 0 10px}
+.lab-v1026-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.lab-v1026-fields label{min-width:0}
+.lab-v1026-fields input{width:100%}
+.lab-v1026-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.lab-v1026-alert{border-radius:12px;padding:10px 12px;margin:8px 0;border:1px solid transparent;line-height:1.45}
+.lab-v1026-alert.danger{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+.lab-v1026-alert.warn{background:#fffbeb;border-color:#fde68a;color:#92400e}
+.lab-v1026-alert.ok{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.lab-v1026-alert.info{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.lab-v1026-kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.lab-v1026-kpi div{background:var(--surface,#fff);border:1px solid var(--border,#dbe3ee);border-radius:10px;padding:9px}
+.lab-v1026-kpi b{display:block;font-size:1.05rem}
+.lab-v1026-list{margin:0;padding-left:18px}
+.lab-v1026-muted{font-size:.85rem;opacity:.8;margin-top:10px}
+@media(max-width:760px){.lab-v1026-grid{grid-template-columns:1fr}.lab-v1026-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:430px){.lab-v1026-fields{grid-template-columns:1fr}}
+</style>
+<script id="lab-v1026-script">
+(function(){
+'use strict';
+var E=function(id){return document.getElementById(id)}, H=function(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'})[c]})};
+function n(v){var x=parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(x)?x:null}
+function ensure(){window.S=window.S||{};var d={lab26Hb:'',lab26Wbc:'',lab26Plt:'',lab26Glu:'',lab26Na:'',lab26K:'',lab26Cl:'',lab26Ca:'',lab26Mg:'',lab26Cr:'',lab26Urea:'',lab26Ast:'',lab26Alt:'',lab26Bil:'',lab26Ph:'',lab26Pco2:'',lab26Hco3:'',lab26Lac:'',lab26Trop:'',lab26Dd:'',lab26Crp:'',lab26Inr:'',lab26Ket:'',lab26Sex:'Bilinmiyor'};Object.keys(d).forEach(function(k){if(S[k]===undefined)S[k]=d[k]})}
+function inp(id,label,unit){return '<label>'+H(label)+(unit?' <small>('+H(unit)+')</small>':'')+'<input id="'+id+'" type="number" step="any" inputmode="decimal" value="'+H(S[id])+'"></label>'}
+function firstVal(ids){for(var i=0;i<ids.length;i++){var e=E(ids[i]);if(e&&String(e.value||'').trim()!=='')return e.value;if(S[ids[i]]!==undefined&&String(S[ids[i]]||'').trim()!=='')return S[ids[i]]}return ''}
+function pull(){ensure();var map={lab26Hb:['hb','hemoglobin','labHb','gibHb','traumaHb'],lab26Wbc:['wbc','leukocyte','labWbc'],lab26Plt:['plt','platelet','labPlt'],lab26Glu:['glucose','glu','bloodGlucose','endGlucose','medGlucose'],lab26Na:['sodium','na','labNa','endNa'],lab26K:['potassium','k','labK','endK'],lab26Cl:['chloride','cl','labCl'],lab26Ca:['calcium','ca','labCa','endCa'],lab26Mg:['magnesium','mg','labMg'],lab26Cr:['creatinine','cr','labCr','med25Cr'],lab26Urea:['urea','bun','labUrea'],lab26Ast:['ast','labAst'],lab26Alt:['alt','labAlt'],lab26Bil:['bilirubin','bil','labBil'],lab26Ph:['ph','bloodPh','toxPh','endPh'],lab26Pco2:['pco2','labPco2'],lab26Hco3:['hco3','bicarb','labHco3','endHco3'],lab26Lac:['lactate','lac','labLactate','toxLactate'],lab26Trop:['troponin','trop','labTroponin'],lab26Dd:['ddimer','dDimer','labDdimer'],lab26Crp:['crp','labCrp'],lab26Inr:['inr','labInr'],lab26Ket:['ketone','ketones','betaHydroxybutyrate','endKetone']};Object.keys(map).forEach(function(k){var v=firstVal(map[k]);if(v!=='')S[k]=v});var sex=firstVal(['sex','gender','patientSex']);if(sex)S.lab26Sex=sex;syncInputs();renderBody()}
+function syncInputs(){Object.keys(S).filter(function(k){return k.indexOf('lab26')===0}).forEach(function(k){var e=E(k);if(e)e.value=S[k]})}
+function classify(){var a=[], critical=[], calc={};
+var hb=n(S.lab26Hb),w=n(S.lab26Wbc),p=n(S.lab26Plt),g=n(S.lab26Glu),na=n(S.lab26Na),k=n(S.lab26K),cl=n(S.lab26Cl),ca=n(S.lab26Ca),mg=n(S.lab26Mg),cr=n(S.lab26Cr),ast=n(S.lab26Ast),alt=n(S.lab26Alt),bil=n(S.lab26Bil),ph=n(S.lab26Ph),pc=n(S.lab26Pco2),hc=n(S.lab26Hco3),lac=n(S.lab26Lac),tr=n(S.lab26Trop),dd=n(S.lab26Dd),crp=n(S.lab26Crp),inr=n(S.lab26Inr),ket=n(S.lab26Ket);
+function add(level,title,text){(level==='danger'?critical:a).push({level:level,title:title,text:text})}
+if(hb!==null){if(hb<7)add('danger','Ciddi anemi','Hb <7 g/dL; aktif kanama, iskemi, semptom ve klinik bağlama göre acil yaklaşım gerekir.');else if(hb<10)add('warn','Anemi','Hb düşük; akut/kronik ayrımı ve kanama odağı değerlendirilmelidir.');else add('ok','Hemoglobin','Belirgin düşük değer saptanmadı.')}
+if(w!==null){if(w<2||w>30)add('danger','Kritik lökosit sapması','Ağır enfeksiyon, kemik iliği baskılanması veya hematolojik nedenler düşünülmelidir.');else if(w<4||w>12)add('warn','Lökosit anormalliği','Klinikle birlikte enfeksiyon, stres veya hematolojik nedenleri değerlendir.');}
+if(p!==null){if(p<20)add('danger','Ciddi trombositopeni','Spontan kanama riski yüksek olabilir.');else if(p<50)add('warn','Trombositopeni','Girişim ve kanama riski açısından dikkat.');else if(p>1000)add('danger','Aşırı trombositoz','Trombotik/hematolojik risk değerlendirmesi gerekir.');}
+if(g!==null){if(g<54)add('danger','Ciddi hipoglisemi','Derhal doğrula ve tedavi et; bilinç bozukluğunda acil yaklaşım.');else if(g<70)add('warn','Hipoglisemi','Tekrar ölçüm ve neden değerlendirmesi gerekir.');else if(g>=600)add('danger','Çok ağır hiperglisemi','HHS/DKA ve osmolalite değerlendirmesi gerekir.');else if(g>=250)add('warn','Belirgin hiperglisemi','Keton, kan gazı ve dehidratasyon açısından değerlendir.');}
+if(na!==null){if(na<120||na>160)add('danger','Kritik sodyum bozukluğu','Nörolojik komplikasyon riski; düzeltme hızı dikkatle planlanmalıdır.');else if(na<130||na>150)add('warn','Sodyum bozukluğu','Hacim durumu, glukoz ve neden değerlendirmesi gerekir.');if(g!==null&&g>100){calc.cNa=na+1.6*((g-100)/100)}}
+if(k!==null){if(k<2.5||k>=6.5)add('danger','Kritik potasyum bozukluğu','Aritmi riski; EKG ve acil tedavi değerlendirmesi gerekir.');else if(k<3||k>=5.5)add('warn','Potasyum bozukluğu','EKG, magnezyum ve böbrek fonksiyonlarıyla birlikte değerlendir.');}
+if(ca!==null){if(ca<7||ca>13)add('danger','Ciddi kalsiyum bozukluğu','Aritmi, nörolojik ve renal komplikasyon riski.');else if(ca<8||ca>11)add('warn','Kalsiyum anormalliği','Albumine göre düzeltme ve klinik korelasyon gerekir.');}
+if(mg!==null&&(mg<1.2||mg>4))add('danger','Ciddi magnezyum bozukluğu','Ritim ve nöromüsküler komplikasyon riski.');
+if(cr!==null&&cr>=3)add('warn','Belirgin kreatinin yüksekliği','AKI/kronik böbrek hastalığı ayrımı ve bazal değer karşılaştırması gerekir.');
+if(ph!==null){if(ph<7.1||ph>7.6)add('danger','Kritik pH','Ağır asit-baz bozukluğu; acil neden ve organ desteği değerlendirmesi gerekir.');else if(ph<7.35||ph>7.45)add('warn','Asit-baz bozukluğu','pCO₂, HCO₃ ve klinikle birlikte yorumlanmalıdır.');}
+if(hc!==null&&cl!==null&&na!==null){calc.ag=na-cl-hc;if(calc.ag>16)add('warn','Artmış anyon açıklığı','Laktat, keton, böbrek yetmezliği ve toksik alkol gibi nedenleri değerlendir.');}
+if(ph!==null&&pc!==null&&hc!==null){var primary='';if(ph<7.35)primary=hc<22?'Metabolik asidoz olası':(pc>45?'Respiratuvar asidoz olası':'Karma/uyumsuz patern');else if(ph>7.45)primary=hc>26?'Metabolik alkaloz olası':(pc<35?'Respiratuvar alkaloz olası':'Karma/uyumsuz patern');else primary='pH normal aralıkta; kompanse/karma bozukluk dışlanmaz';calc.abg=primary;}
+if(lac!==null){if(lac>=4)add('danger','Yüksek laktat','Şok, hipoperfüzyon, nöbet veya toksik/metabolik nedenleri acilen değerlendir.');else if(lac>=2)add('warn','Laktat yüksekliği','Seri ölçüm ve klinik perfüzyon değerlendirmesi gerekir.');}
+if(tr!==null&&tr>0)add('info','Troponin girildi','Mutlak eşik cihaz/laboratuvara özgüdür; 99. persentil, seri değişim ve EKG ile yorumlanmalıdır.');
+if(dd!==null&&dd>0)add('info','D-dimer girildi','Yaş ayarlı eşik ve klinik ön test olasılığıyla yorumlanmalıdır; tek başına tanı koydurmaz.');
+if(ast!==null&&alt!==null&&(ast>500||alt>500))add('danger','Belirgin transaminaz yüksekliği','İskemik, toksik, viral ve obstrüktif nedenler açısından acil değerlendirme gerekir.');else if((ast!==null&&ast>100)||(alt!==null&&alt>100))add('warn','Transaminaz yüksekliği','Karaciğer hasarı paterni ve ilaç/toksin öyküsü değerlendirilmeli.');
+if(bil!==null&&bil>5)add('warn','Belirgin bilirubin yüksekliği','Kolestaz, hemoliz ve hepatik nedenleri değerlendir.');
+if(inr!==null){if(inr>=5)add('danger','Çok yüksek INR','Kanama riski; endikasyon, aktif kanama ve geri çevirme gereksinimi değerlendirilmelidir.');else if(inr>1.5)add('warn','INR yüksekliği','Antikoagülasyon veya karaciğer fonksiyonuyla birlikte değerlendir.');}
+if(ket!==null&&ket>=3)add('danger','Belirgin ketonemi','DKA için glukoz, pH, HCO₃ ve anyon açıklığıyla birlikte değerlendir.');
+if(crp!==null&&crp>100)add('warn','Belirgin CRP yüksekliği','Enfeksiyon/inflamasyon olasılığı yüksek olabilir; klinik ve mikrobiyoloji ile yorumla.');
+return {critical:critical,items:a,calc:calc};}
+function renderBody(){var b=E('labV1026Body');if(!b)return;var r=classify(), all=r.critical.concat(r.items), html='';if(r.calc.ag!==undefined||r.calc.cNa!==undefined||r.calc.abg){html+='<div class="lab-v1026-kpi">';if(r.calc.ag!==undefined)html+='<div><span>Anyon açıklığı</span><b>'+r.calc.ag.toFixed(1)+'</b></div>';if(r.calc.cNa!==undefined)html+='<div><span>Düzeltilmiş Na</span><b>'+r.calc.cNa.toFixed(1)+'</b></div>';if(r.calc.abg)html+='<div style="grid-column:1/-1"><span>Kan gazı paterni</span><b>'+H(r.calc.abg)+'</b></div>';html+='</div>'}
+if(!all.length)html+='<div class="lab-v1026-alert info">Yorum için en az bir tetkik değeri girin.</div>';else all.forEach(function(x){html+='<div class="lab-v1026-alert '+x.level+'"><b>'+H(x.title)+'</b><br>'+H(x.text)+'</div>'});
+html+='<div class="lab-v1026-muted"><b>Not:</b> Eşikler erişkinler için genel güvenlik uyarılarıdır. Laboratuvar referans aralığı, cihazın troponin/D-dimer birimi, gebelik, yaş ve klinik bağlam her zaman önceliklidir.</div>';b.innerHTML=html}
+function summary(){var r=classify(), lines=['TETKİK YORUMLAMA ÖZETİ'];if(r.calc.ag!==undefined)lines.push('Anyon açıklığı: '+r.calc.ag.toFixed(1));if(r.calc.cNa!==undefined)lines.push('Düzeltilmiş Na: '+r.calc.cNa.toFixed(1));if(r.calc.abg)lines.push('Kan gazı: '+r.calc.abg);r.critical.concat(r.items).forEach(function(x){lines.push('- '+x.title+': '+x.text)});return lines.join('\n')}
+function card(){ensure();var h=E('stepContent');if(!h||E('labV1026Card'))return;var page=typeof order==='function'?order()[currentStep]:null;if(![4,5,6,7,8,9,10,11].includes(page))return;var d=document.createElement('div');d.id='labV1026Card';d.className='card lab-v1026-card';d.innerHTML='<div class="section-title"><h3>Tetkik Yorumlama Motoru</h3><span class="phase-badge">v10.26</span></div><div class="lab-v1026-grid"><div class="lab-v1026-section"><h4>Laboratuvar değerleri</h4><div class="lab-v1026-fields">'+inp('lab26Hb','Hb','g/dL')+inp('lab26Wbc','WBC','10³/µL')+inp('lab26Plt','Trombosit','10³/µL')+inp('lab26Glu','Glukoz','mg/dL')+inp('lab26Na','Na','mmol/L')+inp('lab26K','K','mmol/L')+inp('lab26Cl','Cl','mmol/L')+inp('lab26Ca','Ca','mg/dL')+inp('lab26Mg','Mg','mg/dL')+inp('lab26Cr','Kreatinin','mg/dL')+inp('lab26Urea','Üre/BUN','mg/dL')+inp('lab26Crp','CRP','mg/L')+inp('lab26Ast','AST','U/L')+inp('lab26Alt','ALT','U/L')+inp('lab26Bil','Bilirubin','mg/dL')+inp('lab26Ph','pH','')+inp('lab26Pco2','pCO₂','mmHg')+inp('lab26Hco3','HCO₃','mmol/L')+inp('lab26Lac','Laktat','mmol/L')+inp('lab26Trop','Troponin','lab birimi')+inp('lab26Dd','D-dimer','lab birimi')+inp('lab26Inr','INR','')+inp('lab26Ket','β-hidroksibütirat','mmol/L')+'</div><div class="lab-v1026-actions"><button type="button" class="secondary" id="lab26Pull">Vaka verisinden yenile</button><button type="button" class="secondary" id="lab26Copy">Yorum özetini kopyala</button></div></div><div class="lab-v1026-section"><h4>Otomatik yorum ve kritik uyarılar</h4><div id="labV1026Body"></div></div></div>';h.appendChild(d);renderBody()}
+function collectLocal(){document.querySelectorAll('#labV1026Card input').forEach(function(e){S[e.id]=e.value});renderBody()}
+document.addEventListener('input',function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('#labV1026Card'))collectLocal()});
+document.addEventListener('click',function(ev){var t=ev.target;if(!t)return;if(t.id==='lab26Pull'){pull()}if(t.id==='lab26Copy'){var txt=summary();if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt);else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}t.textContent='Kopyalandı';setTimeout(function(){t.textContent='Yorum özetini kopyala'},1200)}});
+var or=window.render;if(typeof or==='function')window.render=function(){var z=or.apply(this,arguments);try{card()}catch(e){console.warn('v10.26 tetkik motoru render',e)}return z};
+var ou=window.updateAll;if(typeof ou==='function')window.updateAll=function(){var z=ou.apply(this,arguments);try{var c=E('labV1026Card');if(c)c.remove();card()}catch(e){console.warn('v10.26 tetkik motoru update',e)}return z};
+function mark(){window.ACA_APP_VERSION='v10.26.0';window.ACA_UPDATE_NAME='Tetkik Yorumlama Motoru';document.title='Acil Klinik Asistanı v10.26.0';var st=document.querySelector('.status');if(st)st.textContent='v10.26.0 • Tetkik Yorumlama Motoru';document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.26.0'});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Tetkik Yorumlama Motoru'})}
+function init(){ensure();card();mark()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,120)});else setTimeout(init,120);setTimeout(mark,1300);
+})();
+</script>
+
+
+
+<style id="img-v1027-style">
+.img-v1027-card{border-left:4px solid #7c3aed}
+.img-v1027-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.img-v1027-section{background:var(--surface-2,#f8fafc);border:1px solid var(--border,#dbe3ee);border-radius:14px;padding:14px}
+.img-v1027-section h4{margin:0 0 10px}.img-v1027-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.img-v1027-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.img-v1027-alert{border-radius:12px;padding:10px 12px;margin:8px 0;border:1px solid transparent;line-height:1.45}
+.img-v1027-alert.danger{background:#fff1f2;border-color:#fecdd3;color:#9f1239}.img-v1027-alert.warn{background:#fffbeb;border-color:#fde68a;color:#92400e}.img-v1027-alert.ok{background:#f0fdf4;border-color:#bbf7d0;color:#166534}.img-v1027-alert.info{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.img-v1027-tag{display:inline-block;padding:4px 8px;border-radius:999px;background:#ede9fe;color:#5b21b6;font-size:11px;font-weight:800;margin:2px}
+.img-v1027-list{margin:6px 0 0;padding-left:18px}.img-v1027-muted{font-size:.84rem;opacity:.8;margin-top:10px}
+@media(max-width:760px){.img-v1027-grid{grid-template-columns:1fr}.img-v1027-fields{grid-template-columns:1fr}}
+</style>
+<script id="img-v1027-script">
+(function(){
+'use strict';
+var E=function(id){return document.getElementById(id)},H=function(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'})[c]})};
+function ensure(){window.S=window.S||{};var d={img27Modality:'BT',img27Region:'',img27Contrast:'Bilinmiyor',img27Report:'',img27Question:'',img27Pregnancy:'Bilinmiyor',img27Egfr:'',img27Allergy:'',img27Anticoag:'Hayır'};Object.keys(d).forEach(function(k){if(S[k]===undefined)S[k]=d[k]})}
+function sel(id,label,arr){return '<label>'+H(label)+'<select id="'+id+'">'+arr.map(function(x){return'<option '+(S[id]===x?'selected':'')+'>'+H(x)+'</option>'}).join('')+'</select></label>'}
+function inp(id,label,type,ph){return '<label>'+H(label)+'<input id="'+id+'" type="'+(type||'text')+'" value="'+H(S[id])+'" placeholder="'+H(ph||'')+'"></label>'}
+function text(){return String(S.img27Report||'').toLocaleLowerCase('tr-TR')}
+function has(words){var t=text();return words.some(function(w){return t.indexOf(w)>=0})}
+function assess(){var alerts=[],notes=[],tags=[];function add(level,title,body){alerts.push({level:level,title:title,body:body})}
+var t=text(),mod=S.img27Modality,region=(S.img27Region||'').toLocaleLowerCase('tr-TR');
+if(!t.trim())add('info','Rapor metni bekleniyor','Radyoloji raporunun bulgular veya sonuç bölümünü yapıştırın. Motor görüntünün kendisini değerlendirmez.');
+if(has(['intrakraniyal kanama','subaraknoid kanama','subdural hematom','epidural hematom','intraserebral kanama']))add('danger','Akut intrakraniyal kanama ifadesi','Acil nörolojik/nöroşirürjik değerlendirme, antikoagülan sorgusu ve kan basıncı yönetimi gerekir.');
+if(has(['orta hat şifti','midline shift','herniasyon','bazal sisternlerde silinme']))add('danger','Kitle etkisi / herniasyon riski','Hava yolu, baş elevasyonu ve acil nöroşirürji değerlendirmesi önceliklidir.');
+if(has(['pulmoner emboli','pulmoner arterde dolum defekti']))add('danger','Pulmoner emboli ile uyumlu ifade','Hemodinami, sağ ventrikül yükü, kanama riski ve antikoagülasyon/reperfüzyon uygunluğu birlikte değerlendirilmelidir.');
+if(has(['aort diseksiyonu','intimal flep','aort rüptürü']))add('danger','Akut aort sendromu ifadesi','Acil kalp-damar cerrahisi, sıkı hemodinamik kontrol ve gecikmesiz sevk gerekir.');
+if(has(['pnömotoraks','tansiyon pnömotoraks']))add(has(['tansiyon pnömotoraks'])?'danger':'warn','Pnömotoraks ifadesi','Klinik instabilite varsa görüntüleme sonucunu beklemeden acil dekompresyon değerlendirilmelidir.');
+if(has(['serbest hava','pnömoperitoneum','perforasyon']))add('danger','Perforasyon / serbest hava ifadesi','Acil cerrahi değerlendirme, sepsis kontrolü ve oral alımın kesilmesi gerekir.');
+if(has(['barsak obstrüksiyonu','ileus','kapalı ans','closed loop','mezenter iskemi','bağırsak iskemi']))add('danger','Obstrüksiyon veya iskemi şüphesi','Laktat, peritonit, strangülasyon bulguları ve acil cerrahi gereksinimi değerlendirilmelidir.');
+if(has(['apandisit','kolesistit','kolanjit','divertikülit']))add('warn','Akut batın tanısı bildirilmiş','Klinik şiddet, perforasyon/apse, sepsis ve cerrahi konsültasyon gereksinimi değerlendirilmelidir.');
+if(has(['hidronefroz','üreter taşı','obstrüktif üropati']))add('warn','Üriner obstrüksiyon ifadesi','Ateş, anüri, tek böbrek, AKI ve kontrolsüz ağrı varsa acil üroloji değerlendirmesi gerekir.');
+if(has(['ektopik gebelik','hemoperitoneum','adneksiyel kitle']))add('danger','Ektopik gebelik / intraabdominal kanama şüphesi','Hemodinami, β-hCG ve acil kadın doğum değerlendirmesi gerekir.');
+if(has(['fraktür','kırık','çıkık','dislokasyon']))add('warn','Kırık/çıkık ifadesi','Nörovasküler durum, açık yara, kompartman riski ve uygun immobilizasyon kontrol edilmelidir.');
+if(has(['akut enfarkt','difüzyon kısıtlılığı','büyük damar oklüzyonu']))add('danger','Akut iskemik inme ifadesi','Son görülme zamanı, NIHSS ve reperfüzyon uygunluğu gecikmeden değerlendirilmelidir.');
+if(has(['malignite','metastaz','kitle lezyonu']))add('warn','Kitle/malignite şüphesi','Acil semptom nedeni olup olmadığı ve uygun branş yönlendirmesi planlanmalıdır.');
+if(has(['akut patoloji saptanmadı','akut intrakraniyal patoloji yok','normal sınırlarda','doğal olarak değerlendirilmiştir']))add('ok','Akut radyolojik bulgu belirtilmemiş','Negatif görüntüleme, yüksek klinik şüpheyi tek başına dışlamaz; zamanlama ve yöntemin duyarlılığı dikkate alınmalıdır.');
+if(mod.indexOf('Kontrast')>=0||S.img27Contrast==='Evet'){var eg=parseFloat(String(S.img27Egfr||'').replace(',','.'));if(S.img27Pregnancy==='Evet')add('warn','Gebelikte kontrast/radyasyon kontrolü','Endikasyon, alternatif yöntem ve fetal risk-yarar dengesi radyolojiyle doğrulanmalıdır.');if(isFinite(eg)&&eg<30)add('warn','eGFR <30','Kontrast gerekliliği, AKI riski ve yerel protokol radyolojiyle değerlendirilmelidir.');if(String(S.img27Allergy||'').trim())add('warn','Kontrast alerji öyküsü','Reaksiyon tipi, şiddeti ve premedikasyon/alternatif yöntem gereksinimi doğrulanmalıdır.');}
+if(S.img27Anticoag==='Evet'&&has(['kanama','hematom','hemoraji']))add('danger','Kanama + antikoagülan kullanımı','Son doz, ilaç türü, koagülasyon testleri ve geri çevirme gereksinimi acilen değerlendirilmelidir.');
+if(region)tags.push('Bölge: '+S.img27Region);if(mod)tags.push('Yöntem: '+mod);if(S.img27Question)notes.push('Klinik soru: '+S.img27Question);
+notes.push('Rapor sonucu hastanın muayenesi, vital bulguları ve önceki görüntülemeleriyle birlikte yorumlanmalıdır.');
+return{alerts:alerts,notes:notes,tags:tags}}
+function renderBody(){var b=E('imgV1027Body');if(!b)return;var r=assess(),html='';if(r.tags.length)html+='<div>'+r.tags.map(function(x){return'<span class="img-v1027-tag">'+H(x)+'</span>'}).join('')+'</div>';r.alerts.forEach(function(x){html+='<div class="img-v1027-alert '+x.level+'"><b>'+H(x.title)+'</b><br>'+H(x.body)+'</div>'});html+='<div class="img-v1027-muted"><ul class="img-v1027-list">'+r.notes.map(function(x){return'<li>'+H(x)+'</li>'}).join('')+'</ul><b>Güvenlik sınırı:</b> Bu araç radyoloji uzmanı raporunun yerini tutmaz ve görüntünün kendisini analiz etmez.</div>';b.innerHTML=html}
+function summary(){var r=assess(),lines=['GÖRÜNTÜLEME RAPORU KLİNİK ÖZETİ','Yöntem: '+S.img27Modality,'Bölge: '+(S.img27Region||'-')];if(S.img27Question)lines.push('Klinik soru: '+S.img27Question);r.alerts.forEach(function(x){lines.push('- '+x.title+': '+x.body)});return lines.join('\n')}
+function card(){ensure();var h=E('stepContent');if(!h||E('imgV1027Card'))return;var page=typeof order==='function'?order()[currentStep]:null;if(![4,5,6,7,8,9,10,11].includes(page))return;var d=document.createElement('div');d.id='imgV1027Card';d.className='card img-v1027-card';d.innerHTML='<div class="section-title"><h3>Görüntüleme ve Rapor Yorumlama Motoru</h3><span class="phase-badge">v10.27</span></div><div class="img-v1027-grid"><div class="img-v1027-section"><h4>Görüntüleme bilgileri</h4><div class="img-v1027-fields">'+sel('img27Modality','Yöntem',['Direkt grafi','USG','BT','Kontrastlı BT','MR','MR anjiyografi','BT anjiyografi','Diğer'])+inp('img27Region','Bölge','text','Örn. beyin, toraks, batın')+sel('img27Contrast','Kontrast verildi mi?',['Bilinmiyor','Hayır','Evet'])+sel('img27Pregnancy','Gebelik',['Bilinmiyor','Hayır','Evet'])+inp('img27Egfr','eGFR','number','')+inp('img27Allergy','Kontrast alerjisi','text','Varsa reaksiyon')+sel('img27Anticoag','Antikoagülan kullanımı',['Hayır','Evet','Bilinmiyor'])+inp('img27Question','Klinik soru','text','Örn. PE? kanama? perforasyon?')+'</div><label style="margin-top:10px">Radyoloji raporu<textarea id="img27Report" rows="7" placeholder="Bulgular veya sonuç bölümünü buraya yapıştırın">'+H(S.img27Report)+'</textarea></label><div class="img-v1027-actions"><button type="button" class="secondary" id="img27Copy">Yorum özetini kopyala</button><button type="button" class="secondary" id="img27Clear">Alanı temizle</button></div></div><div class="img-v1027-section"><h4>Klinik anlam ve kritik uyarılar</h4><div id="imgV1027Body"></div></div></div>';h.appendChild(d);renderBody()}
+function collect(){document.querySelectorAll('#imgV1027Card input,#imgV1027Card select,#imgV1027Card textarea').forEach(function(e){S[e.id]=e.value});renderBody()}
+document.addEventListener('input',function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('#imgV1027Card'))collect()});document.addEventListener('change',function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('#imgV1027Card'))collect()});
+document.addEventListener('click',function(ev){var t=ev.target;if(!t)return;if(t.id==='img27Copy'){var txt=summary();if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt);t.textContent='Kopyalandı';setTimeout(function(){t.textContent='Yorum özetini kopyala'},1200)}if(t.id==='img27Clear'){S.img27Report='';var e=E('img27Report');if(e)e.value='';renderBody()}});
+var or=window.render;if(typeof or==='function')window.render=function(){var z=or.apply(this,arguments);try{card()}catch(e){console.warn('v10.27 görüntüleme motoru render',e)}return z};
+var ou=window.updateAll;if(typeof ou==='function')window.updateAll=function(){var z=ou.apply(this,arguments);try{var c=E('imgV1027Card');if(c)c.remove();card()}catch(e){console.warn('v10.27 görüntüleme motoru update',e)}return z};
+function mark(){window.ACA_APP_VERSION='v10.27.0';window.ACA_UPDATE_NAME='Görüntüleme ve Rapor Yorumlama Motoru';document.title='Acil Klinik Asistanı v10.27.0';var st=document.querySelector('.status');if(st)st.textContent='v10.27.0 • Görüntüleme ve Rapor Yorumlama Motoru';document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.27.0'});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Görüntüleme ve Rapor Yorumlama Motoru'})}
+function init(){ensure();card();mark()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,140)});else setTimeout(init,140);setTimeout(mark,1600);
+})();
+</script>
 </body>
 </html>
