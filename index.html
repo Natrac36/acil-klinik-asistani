@@ -9236,5 +9236,73 @@ function init(){card();mark()}if(document.readyState==='loading')document.addEve
 })();
 </script>
 
+
+<style id="med-v1025-style">
+.med-v1025-card{border:1px solid #cbd5e1;background:linear-gradient(180deg,#fff,#f8fafc)}
+.med-v1025-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.med-v1025-section{border:1px solid #e2e8f0;border-radius:14px;padding:12px;background:#fff}
+.med-v1025-section h4{margin:0 0 10px}
+.med-v1025-alert{border-radius:12px;padding:10px 12px;margin:8px 0;border:1px solid #cbd5e1;background:#f8fafc}
+.med-v1025-alert.critical{border-color:#fca5a5;background:#fef2f2}
+.med-v1025-alert.warn{border-color:#fcd34d;background:#fffbeb}
+.med-v1025-alert.info{border-color:#93c5fd;background:#eff6ff}
+.med-v1025-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.med-v1025-kpi{border:1px solid #e2e8f0;border-radius:12px;padding:9px;background:#fff}
+.med-v1025-kpi span{display:block;font-size:12px;color:#64748b}.med-v1025-kpi b{font-size:18px}
+.med-v1025-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:760px){.med-v1025-grid,.med-v1025-kpis{grid-template-columns:1fr}}
+</style>
+<script id="med-v1025-script">
+(function(){
+'use strict';
+var E=function(id){return document.getElementById(id)}, H=function(x){return String(x==null?'':x).replace(/[&<>\"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]})};
+var N=function(v){var n=parseFloat(v);return Number.isFinite(n)?n:null};
+function ensure(){if(!window.S)window.S={};var d={med25List:'',med25Allergy:'',med25Pregnancy:'Bilinmiyor',med25Breastfeeding:'Bilinmiyor',med25Egfr:'',med25Liver:'Yok/Bilinmiyor',med25Bleeding:false,med25Qtc:'',med25Weight:'',med25Age:'',med25Notes:''};Object.keys(d).forEach(function(k){if(S[k]===undefined)S[k]=d[k]})}
+function txt(){return [S.med25List,S.meds,S.drugNotes,S.selectedDrug].filter(Boolean).join(', ').toLocaleLowerCase('tr-TR')}
+function has(words){var t=txt();return words.some(function(w){return t.indexOf(w)>=0})}
+function allergyHit(){var a=String(S.med25Allergy||S.allergy||'').toLocaleLowerCase('tr-TR'),t=txt();if(!a.trim())return false;return a.split(/[,;\n]/).map(function(x){return x.trim()}).filter(Boolean).some(function(x){return x.length>2&&t.indexOf(x)>=0})}
+function calc(){ensure();var alerts=[],monitor=[],actions=[];function add(level,title,detail,action){alerts.push({level:level,title:title,detail:detail,action:action});if(action)actions.push(action)}
+ var age=N(S.med25Age)||N(S.age),egfr=N(S.med25Egfr)||N(S.egfr),qtc=N(S.med25Qtc)||N(S.ecgQTc),wt=N(S.med25Weight)||N(S.weight),preg=S.med25Pregnancy,breast=S.med25Breastfeeding,liver=S.med25Liver;
+ if(allergyHit())add('critical','Alerji–ilaç çakışması','Girilen alerji ile ilaç listesinde olası eşleşme var.','Etken maddeyi ve çapraz reaksiyonu doğrulamadan uygulama yapma.');
+ if(!String(S.med25Allergy||S.allergy||'').trim())add('warn','Alerji bilgisi eksik','İlaç güvenliği değerlendirmesi için alerji alanı boş.','İlaç vermeden önce alerjiyi doğrula.');
+ if(preg==='Evet'&&has(['warfarin','valproat','izotretinoin','metotreksat','ace inhibit','ramipril','enalapril','losartan','valsartan']))add('critical','Gebelikte yüksek riskli ilaç','Listede gebelikte kontrendike veya güçlü kaçınma gerektirebilen bir ajan olabilir.','Gebelik haftası ve endikasyona göre güncel ürün bilgisini/uzman görüşünü doğrula.');
+ if(preg==='Evet'&&has(['nsaid','ibuprofen','diklofenak','naproksen']))add('warn','Gebelikte NSAİİ uyarısı','Gestasyon haftasına göre fetal ve maternal risk değişir.','Gebelik haftasını doğrula; alternatif analjeziyi değerlendir.');
+ if(breast==='Evet'&&has(['amiodaron','lityum','metotreksat','izotretinoin']))add('warn','Emzirme güvenliği uyarısı','Süt geçişi ve bebek toksisitesi açısından özel değerlendirme gerekebilir.','Emzirme uyumluluğunu güvenilir ilaç kaynağından doğrula.');
+ if(egfr!==null&&egfr<30&&has(['metformin','dabigatran','gabapentin','pregabalin','vankomisin','gentamisin','amikasin','digoksin','enoksaparin']))add('critical','İleri böbrek yetmezliğinde doz/birikim riski','Seçili ilaçlardan biri renal atılım veya toksisite açısından yüksek riskli olabilir.','eGFR’ye göre doz aralığı, yükleme dozu ve monitörizasyonu doğrula.');
+ else if(egfr!==null&&egfr<60&&has(['metformin','gabapentin','pregabalin','vankomisin','gentamisin','digoksin','enoksaparin','rivaroksaban','apiksaban']))add('warn','Renal doz ayarı gerekebilir','Orta derecede böbrek fonksiyon kaybında doz veya aralık değişebilir.','İlacın endikasyona özgü renal dozunu doğrula.');
+ if(liver&&liver!=='Yok/Bilinmiyor'&&has(['parasetamol','valproat','amiodaron','metotreksat','statin','makrolid']))add('warn','Karaciğer hastalığında ilaç riski','Hepatotoksisite veya klirens azalması olabilir.','AST/ALT, bilirubin, INR ve klinik evreye göre kullanımı doğrula.');
+ if(S.med25Bleeding&&has(['warfarin','apiksaban','rivaroksaban','dabigatran','heparin','enoksaparin','aspirin','klopidogrel','tikagrelor','nsaid','ibuprofen','diklofenak']))add('critical','Aktif kanama ile uyumsuz tedavi','Antikoagülan/antiagregan/NSAİİ kanamayı artırabilir.','Kanama odağı, son doz, böbrek fonksiyonu ve geri döndürme gereksinimini acilen değerlendir.');
+ var qtDrugs=['amiodaron','sotalol','haloperidol','droperidol','ondansetron','azitromisin','klaritromisin','levofloksasin','moksifloksasin','metadon','essitalopram','sitalopram'];
+ if(has(qtDrugs)&&(qtc!==null&&qtc>=500))add('critical','QTc ≥500 ms ve QT uzatan ilaç','Torsades de pointes riski belirgin artmıştır.','QT uzatan ajanları durdur; K/Mg/Ca düzelt ve sürekli monitörizasyon sağla.');
+ else if(has(qtDrugs))add('warn','QT uzaması potansiyeli','Listede QT uzatabilen ilaç bulunuyor.','EKG, potasyum ve magnezyumu klinik riske göre kontrol et.');
+ if(has(['opioid','morfin','fentanil','tramadol','kodein'])&&has(['midazolam','diazepam','lorazepam','alprazolam','klonazepam','zolpidem','pregabalin','gabapentin']))add('critical','Sedatif–opioid kombinasyonu','Solunum depresyonu ve bilinç baskılanması riski artar.','Düşük doz, yakın solunum/SpO₂ izlemi ve antidot/resüsitasyon hazırlığı sağla.');
+ if(has(['warfarin'])&&has(['metronidazol','trimetoprim','sulfametoksazol','klaritromisin','amiodaron','flukonazol']))add('warn','Warfarin etkileşimi','INR yükselmesi ve kanama riski olabilir.','INR ve kanama bulgularını daha sık izle; doz planını doğrula.');
+ if(has(['nsaid','ibuprofen','diklofenak','naproksen'])&&has(['ramipril','enalapril','losartan','valsartan'])&&has(['furosemid','hidroklorotiyazid','spironolakton']))add('warn','“Triple whammy” AKI riski','NSAİİ + RAAS blokeri + diüretik akut böbrek hasarı riskini artırır.','Kreatinin, potasyum ve volüm durumunu değerlendir.');
+ if(age!==null&&age>=65&&has(['diazepam','alprazolam','amitriptilin','oksibutinin','difenhidramin']))add('warn','Geriatrik sedasyon/antikolinerjik risk','Düşme, deliryum ve üriner retansiyon riski artabilir.','Daha güvenli alternatif ve düşük doz yaklaşımını değerlendir.');
+ if(age!==null&&age<18&&!wt)add('warn','Pediatrik kilo eksik','Pediatrik doz güvenli hesaplanamaz.','Gerçek veya güvenilir ölçülmüş kiloyu gir.');
+ if(wt!==null&&wt<=0)add('critical','Geçersiz kilo','Doz hesaplaması için kilo geçersiz.','Kilo bilgisini düzelt.');
+ if(has(['gentamisin','amikasin','vankomisin']))monitor.push('Kreatinin/eGFR, idrar çıkışı ve gerekiyorsa ilaç düzeyi');
+ if(has(['warfarin']))monitor.push('INR ve kanama bulguları');
+ if(has(['heparin','enoksaparin']))monitor.push('Hemogram/trombosit, kanama ve renal fonksiyon');
+ if(has(['digoksin']))monitor.push('EKG, potasyum, magnezyum, kreatinin ve klinik toksisite');
+ if(has(['lityum']))monitor.push('Lityum düzeyi, kreatinin, sodyum ve hidrasyon');
+ if(has(qtDrugs))monitor.push('EKG/QTc, potasyum ve magnezyum');
+ if(!alerts.length)alerts.push({level:'info',title:'Belirgin çakışma saptanmadı',detail:'Girilen sınırlı veriyle yüksek riskli bir kombinasyon bulunmadı.',action:'Yine de ürün bilgisi, endikasyon, doz, yol ve yerel protokol doğrulanmalıdır.'});
+ return{alerts:alerts,monitor:Array.from(new Set(monitor)),actions:Array.from(new Set(actions)),risk:alerts.some(function(a){return a.level==='critical'})?'Yüksek':alerts.some(function(a){return a.level==='warn'})?'Orta':'Düşük'} }
+function inp(id,label,type,ph){return'<label>'+H(label)+'<input id="'+id+'" type="'+(type||'text')+'" '+(type==='number'?'step="any" ':'')+'placeholder="'+H(ph||'')+'"></label>'}
+function sel(id,label,opts){return'<label>'+H(label)+'<select id="'+id+'">'+opts.map(function(x){return'<option>'+H(x)+'</option>'}).join('')+'</select></label>'}
+function renderBody(){var b=E('medV1025Body');if(!b)return;var r=calc();b.innerHTML='<div class="med-v1025-kpis"><div class="med-v1025-kpi"><span>Genel risk</span><b>'+H(r.risk)+'</b></div><div class="med-v1025-kpi"><span>Uyarı sayısı</span><b>'+r.alerts.length+'</b></div><div class="med-v1025-kpi"><span>Monitörizasyon</span><b>'+r.monitor.length+'</b></div></div>'+r.alerts.map(function(a){return'<div class="med-v1025-alert '+H(a.level)+'"><b>'+H(a.title)+'</b><div>'+H(a.detail)+'</div><small><b>Yapılacak:</b> '+H(a.action)+'</small></div>'}).join('')+(r.monitor.length?'<div class="med-v1025-section"><h4>Önerilen monitörizasyon</h4><ul>'+r.monitor.map(function(x){return'<li>'+H(x)+'</li>'}).join('')+'</ul></div>':'')}
+function pull(){ensure();S.med25List=S.med25List||S.meds||S.drugNotes||'';S.med25Allergy=S.med25Allergy||S.allergy||'';S.med25Egfr=S.med25Egfr||S.egfr||'';S.med25Qtc=S.med25Qtc||S.ecgQTc||'';S.med25Weight=S.med25Weight||S.weight||'';S.med25Age=S.med25Age||S.age||''}
+function card(){ensure();var h=E('stepContent');if(!h||E('medV1025Card'))return;var page=typeof order==='function'?order()[currentStep]:null;if(![3,5,7,8,9,10,11].includes(page))return;pull();var d=document.createElement('div');d.id='medV1025Card';d.className='card med-v1025-card';d.innerHTML='<div class="section-title"><h3>İlaç Güvenlik Motoru</h3><span class="phase-badge">v10.25</span></div><div class="med-v1025-grid"><div class="med-v1025-section"><h4>Hasta ve ilaç bilgileri</h4><label>İlaçlar<textarea id="med25List" rows="4" placeholder="Virgül veya satırla ayırın">'+H(S.med25List)+'</textarea></label><div class="grid">'+inp('med25Allergy','İlaç alerjisi','text','Örn. penisilin, NSAİİ')+inp('med25Age','Yaş','number','')+inp('med25Weight','Kilo (kg)','number','')+inp('med25Egfr','eGFR','number','')+inp('med25Qtc','QTc (ms)','number','')+sel('med25Pregnancy','Gebelik',['Bilinmiyor','Hayır','Evet'])+sel('med25Breastfeeding','Emzirme',['Bilinmiyor','Hayır','Evet'])+sel('med25Liver','Karaciğer durumu',['Yok/Bilinmiyor','Hafif','Orta','İleri'])+'</div><label class="choice"><input id="med25Bleeding" type="checkbox" '+(S.med25Bleeding?'checked':'')+'> Aktif veya yüksek riskli kanama</label><div class="med-v1025-actions"><button type="button" class="secondary" id="med25Pull">Vaka verisinden yenile</button><button type="button" class="secondary" id="med25Copy">Güvenlik özetini kopyala</button></div></div><div id="medV1025Body"></div></div><div class="med-v1025-alert info"><b>Güvenlik sınırı:</b> Bu motor reçete veya ilaç emri oluşturmaz. Etken madde, doz, yol, preparat, kontrendikasyon ve güncel ürün bilgisi uygulama öncesinde doğrulanmalıdır.</div>';h.appendChild(d);['med25Pregnancy','med25Breastfeeding','med25Liver'].forEach(function(id){var e=E(id);if(e)e.value=S[id]});renderBody()}
+function sync(t){if(!t||!/^med25/.test(t.id))return;S[t.id]=t.type==='checkbox'?t.checked:t.value;renderBody()}
+document.addEventListener('input',function(e){sync(e.target)});document.addEventListener('change',function(e){sync(e.target)});
+document.addEventListener('click',function(e){var t=e.target;if(!t)return;if(t.id==='med25Pull'){S.med25List=S.meds||S.drugNotes||S.med25List;S.med25Allergy=S.allergy||S.med25Allergy;S.med25Egfr=S.egfr||S.med25Egfr;S.med25Qtc=S.ecgQTc||S.med25Qtc;S.med25Weight=S.weight||S.med25Weight;S.med25Age=S.age||S.med25Age;var c=E('medV1025Card');if(c)c.remove();card()}if(t.id==='med25Copy'){var r=calc(),out=['İLAÇ GÜVENLİĞİ ÖZETİ','Risk: '+r.risk,'İlaçlar: '+(S.med25List||'belirtilmedi'),'Alerji: '+(S.med25Allergy||S.allergy||'belirtilmedi'),...r.alerts.map(function(a){return'- '+a.title+': '+a.detail+' Yapılacak: '+a.action}),...(r.monitor.length?['Monitörizasyon: '+r.monitor.join('; ')]:[])].join('\n');navigator.clipboard&&navigator.clipboard.writeText(out)}});
+var or=window.render;if(typeof or==='function')window.render=function(){var z=or.apply(this,arguments);try{card()}catch(e){console.warn('v10.25 ilaç güvenliği render',e)}return z};
+var ou=window.updateAll;if(typeof ou==='function')window.updateAll=function(){var z=ou.apply(this,arguments);try{var c=E('medV1025Card');if(c)c.remove();card()}catch(e){console.warn('v10.25 ilaç güvenliği update',e)}return z};
+function mark(){window.ACA_APP_VERSION='v10.25.0';window.ACA_UPDATE_NAME='İlaç Güvenlik Motoru';document.title='Acil Klinik Asistanı v10.25.0';var st=document.querySelector('.status');if(st)st.textContent='v10.25.0 • İlaç Güvenlik Motoru';document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.25.0'});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='İlaç Güvenlik Motoru'})}
+function init(){ensure();card();mark()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,100)});else setTimeout(init,100);setTimeout(mark,1200);
+})();
+</script>
+
 </body>
 </html>
