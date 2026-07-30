@@ -9588,3 +9588,70 @@ function init(){ensure();card();mark()}if(document.readyState==='loading')docume
 </script>
 </body>
 </html>
+
+<style id="acaV1031StructureStyle">
+/* v10.31 Yapısal düzenleme ve hızlı erişim katmanı — klinik motorları değiştirmez */
+.aca-structure-nav{position:sticky;top:96px;z-index:18;margin:0 0 14px;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border:1px solid rgba(148,163,184,.34);border-radius:16px;box-shadow:0 8px 24px rgba(15,23,42,.10);padding:11px}
+.aca-structure-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.aca-structure-title{display:flex;align-items:center;gap:8px;font-weight:900;color:#0f172a}.aca-structure-title small{font-weight:700;color:var(--muted)}
+.aca-structure-tools{display:flex;gap:7px;flex-wrap:wrap}.aca-structure-tools button{min-height:36px;padding:7px 10px;font-size:11px}
+.aca-structure-search{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:7px;margin-top:9px}.aca-structure-search input{min-height:38px;padding:8px 10px;font-size:13px}
+.aca-flow-tabs{display:flex;gap:6px;overflow-x:auto;padding:9px 1px 1px;scrollbar-width:thin}.aca-flow-tabs button{flex:0 0 auto;min-height:35px;padding:7px 10px;font-size:11px;border-radius:999px}.aca-flow-tabs button.active{background:#0f766e;color:#fff;border-color:#0f766e}
+.aca-subnav{display:flex;gap:5px;overflow-x:auto;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}.aca-subnav button{flex:0 0 auto;min-height:31px;padding:5px 9px;font-size:10px;border-radius:999px;background:#f8fafc}
+.aca-card-badge{display:inline-flex;align-items:center;margin-left:7px;padding:3px 7px;border-radius:999px;background:#e2e8f0;color:#334155;font-size:9px;font-weight:900;vertical-align:middle}
+.aca-card-badge.legacy{background:#fef3c7;color:#92400e}.aca-card-badge.core{background:#ccfbf1;color:#115e59}.aca-card-badge.advanced{background:#ede9fe;color:#5b21b6}
+.aca-focus-hidden{display:none!important}.aca-search-hidden{display:none!important}
+.aca-overlap-note{margin:7px 0 0;padding:7px 9px;border-left:4px solid #f59e0b;background:#fffbeb;border-radius:8px;font-size:11px;color:#713f12}
+.aca-empty-search{display:none;margin:10px 0;padding:12px;border:1px dashed #94a3b8;border-radius:12px;background:#f8fafc;color:#475569;text-align:center}.aca-empty-search.show{display:block}
+body.dashboard-home .aca-structure-nav{display:none!important}
+@media(max-width:900px){.aca-structure-nav{top:88px}.aca-structure-search{grid-template-columns:1fr}.aca-structure-tools{width:100%}.aca-structure-tools button{flex:1}.aca-flow-tabs{margin-left:-3px;margin-right:-3px}}
+@media(max-width:560px){.aca-structure-nav{position:relative;top:auto;border-radius:14px;padding:9px}.aca-structure-title small{display:none}.aca-flow-tabs button{font-size:10px;padding:6px 8px}.aca-subnav button{font-size:9px}}
+@media print{.aca-structure-nav,.aca-card-badge,.aca-overlap-note{display:none!important}.aca-focus-hidden,.aca-search-hidden{display:block!important}}
+</style>
+
+<script id="acaV1031StructureScript">
+(function(){
+'use strict';
+var VERSION='v10.31.0', UPDATE='Sayfa Yapısı ve Hızlı Erişim Düzeni';
+var focusMode=true, activeCategory='all', searchTerm='';
+var categoryMap={
+  case:{label:'Vaka',icon:'🗂️',terms:['vaka','hasta bilg','öykü','şikâyet','kimlik','başvuru']},
+  assessment:{label:'Değerlendirme',icon:'🩺',terms:['acil değerlendirme','abcde','tanı','skor','ekg','pediatr','kılavuz','karar motoru','kırmızı bayrak','klinik çekirdek']},
+  tests:{label:'Tetkik',icon:'🧪',terms:['tetkik','laboratuvar','radyoloji','görüntüleme','kan gazı','rapor yorum']},
+  meds:{label:'Tedavi ve İlaç',icon:'💊',terms:['tedavi','order','ilaç','reçete','doz','antibiyotik','analjezi']},
+  procedure:{label:'Girişim',icon:'🧰',terms:['işlem','girişim','entübasyon','kardiyoversiyon','defibrilasyon','torakostomi','lomber ponksiyon']},
+  disposition:{label:'Sonlandırma',icon:'🏥',terms:['konsültasyon','yatış','sevk','taburculuk','güvenlik ağı','sonlandırma']},
+  docs:{label:'Belge',icon:'📄',terms:['belge','epikriz','not','özet','dokümantasyon','çıktı','pdf']},
+  advanced:{label:'Gelişmiş',icon:'⚙️',terms:['yapay zekâ','sistem','kararlılık','çevrimdışı','senkronizasyon','test senaryo','kalite kontrol','güncelleme','audit','denetim']}
+};
+var exact={
+  naturalCaseEntryCard:'case',caseEntryCard:'case',clinicalNoteCard:'case',workflowSummaryCard:'case',emergencyCoreCard:'assessment',
+  laboratoryEngineCard:'tests',radiologyEngineCard:'tests',smartTestOrderCard:'tests',labV1026Card:'tests',imagingV1027Card:'tests',
+  smartTreatmentOrderCard:'meds',medicationSafetyCard:'meds',medV1025Card:'meds',doseCalculatorCard:'meds',smartPrescriptionCard:'meds',drugLibraryCard:'meds',
+  procedureV1030Card:'procedure',multiSpecialistConsultCard:'disposition',dispositionV1028Card:'disposition',safetynetV1029Card:'disposition',
+  professionalDocumentCard:'docs',documentationCard:'docs',systemStabilityCard:'advanced',offlineUpdateCard:'advanced',offlineCaseSyncCard:'advanced',
+  aiCompatibilityCard:'advanced',aiConnectionCard:'advanced',aiClinicalReconciliationCard:'advanced',guidelineCurrencyAuditCard:'advanced'
+};
+var legacyIds=new Set(['medicationSafetyCard','laboratoryEngineCard','radiologyEngineCard']);
+var advancedIds=new Set(['systemStabilityCard','offlineUpdateCard','offlineCaseSyncCard','aiCompatibilityCard','aiConnectionCard','aiClinicalReconciliationCard','guidelineCurrencyAuditCard']);
+function E(id){return document.getElementById(id)}
+function norm(s){return String(s||'').toLocaleLowerCase('tr-TR').replace(/\s+/g,' ').trim()}
+function titleOf(card){var h=card.querySelector('h2,h3,h4,summary');return norm(h?h.textContent:card.id)}
+function categoryOf(card){if(exact[card.id])return exact[card.id];var t=titleOf(card);for(var key of Object.keys(categoryMap)){if(categoryMap[key].terms.some(function(x){return t.includes(x)}))return key}return 'advanced'}
+function clinicalCards(){return Array.from(document.querySelectorAll('main .card, main details.card, #stepContent>.card')).filter(function(c){return !c.closest('.aca-structure-nav') && c.id})}
+function markCard(card){if(card.dataset.acaStructured)return;card.dataset.acaStructured='1';var cat=categoryOf(card);card.dataset.acaCategory=cat;var h=card.querySelector('h2,h3,summary');if(h&&!h.querySelector('.aca-card-badge')){var b=document.createElement('span');b.className='aca-card-badge '+(legacyIds.has(card.id)?'legacy':advancedIds.has(card.id)?'advanced':'core');b.textContent=legacyIds.has(card.id)?'Eski/örtüşen':advancedIds.has(card.id)?'Gelişmiş':categoryMap[cat].label;h.appendChild(b)}
+ if(legacyIds.has(card.id)&&!card.querySelector('.aca-overlap-note')){var note=document.createElement('div');note.className='aca-overlap-note';note.textContent=card.id==='medicationSafetyCard'?'Yeni İlaç Güvenlik Motoru ile örtüşür; eski ayrıntılar korunmuştur. Düzenli görünümde gizlenir.':card.id==='laboratoryEngineCard'?'Yeni Tetkik Yorumlama Motoru ile kısmen örtüşür; eski ayrıntılar korunmuştur.':'Yeni Görüntüleme ve Rapor Yorumlama Motoru ile kısmen örtüşür; eski ayrıntılar korunmuştur.';var first=card.querySelector('.section-title,h2,h3,summary');if(first&&first.parentNode)first.parentNode.insertBefore(note,first.nextSibling)}
+}
+function apply(){var visible=0;clinicalCards().forEach(function(card){markCard(card);var cat=card.dataset.acaCategory||categoryOf(card);var txt=norm(card.textContent);var categoryOK=activeCategory==='all'||cat===activeCategory;var searchOK=!searchTerm||txt.includes(searchTerm);var focusHidden=focusMode&&(legacyIds.has(card.id)||advancedIds.has(card.id));card.classList.toggle('aca-focus-hidden',focusHidden);card.classList.toggle('aca-search-hidden',!(categoryOK&&searchOK));if(!focusHidden&&categoryOK&&searchOK)visible++});var em=E('acaEmptySearch');if(em)em.classList.toggle('show',visible===0);document.querySelectorAll('.aca-flow-tabs button').forEach(function(b){b.classList.toggle('active',b.dataset.cat===activeCategory)});var fb=E('acaFocusBtn');if(fb)fb.textContent=focusMode?'Tüm araçları göster':'Düzenli görünüm'}
+function scrollCategory(cat){activeCategory=cat;apply();var target=clinicalCards().find(function(c){return !c.classList.contains('aca-focus-hidden')&&!c.classList.contains('aca-search-hidden')});if(target)target.scrollIntoView({behavior:'smooth',block:'start'})}
+function nav(){if(E('acaStructureNav'))return;var main=document.querySelector('main');if(!main)return;var n=document.createElement('section');n.id='acaStructureNav';n.className='aca-structure-nav no-print';n.innerHTML='<div class="aca-structure-head"><div class="aca-structure-title">🧭 Klinik Akış Navigasyonu <small>Mevcut motorlar korunarak düzenlendi</small></div><div class="aca-structure-tools"><button type="button" id="acaFocusBtn">Tüm araçları göster</button><button type="button" id="acaClearFilter">Filtreyi temizle</button></div></div><div class="aca-structure-search"><input id="acaCardSearch" type="search" placeholder="Araç, ilaç, tetkik veya işlem ara…"><button type="button" id="acaSearchClear">Temizle</button></div><div class="aca-flow-tabs"><button data-cat="all" class="active">Tümü</button>'+Object.keys(categoryMap).map(function(k){return '<button data-cat="'+k+'">'+categoryMap[k].icon+' '+categoryMap[k].label+'</button>'}).join('')+'</div><div class="aca-subnav"><button data-jump="smartTreatmentOrderCard">Acil tedavi</button><button data-jump="medV1025Card">İlaç güvenliği</button><button data-jump="doseCalculatorCard">Doz</button><button data-jump="smartPrescriptionCard">Reçete</button><button data-jump="smartTestOrderCard">Tetkik istemi</button><button data-jump="labV1026Card">Tetkik yorumu</button><button data-jump="imagingV1027Card">Görüntüleme</button><button data-jump="procedureV1030Card">Girişimler</button><button data-jump="dispositionV1028Card">Yatış–sevk</button><button data-jump="safetynetV1029Card">Taburculuk</button></div><div id="acaEmptySearch" class="aca-empty-search">Bu filtrede görünür araç bulunamadı. “Tüm araçları göster” veya “Filtreyi temizle” seçeneğini kullanın.</div>';
+ var anchor=document.querySelector('#moduleHeading')||main.firstElementChild; if(anchor&&anchor.parentNode===main)main.insertBefore(n,anchor.nextSibling);else main.insertBefore(n,main.firstChild);
+ n.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.cat){scrollCategory(b.dataset.cat);return}if(b.dataset.jump){var target=E(b.dataset.jump);if(!target&&typeof window.render==='function'){try{window.render()}catch(_){}}target=E(b.dataset.jump);if(target){activeCategory='all';searchTerm='';var s=E('acaCardSearch');if(s)s.value='';apply();target.scrollIntoView({behavior:'smooth',block:'start'});target.setAttribute('open','')}return;}if(b.id==='acaFocusBtn'){focusMode=!focusMode;apply()}if(b.id==='acaClearFilter'||b.id==='acaSearchClear'){activeCategory='all';searchTerm='';var i=E('acaCardSearch');if(i)i.value='';apply()}});
+ var input=E('acaCardSearch');if(input)input.addEventListener('input',function(){searchTerm=norm(input.value);apply()});
+}
+function boot(){nav();clinicalCards().forEach(markCard);apply();window.ACA_APP_VERSION=VERSION;window.ACA_UPDATE_NAME=UPDATE;document.title='Acil Klinik Asistanı '+VERSION;var st=document.querySelector('.status');if(st)st.textContent=VERSION+' • '+UPDATE}
+var mo=new MutationObserver(function(){clearTimeout(window.__acaStructureTimer);window.__acaStructureTimer=setTimeout(function(){clinicalCards().forEach(markCard);apply()},80)});
+function start(){boot();var main=document.querySelector('main');if(main)mo.observe(main,{childList:true,subtree:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
