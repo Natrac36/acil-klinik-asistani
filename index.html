@@ -3515,14 +3515,39 @@ function consultantSnapshot(){
  const blockers=dischargeBlockers();
  return {level,cls,main,ds,missing:missing||'Temel kritik veri eksikliği saptanmadı.',waitText,changeTest,blockers,now:ap.now.slice(0,3),must:(r.mustNotMiss||[]).slice(0,3)};
 }
+function diagnosisClinicalInsight(d){
+ const name=d?.name||'', plus=(d?.plus||[]).filter(Boolean), minus=(d?.minus||[]).filter(Boolean), score=Number(d?.score)||0;
+ let level=score>=55?'critical':score>=35?'high':'low', next='Klinik verileri tamamla ve seri yeniden değerlendirme yap.', source='Yerel protokol ve güncel kılavuzla doğrula.';
+ if(name==='Akut koroner sendrom'){
+  const heart=riskScores().find(x=>x.name==='HEART');
+  next=S.ecg==='Bekleniyor'?'12 derivasyon EKG’yi gecikmeden değerlendir.':(['Yüksek','Sınırda','Bekleniyor'].includes(S.troponin)?'Doğrulanmış seri hs-troponin algoritmasını tamamla.':'Semptom başlangıcı ve klinik riske göre seri EKG/troponin gereksinimini değerlendir.');
+  if(S.ecg==='ST elevasyonu')next='ST elevasyonu: yerel STEMI aktivasyon ve acil reperfüzyon yolunu başlat.';
+  source='ESC 2023 ACS · AHA/ACC 2021 Chest Pain'+(heart?` · HEART: ${heart.value}`:'');
+ }else if(name==='Pulmoner emboli'){
+  const wells=riskScores().find(x=>x.name==='Wells-PE'), perc=riskScores().find(x=>x.name==='PERC');
+  next=wells?.level==='high'?'Yüksek klinik olasılık: uygun görüntüleme yolunu geciktirme.':(perc&&String(perc.value)==='Negatif'?'Yalnız düşük ön test olasılığında PERC ile dışlama düşünülebilir.':'Ön test olasılığını belirle; uygunsa D-dimer, değilse görüntüleme yolunu seç.');
+  source='ESC 2019 Acute PE'+(wells?` · Wells: ${wells.value}`:'')+(perc?` · PERC: ${perc.value}`:'');
+ }else if(name==='Kas-iskelet kaynaklı ağrı'){
+  next='Yaşamı tehdit eden nedenler dışlandıktan sonra palpasyon/hareketle yeniden üretilebilirliği doğrula ve semptomatik yaklaşımı değerlendir.';
+  source='AHA/ACC 2021 Chest Pain · klinik yeniden değerlendirme';
+ }else if(name==='Akut aort sendromu'){
+  next='Ani başlangıç, nabız/KB asimetrisi veya nörolojik bulguda acil aort görüntüleme ve uzman görüşünü değerlendir.';
+  source='ESC aort hastalıkları yaklaşımı';
+ }
+ return {name,score,level,plus:plus.slice(0,3),minus:minus.slice(0,2),next,source};
+}
+function priorityDiagnosisCardsHTML(ds){
+ if(!ds?.length)return 'Yeterli veri yok';
+ return `<div class="priority-dx-list">${ds.map(d=>{const x=diagnosisClinicalInsight(d);return `<div class="priority-dx-card ${x.level}"><div class="priority-dx-head"><span class="priority-dx-title">${esc(x.name)}</span><span class="priority-dx-score">${x.score}/100</span></div><div class="priority-dx-columns"><div class="priority-dx-evidence priority-dx-for"><b>Lehte</b><br>${esc(x.plus.join(' · ')||'Henüz güçlü destekleyici veri yok')}</div><div class="priority-dx-evidence priority-dx-against"><b>Aleyhte / eksik</b><br>${esc(x.minus.join(' · ')||'Belirgin aleyhte veri girilmedi')}</div></div><div class="priority-dx-next"><b>Sıradaki adım:</b> ${esc(x.next)}</div><div class="priority-dx-source">${esc(x.source)}</div></div>`}).join('')}</div>`;
+}
 function quickConsultantHTML(){
  const c=consultantSnapshot();
- return `<div class="consultant-grid"><div class="consultant-head"><div class="consultant-main">${esc(c.main)}</div><span class="consultant-badge ${c.cls}">${esc(c.level)}</span></div><div class="consultant-row"><b>En olası 3 öncelik</b><div class="mini-dx">${c.ds.length?c.ds.map(x=>`<span class="pill">${esc(x.name)}</span>`).join(''):'Yeterli veri yok'}</div></div><div class="consultant-row"><b>Eksik en kritik bilgi</b>${esc(c.missing)}</div><div class="consultant-row"><b>Sonuç beklerken</b>${esc(c.waitText)}</div><div class="consultant-row"><b>Yönetimi en çok değiştirecek tetkik</b>${esc(c.changeTest)}</div><div class="consultant-row"><b>Taburculuk engelleri</b>${c.blockers.length?c.blockers.slice(0,4).map(x=>`<span class="pill">${esc(x)}</span>`).join(' '):'Girilen verilere göre belirgin engel saptanmadı; klinik karar ve yeniden değerlendirme gerekir.'}</div><div class="consultant-disclaimer">Kesin tanı üretmez; yalnız girilen verileri önceliklendirir.</div></div>`;
+ return `<div class="consultant-grid"><div class="consultant-head"><div class="consultant-main">${esc(c.main)}</div><span class="consultant-badge ${c.cls}">${esc(c.level)}</span></div><div class="consultant-row"><b>En olası 3 öncelik ve klinik gerekçe</b>${priorityDiagnosisCardsHTML(c.ds)}</div><div class="consultant-row"><b>Eksik en kritik bilgi</b>${esc(c.missing)}</div><div class="consultant-row"><b>Sonuç beklerken</b>${esc(c.waitText)}</div><div class="consultant-row"><b>Yönetimi en çok değiştirecek tetkik</b>${esc(c.changeTest)}</div><div class="consultant-row"><b>Taburculuk engelleri</b>${c.blockers.length?c.blockers.slice(0,4).map(x=>`<span class="pill">${esc(x)}</span>`).join(' '):'Girilen verilere göre belirgin engel saptanmadı; klinik karar ve yeniden değerlendirme gerekir.'}</div><div class="consultant-disclaimer">Kesin tanı üretmez; yalnız girilen verileri önceliklendirir.</div></div>`;
 }
 function renderConsultant(){
  const box=el('consultantPanel'), badge=el('consultantBadge'); if(!box||!badge)return;
  const c=consultantSnapshot(); badge.textContent=c.level; badge.className=`consultant-badge ${c.cls}`;
- box.innerHTML=`<div class="consultant-main">${esc(c.main)}</div><div class="consultant-row"><b>Öncelikli tanılar</b><div class="mini-dx">${c.ds.length?c.ds.map(x=>`<span class="pill">${esc(x.name)}</span>`).join(''):'Yeterli veri yok'}</div></div><div class="consultant-row"><b>Kaçırma</b>${c.must.length?c.must.map(x=>`<span class="pill">${esc(x)}</span>`).join(' '):'Özel zaman-kritik sinyal oluşmadı.'}</div><div class="consultant-row"><b>Eksik kritik bilgi</b>${esc(c.missing)}</div><div class="consultant-row"><b>Bekleyen sonuç</b>${esc(c.waitText)}</div><div class="consultant-row"><b>Kararı değiştirecek tetkik</b>${esc(c.changeTest)}</div><div class="consultant-row"><b>Taburculuk engeli</b>${c.blockers.length?c.blockers.slice(0,4).map(x=>`<span class="pill">${esc(x)}</span>`).join(' '):'Belirgin engel saptanmadı; yeniden değerlendirme şart.'}</div><div class="consultant-disclaimer">Otomatik karar desteğidir; hekim değerlendirmesi ve yerel protokol esastır.</div>`;
+ box.innerHTML=`<div class="consultant-main">${esc(c.main)}</div><div class="consultant-row"><b>Öncelikli tanılar ve klinik gerekçe</b>${priorityDiagnosisCardsHTML(c.ds)}</div><div class="consultant-row"><b>Kaçırma</b>${c.must.length?c.must.map(x=>`<span class="pill">${esc(x)}</span>`).join(' '):'Özel zaman-kritik sinyal oluşmadı.'}</div><div class="consultant-row"><b>Eksik kritik bilgi</b>${esc(c.missing)}</div><div class="consultant-row"><b>Bekleyen sonuç</b>${esc(c.waitText)}</div><div class="consultant-row"><b>Kararı değiştirecek tetkik</b>${esc(c.changeTest)}</div><div class="consultant-row"><b>Taburculuk engeli</b>${c.blockers.length?c.blockers.slice(0,4).map(x=>`<span class="pill">${esc(x)}</span>`).join(' '):'Belirgin engel saptanmadı; yeniden değerlendirme şart.'}</div><div class="consultant-disclaimer">Otomatik karar desteğidir; hekim değerlendirmesi ve yerel protokol esastır.</div>`;
 }
 
 function quickDecisionHTML(){const ds=diagnoses().slice(0,3),ap=actionPlan(),r=integratedReasoning();return `<div class="quick-dashboard">${trafficHTML()}<div class="quick-box"><h3>Öncelikli düşün</h3><p>${ds.map(x=>`<b>${esc(x.name)}</b>`).join(' · ')||'Yeterli veri yok'}</p></div><div class="quick-box"><h3>Şimdi yap</h3><ul class="compact">${ap.now.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="quick-box"><h3>Kaçırma</h3><ul class="compact">${(r.mustNotMiss.length?r.mustNotMiss:['Özel zaman-kritik sinyal oluşmadı; klinik değerlendirme sürmeli.']).slice(0,3).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div class="quick-box"><h3>Eksik tek kritik bilgi</h3><p>${esc((r.missing&&r.missing[0])||'Temel kritik veri eksikliği saptanmadı.')}</p></div></div>`}
@@ -7668,6 +7693,9 @@ body.module-view .layout{display:grid!important}
 .aca-ai-service-banner{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:14px;margin:10px 0 14px;border:1px solid #f0c36a;background:#fff8e8;color:#6e4b00}.aca-ai-service-banner>span{font-size:22px}.aca-ai-service-banner div{display:flex;flex-direction:column;gap:4px}.aca-ai-service-banner small{line-height:1.45;color:#856521}.aca-ai-service-banner.enabled{border-color:#86efac;background:#effcf5;color:#087443}.aca-ai-service-banner.enabled small{color:#227252}
 .aca-ai-developer-panel{margin:10px 0;border:1px solid #d8e1e8;border-radius:13px;padding:10px 12px;background:#f8fafc}.aca-ai-developer-panel summary{cursor:pointer;font-weight:800}
 @media(max-width:620px){.aca-ai-home-status strong{display:none}.aca-ai-home-status{padding:10px 11px}}
+
+/* v9.7.1 Tanı kartı klinik gerekçe görünümü */
+.priority-dx-list{display:grid;gap:9px;margin-top:8px}.priority-dx-card{border:1px solid var(--line);border-left:5px solid #64748b;border-radius:13px;padding:10px;background:#fff}.priority-dx-card.critical{border-left-color:#dc2626;background:#fff7f7}.priority-dx-card.high{border-left-color:#f59e0b;background:#fffbeb}.priority-dx-card.low{border-left-color:#16a34a;background:#f0fdf4}.priority-dx-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.priority-dx-title{font-weight:900;font-size:13px}.priority-dx-score{font-size:11px;font-weight:900;padding:3px 7px;border-radius:99px;background:#e2e8f0;white-space:nowrap}.priority-dx-columns{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.priority-dx-evidence{border-radius:9px;padding:8px;font-size:11px}.priority-dx-for{background:#f0fdf4;border:1px solid #bbf7d0}.priority-dx-against{background:#fff7ed;border:1px solid #fed7aa}.priority-dx-next{margin-top:7px;padding:8px;border-radius:9px;background:#eff6ff;border:1px solid #bfdbfe;font-size:11px}.priority-dx-source{margin-top:6px;font-size:10px;color:var(--muted)}@media(max-width:560px){.priority-dx-columns{grid-template-columns:1fr}}
 </style>
 <script id="aca-v952-ai-commercial-js">
 (function(){'use strict';
@@ -7707,7 +7735,7 @@ body.module-view .layout{display:grid!important}
 <script id="aca-v970-evidence-core-js">
 (function(){
 'use strict';
-window.ACA_APP_VERSION='v9.7.0';
+window.ACA_APP_VERSION='v9.7.1';
 window.ACA_UPDATE_NAME='Kanıta Dayalı Klinik İçerik Çekirdeği — Göğüs Ağrısı';
 var CHEST_PAIN_KNOWLEDGE={
  id:'symptom.chest_pain.v1',reviewed:'2026-07-30',
@@ -7733,7 +7761,7 @@ window.renderEvidenceClinicalKnowledge=function(){
  var k=CHEST_PAIN_KNOWLEDGE,dx=typeof diagnoses==='function'?diagnoses().slice(0,4):[],cr=typeof criticals==='function'?criticals():[];
  var sourceHtml=k.sources.map(function(x){return '<span class="evidence-chip">'+esc(x.organization)+' '+esc(x.year)+'</span>'}).join('');
  host.innerHTML='<div class="evidence-knowledge-card">'+
-  '<div class="evidence-knowledge-head"><div><h4>📚 Kanıta dayalı göğüs ağrısı yolu</h4><div class="muted">Mevcut karar motorunu besleyen çevrimdışı klinik içerik paketi</div></div><span class="phase-badge">v9.7.0</span></div>'+
+  '<div class="evidence-knowledge-head"><div><h4>📚 Kanıta dayalı göğüs ağrısı yolu</h4><div class="muted">Mevcut karar motorunu besleyen çevrimdışı klinik içerik paketi</div></div><span class="phase-badge">v9.7.1</span></div>'+
   '<div class="evidence-knowledge-grid">'+
    '<div class="evidence-knowledge-box evidence-warning"><h5>Önce dışla</h5>'+list(k.mustNotMiss)+'</div>'+
    '<div class="evidence-knowledge-box"><h5>Hedefli anamnez</h5>'+list(k.history)+'</div>'+
