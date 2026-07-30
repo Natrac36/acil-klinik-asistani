@@ -7777,4 +7777,96 @@ setTimeout(function(){try{window.renderEvidenceClinicalKnowledge();document.quer
 })();
 </script>
 
+<style id="aca-v980-chest-complete-css">
+.chest-complete-card{border:2px solid #0ea5e9;background:linear-gradient(180deg,#f0f9ff,#fff)}
+.chest-complete-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.chest-complete-box{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.chest-complete-box h4{margin:0 0 7px;font-size:14px}.chest-path-hero{border-radius:14px;padding:13px;color:#fff;background:linear-gradient(135deg,#0c4a6e,#0f766e);margin-bottom:10px}.chest-path-hero.critical{background:linear-gradient(135deg,#7f1d1d,#dc2626)}.chest-path-hero.warning{background:linear-gradient(135deg,#78350f,#c2410c)}.chest-path-hero.safe{background:linear-gradient(135deg,#14532d,#0f766e)}.chest-path-title{font-size:17px;font-weight:950}.chest-path-meta{font-size:11px;opacity:.9;margin-top:5px}.chest-step{border-left:5px solid #0ea5e9;border-radius:10px;padding:9px;background:#f8fafc;margin:7px 0;font-size:12px}.chest-step.now{border-left-color:#dc2626;background:#fff1f2}.chest-step.warn{border-left-color:#f59e0b;background:#fffbeb}.chest-step.ok{border-left-color:#16a34a;background:#f0fdf4}.chest-mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.chest-mini{border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff}.chest-mini b{display:block;font-size:11px;color:var(--muted);text-transform:uppercase}.chest-mini span{display:block;font-weight:900;margin-top:3px}.chest-extra-fields{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}.chest-extra-fields .tiny-checks{grid-template-columns:repeat(2,minmax(0,1fr))}.chest-source{font-size:10px;color:var(--muted);margin-top:9px;line-height:1.45}@media(max-width:700px){.chest-complete-grid{grid-template-columns:1fr}.chest-mini-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.chest-extra-fields .tiny-checks,.chest-mini-grid{grid-template-columns:1fr}}
+</style>
+<script id="aca-v980-chest-complete-js">
+(function(){
+'use strict';
+window.ACA_APP_VERSION='v9.8.0';
+window.ACA_UPDATE_NAME='Göğüs Ağrısı Tam Klinik Karar Yolu';
+function E(id){return document.getElementById(id)}
+function h(v){return typeof esc==='function'?esc(v):String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function yes(key){return !!(window.S&&S[key])}
+function setExtra(key,on){if(!window.S)return;S[key]=!!on;try{if(typeof updateAll==='function')updateAll()}catch(_){} }
+window.acaChestSetExtra=setExtra;
+function injectFields(){
+ var details=document.querySelector('details.risk-inputs');if(!details||E('chestExtraRiskFields'))return;
+ var box=document.createElement('div');box.id='chestExtraRiskFields';box.className='chest-extra-fields';
+ box.innerHTML='<b>Göğüs ağrısı için ek otomatik skor verileri</b><div class="tiny-checks">'+
+ '<label class="choice"><input type="checkbox" onchange="acaChestSetExtra(\'timiKnownCad\',this.checked)">Bilinen ≥%50 koroner darlık</label>'+
+ '<label class="choice"><input type="checkbox" onchange="acaChestSetExtra(\'timiAspirin7d\',this.checked)">Son 7 günde aspirin kullanımı</label>'+
+ '<label class="choice"><input type="checkbox" onchange="acaChestSetExtra(\'timiAngina24h\',this.checked)">Son 24 saatte ≥2 angina atağı</label>'+
+ '<label class="choice"><input type="checkbox" onchange="acaChestSetExtra(\'aorticHighRiskCondition\',this.checked)">Aort hastalığı / bağ dokusu / yakın aort girişimi</label>'+
+ '</div><div class="muted" style="margin-top:6px">TIMI ve ADD-RS yalnız uygun klinik bağlamda yardımcıdır; tek başına tanı veya taburculuk kararı oluşturmaz.</div>';
+ details.appendChild(box);
+ ['timiKnownCad','timiAspirin7d','timiAngina24h','aorticHighRiskCondition'].forEach(function(k,i){var cb=box.querySelectorAll('input')[i];if(cb)cb.checked=yes(k)});
+}
+function baseScores(){return typeof window.__acaRiskScoresV980Base==='function'?window.__acaRiskScoresV980Base():[]}
+if(typeof window.riskScores==='function'&&!window.__acaRiskScoresV980Base){
+ window.__acaRiskScoresV980Base=window.riskScores;
+ window.riskScores=function(){
+  var out=window.__acaRiskScoresV980Base.apply(this,arguments),age=Number(S.age||0),isChest=S.complaint==='Göğüs ağrısı';if(!isChest)return out;
+  var timi=0,timiMissing=[];
+  if(!S.age)timiMissing.push('yaş');else if(age>=65)timi++;
+  if(S.heartRiskCount==='')timiMissing.push('KAH risk faktörleri');else if(String(S.heartRiskCount)==='2')timi++;
+  if(yes('timiKnownCad'))timi++;
+  if(yes('timiAspirin7d'))timi++;
+  if(yes('timiAngina24h'))timi++;
+  if(S.ecg==='Bekleniyor')timiMissing.push('EKG');else if(S.ecg==='ST depresyonu/T negatifliği')timi++;
+  if(S.troponin==='Bekleniyor')timiMissing.push('troponin');else if(['Yüksek','Sınırda','Üst sınırın 1–3 katı','Üst sınırın >3 katı'].includes(S.troponin))timi++;
+  out.push({name:'TIMI UA/NSTEMI',value:timiMissing.length?'Eksik':timi+'/7',level:timiMissing.length?'incomplete':timi>=5?'high':timi>=3?'mid':'low',text:timiMissing.length?'Eksik: '+timiMissing.join(', '):'Yalnız şüpheli UA/NSTEMI bağlamında kısa dönem risk katmanlamasına yardımcıdır.'});
+  var rf=S.redFlags||[],ex=S.exam||[],hist=S.history||[];
+  var cond=yes('aorticHighRiskCondition')||hist.some(function(x){return /aort|Marfan|bağ dokusu/i.test(x)});
+  var pain=rf.includes('Ani yırtılır tarzda ağrı')||S.onset==='Ani'||S.painType==='Yırtılır';
+  var exam=rf.includes('İki kol arasında belirgin TA/nabız farkı')||ex.includes('Nabız defisiti')||S.mental!=='Normal';
+  var addrs=(cond?1:0)+(pain?1:0)+(exam?1:0);
+  out.push({name:'ADD-RS',value:addrs+'/3',level:addrs>=2?'high':addrs===1?'mid':'low',text:addrs>=2?'Akut aort sendromu için yüksek risk özellikleri; acil uzman/görüntüleme yolu.':addrs===1?'Tek yüksek risk kategorisi; klinik olasılık ve uygun tanısal yol birlikte değerlendirilmeli.':'Girilen veride yüksek risk kategorisi yok; klinik şüpheyi tek başına dışlamaz.'});
+  return out;
+ };
+}
+function getScore(name){try{return riskScores().find(function(x){return x.name===name})}catch(_){return null}}
+function troponinPath(){
+ var first=S.troponin,repeat=S.repeatTroponin,onset=String(S.onset||''),duration=String(S.duration||'');
+ if(first==='Bekleniyor')return{state:'warn',title:'İlk hs-troponin bekleniyor',text:'Örnek zamanını semptom başlangıcıyla birlikte kaydet; valide kurum algoritmasına göre seri ölçümü planla.'};
+ if(['Yüksek','Üst sınırın 1–3 katı','Üst sınırın >3 katı'].includes(first))return{state:'critical',title:'Troponin yüksek',text:'Akut miyokard hasarı vardır; iskemi, seri değişim ve alternatif nedenlerle birlikte değerlendir. NSTEMI tanısı yalnız değer yüksekliğiyle konmaz.'};
+ if(repeat==='Anlamlı yükseliş/düşüş')return{state:'critical',title:'Dinamik troponin değişimi',text:'Akut miyokard hasarı lehine; EKG, klinik iskemi ve alternatif nedenlerle acil karar yolunu sürdür.'};
+ if(first==='Normal'&&repeat==='Normal / anlamlı değişim yok')return{state:'ok',title:'Seri troponin negatif/stabil',text:'Yalnız valide zamanlama, uygun başlangıç süresi, non-iskemik EKG ve düşük klinik riskle birlikte güvenli dışlama yoluna destek olur.'};
+ if(first==='Normal'&&repeat==='Bekleniyor')return{state:'warn',title:'Seri ölçüm tamamlanmadı',text:'Tek normal troponin, özellikle erken başvuruda AKS’yi dışlamaz; kurumun 0/1 saat veya 0/2 saat hs-troponin yolunu tamamla.'};
+ return{state:'warn',title:'Troponin yolu klinik bağlam gerektiriyor',text:'Assay, üst referans sınırı, örnek zamanları ve mutlak delta bilinmeden otomatik rule-out/rule-in yapılmaz.'};
+}
+function dispositionPath(){
+ var heart=getScore('HEART'),addrs=getScore('ADD-RS'),wells=getScore('Wells-PE'),unstable=(Number(S.sbp||999)<90)||(Number(S.spo2||100)<90)||S.mental!=='Normal';
+ var ecgBad=['ST elevasyonu','ST depresyonu/T negatifliği'].includes(S.ecg),tropBad=['Yüksek','Sınırda','Üst sınırın 1–3 katı','Üst sınırın >3 katı'].includes(S.troponin)||S.repeatTroponin==='Anlamlı yükseliş/düşüş';
+ if(unstable||ecgBad||tropBad||(addrs&&addrs.level==='high'))return{state:'critical',title:'Acil yatış / zaman-kritik yol',text:'İnstabilite, iskemik EKG, miyokard hasarı veya yüksek aort riski mevcut. Taburculuk uygun değil.'};
+ if(!heart||heart.level==='incomplete'||S.repeatTroponin==='Bekleniyor')return{state:'warning',title:'Gözlem ve seri değerlendirme',text:'Risk sınıflaması veya seri troponin yolu tamamlanmadan taburculuk kararı verme.'};
+ if(heart.level==='low'&&S.ecg==='Normal / akut iskemi yok'&&S.troponin==='Normal'&&S.repeatTroponin==='Normal / anlamlı değişim yok'&&(!wells||wells.level==='low'))return{state:'safe',title:'Yapılandırılmış düşük-risk değerlendirmesi',text:'Güvenilir takip, alternatif ciddi tanıların dışlanması ve açık geri dönüş uyarılarıyla taburculuk değerlendirilebilir; otomatik taburculuk emri değildir.'};
+ return{state:'warning',title:'Gözlem / ileri değerlendirme',text:'Orta risk veya tamamlanmamış dışlama yolu mevcut; seri EKG-troponin ve hedefli alternatif tanı değerlendirmesini sürdür.'};
+}
+function renderPanel(){
+ var old=E('chestCompleteDecisionCard');if(S.complaint!=='Göğüs ağrısı'){if(old)old.remove();return}
+ var riskCard=E('riskScorePanel');if(!riskCard)return;var card=old||document.createElement('div');card.id='chestCompleteDecisionCard';card.className='card chest-complete-card';if(!old)riskCard.closest('.card').insertAdjacentElement('afterend',card);
+ var tp=troponinPath(),dp=dispositionPath(),heart=getScore('HEART'),timi=getScore('TIMI UA/NSTEMI'),addrs=getScore('ADD-RS'),wells=getScore('Wells-PE'),perc=getScore('PERC');
+ var immediate=[];
+ if(S.ecg==='Bekleniyor')immediate.push('12 derivasyon EKG’yi gecikmeden kaydet ve klinik değişiklikte tekrarla.');
+ if(S.troponin==='Bekleniyor'||S.repeatTroponin==='Bekleniyor')immediate.push('Assaya özgü seri hs-troponin yolunu ve örnek zamanlarını tamamla.');
+ if(addrs&&addrs.level!=='low')immediate.push('Akut aort sendromu olasılığını AKS yolundan ayrı değerlendir; uygun acil görüntüleme/uzman görüşü.');
+ if(wells&&wells.level!=='low')immediate.push('PE ön test olasılığına göre D-dimer veya doğrudan görüntüleme yolunu seç; PERC’yi yalnız düşük olasılıkta kullan.');
+ if(!immediate.length)immediate.push('Seri klinik değerlendirme, alternatif ciddi tanılar ve güvenli sonlandırma ölçütlerini doğrula.');
+ card.innerHTML='<div class="section-title"><h3>Göğüs ağrısı — tam klinik karar yolu</h3><span class="phase-badge">v9.8.0</span></div>'+
+ '<div class="chest-path-hero '+dp.state+'"><div class="chest-path-title">'+h(dp.title)+'</div><div>'+h(dp.text)+'</div><div class="chest-path-meta">Karar; kural tabanlıdır, hekim değerlendirmesi ve yerel protokol onayı gerektirir.</div></div>'+
+ '<div class="chest-mini-grid">'+[['HEART',heart],['TIMI',timi],['ADD-RS',addrs],['Wells-PE',wells],['PERC',perc],['Troponin yolu',{value:tp.title}]].map(function(a){return'<div class="chest-mini"><b>'+h(a[0])+'</b><span>'+h(a[1]?a[1].value:'—')+'</span></div>'}).join('')+'</div>'+
+ '<div class="chest-complete-grid" style="margin-top:10px"><div class="chest-complete-box"><h4>Şimdi yapılacaklar</h4>'+immediate.map(function(x){return'<div class="chest-step now">'+h(x)+'</div>'}).join('')+'</div>'+
+ '<div class="chest-complete-box"><h4>Dinamik troponin yorumu</h4><div class="chest-step '+(tp.state==='critical'?'now':tp.state==='ok'?'ok':'warn')+'"><b>'+h(tp.title)+'</b><br>'+h(tp.text)+'</div><div class="chest-step warn">Tek bir eşik yerine kullanılan hs-troponin assay’inin doğrulanmış 0/1 saat veya 0/2 saat algoritması esas alınmalıdır.</div></div>'+
+ '<div class="chest-complete-box"><h4>Taburculuk güvenlik kilidi</h4><div class="chest-step '+(dp.state==='safe'?'ok':dp.state==='critical'?'now':'warn')+'">'+h(dp.text)+'</div><div class="chest-step">Devam eden/tekrarlayan ağrı, instabil vital, dinamik EKG/troponin, senkop, ciddi alternatif tanı veya güvenilir takip yokluğunda taburculuk önerilmez.</div></div>'+
+ '<div class="chest-complete-box"><h4>Reçete ve tedavi güvenliği</h4><div class="chest-step">Tanı netleşmeden otomatik taburculuk reçetesi üretme. Antitrombotik, nitrat ve analjezi kararında kanama, aort sendromu, hipotansiyon, RV enfarktüsü, PDE-5 kullanımı, böbrek fonksiyonu ve etkileşimleri kontrol et.</div><div class="chest-step warn">Bu bölüm tedavi emri değildir; mevcut tedavi/order motoruyla hekim onaylı kullanılmalıdır.</div></div></div>'+
+ '<div class="chest-source"><b>Kaynak temeli:</b> ESC Akut Koroner Sendromlar 2023; AHA/ACC Göğüs Ağrısı 2021; ESC Akut Pulmoner Emboli 2019; ESC Periferik Arter ve Aort Hastalıkları 2024. Son içerik kontrolü: 30.07.2026.</div>';
+}
+var prior=window.updateAll;if(typeof prior==='function')window.updateAll=function(){var r=prior.apply(this,arguments);try{injectFields();renderPanel();document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}catch(e){console.warn('v9.8 göğüs ağrısı yolu',e)}return r};
+function init(){injectFields();try{if(typeof renderRiskScores==='function')renderRiskScores();renderPanel()}catch(e){console.warn(e)}document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0)});else setTimeout(init,0);
+})();
+</script>
+
 </body></html>
