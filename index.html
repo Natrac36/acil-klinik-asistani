@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v10.27.0</title>
+<title>Acil Klinik Asistanı v10.28.0</title>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -461,7 +461,7 @@ body.module-view .layout{display:grid!important}
 </style>
 </head>
 <body class="dashboard-home">
-<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v10.27.0 • Görüntüleme ve Rapor Yorumlama Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
+<header><div class="head"><div><h1>Acil Klinik Asistanı</h1><p>Profesyonel klinik karar desteği, kişisel çalışma alanı ve ticari ürün altyapısı</p></div><div class="status">v10.28.0 • Yatış–Sevk–Taburculuk Karar Motoru</div></div><div class="modebar"><button id="modeToggle" class="modebtn" type="button" onclick="toggleModeSafe()">Ayrıntılı moda geç</button></div><div class="head" style="display:block"><div class="progress"><span id="progressBar" style="width:14%"></span></div><div class="step-label"><span id="stepName">1. Hasta bilgisi</span><span id="stepCount">1/7</span></div></div></header>
 <main id="appMain">
 
 <section id="commercialDashboard" class="commercial-shell professional-home-panel no-print">
@@ -9434,5 +9434,69 @@ function mark(){window.ACA_APP_VERSION='v10.27.0';window.ACA_UPDATE_NAME='Görü
 function init(){ensure();card();mark()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,140)});else setTimeout(init,140);setTimeout(mark,1600);
 })();
 </script>
+
+
+<style id="disp-v1028-style">
+.disp-v1028-card{border:1px solid #cbd5e1;background:linear-gradient(180deg,#fff,#f8fafc)}
+.disp-v1028-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.disp-v1028-section{border:1px solid #e2e8f0;border-radius:14px;padding:12px;background:#fff}.disp-v1028-section h4{margin:0 0 10px}
+.disp-v1028-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.disp-v1028-alert{border-radius:12px;padding:10px 12px;margin:8px 0;border:1px solid #cbd5e1;background:#f8fafc}.disp-v1028-alert.danger{border-color:#fca5a5;background:#fef2f2}.disp-v1028-alert.warn{border-color:#fcd34d;background:#fffbeb}.disp-v1028-alert.ok{border-color:#86efac;background:#f0fdf4}.disp-v1028-alert.info{border-color:#93c5fd;background:#eff6ff}
+.disp-v1028-hero{border-radius:14px;padding:13px;color:#fff;background:linear-gradient(135deg,#0f172a,#0f766e);margin-bottom:10px}.disp-v1028-hero.danger{background:linear-gradient(135deg,#7f1d1d,#dc2626)}.disp-v1028-hero.warn{background:linear-gradient(135deg,#78350f,#d97706)}.disp-v1028-hero.ok{background:linear-gradient(135deg,#14532d,#0f766e)}.disp-v1028-hero b{display:block;font-size:18px;margin-bottom:3px}
+.disp-v1028-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.disp-v1028-check{display:flex;align-items:flex-start;gap:7px;border:1px solid #e2e8f0;border-radius:10px;padding:8px;background:#fff;font-size:12px}.disp-v1028-check input{width:17px;height:17px;min-height:0;margin-top:1px}.disp-v1028-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.disp-v1028-list{margin:6px 0 0;padding-left:18px}.disp-v1028-list li{margin:4px 0;font-size:12px}.disp-v1028-muted{font-size:11px;color:#64748b;margin-top:9px}
+@media(max-width:760px){.disp-v1028-grid,.disp-v1028-fields,.disp-v1028-checks{grid-template-columns:1fr}}
+</style>
+<script id="disp-v1028-script">
+(function(){
+'use strict';
+var E=function(id){return document.getElementById(id)},H=function(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'})[c]})};
+function ensure(){window.S=window.S||{};var d={disp28Hemodynamics:'Stabil',disp28Airway:'Güvenli',disp28Mental:'Normal',disp28Oxygen:'Yeterli',disp28Pain:'Kontrollü',disp28Oral:'Tolere ediyor',disp28Mobility:'Uygun',disp28Support:'Var',disp28Followup:'Mümkün',disp28CriticalTest:'Yok',disp28RepeatNeed:'Hayır',disp28TreatmentResponse:'İyi',disp28RedFlag:false,disp28UncertainDx:false,disp28HighRiskComorb:false,disp28ProcedureNeed:false,disp28IVNeed:false,disp28ObservationNeed:false,disp28SpecialistNeed:false,disp28TransferNeed:false,disp28Notes:''};Object.keys(d).forEach(function(k){if(S[k]===undefined)S[k]=d[k]})}
+function sel(id,label,arr){return '<label>'+H(label)+'<select id="'+id+'">'+arr.map(function(x){return'<option '+(S[id]===x?'selected':'')+'>'+H(x)+'</option>'}).join('')+'</select></label>'}
+function chk(id,label){return '<label class="disp-v1028-check"><input type="checkbox" id="'+id+'" '+(S[id]?'checked':'')+'> '+H(label)+'</label>'}
+function assess(){ensure();var danger=[],warn=[],ok=[],plan=[],score=0;
+function d(x){danger.push(x);score+=3}function w(x){warn.push(x);score+=1}function o(x){ok.push(x)}
+if(S.disp28Hemodynamics!=='Stabil')d('Hemodinamik instabilite veya persistan anormallik');else o('Hemodinami stabil');
+if(S.disp28Airway!=='Güvenli')d('Hava yolu güvenliği sağlanmamış');else o('Hava yolu güvenli');
+if(S.disp28Mental!=='Normal')d('Bilinç durumu normal değil');else o('Bilinç normal');
+if(S.disp28Oxygen!=='Yeterli')d('Oksijenasyon yeterli değil');else o('Oksijenasyon yeterli');
+if(S.disp28RedFlag)d('Aktif kırmızı bayrak mevcut');
+if(S.disp28TransferNeed)d('İleri merkeze transfer gereksinimi işaretlendi');
+if(S.disp28CriticalTest!=='Yok')d('Kritik veya açıklanmamış tetkik sonucu mevcut');
+if(S.disp28ProcedureNeed)w('Acil girişim/prosedür gereksinimi olabilir');
+if(S.disp28IVNeed)w('Süren IV tedavi veya parenteral tedavi gereksinimi var');
+if(S.disp28ObservationNeed)w('Seri muayene/gözlem ihtiyacı var');
+if(S.disp28SpecialistNeed)w('Acil uzman değerlendirmesi gereksinimi var');
+if(S.disp28UncertainDx)w('Tanısal belirsizlik sürüyor');
+if(S.disp28HighRiskComorb)w('Yüksek riskli komorbidite mevcut');
+if(S.disp28RepeatNeed==='Evet')w('Kontrol tetkiki veya seri ölçüm gerekiyor');
+if(S.disp28TreatmentResponse!=='İyi')w('Tedavi yanıtı yetersiz veya belirsiz');else o('Tedavi yanıtı iyi');
+if(S.disp28Pain!=='Kontrollü')w('Semptom/ağrı yeterince kontrol altında değil');else o('Semptom kontrolü yeterli');
+if(S.disp28Oral!=='Tolere ediyor')w('Oral alım uygun değil');
+if(S.disp28Mobility!=='Uygun')w('Güvenli mobilizasyon sorunu var');
+if(S.disp28Support!=='Var')w('Evde destek yetersiz');
+if(S.disp28Followup!=='Mümkün')w('Erken kontrol veya geri dönüş olanağı güvenilir değil');
+var level,title;
+if(danger.length){level='danger';title=S.disp28TransferNeed?'Acil transfer / üst basamak':'Yatış veya acil ileri değerlendirme'}
+else if(score>=3||S.disp28ObservationNeed||S.disp28SpecialistNeed){level='warn';title='Gözlem / konsültasyon / kısa süreli yatış düşün'}
+else{level='ok';title='Taburculuk için uygunluk düşünülebilir'}
+if(level==='danger'){plan.push('ABCDE stabilizasyonunu sürdür.');plan.push('Uygun branş ve yatak/transfer organizasyonunu geciktirme.');}
+if(level==='warn'){plan.push('Seri vital bulgu ve yeniden muayene yap.');plan.push('Eksik tetkik veya konsültasyonu tamamla.');}
+if(level==='ok'){plan.push('Tanı, tedavi, reçete ve yazılı geri dönüş uyarılarını ver.');plan.push('Kontrol zamanı ve başvuru eşiğini açıkça belirt.');}
+return{level:level,title:title,danger:danger,warn:warn,ok:ok,plan:plan,score:score}}
+function renderBody(){var b=E('dispV1028Body');if(!b)return;var r=assess();var html='<div class="disp-v1028-hero '+r.level+'"><b>'+H(r.title)+'</b><span>Karar yükü: '+H(r.score)+' • Nihai karar klinisyene aittir.</span></div>';
+r.danger.forEach(function(x){html+='<div class="disp-v1028-alert danger"><b>Kritik engel</b><br>'+H(x)+'</div>'});
+r.warn.forEach(function(x){html+='<div class="disp-v1028-alert warn"><b>Dikkat</b><br>'+H(x)+'</div>'});
+if(!r.danger.length&&!r.warn.length)html+='<div class="disp-v1028-alert ok"><b>Belirgin taburculuk engeli saptanmadı</b><br>Yine de tanı-spesifik risk, seri değerlendirme ve sosyal koşullar doğrulanmalıdır.</div>';
+html+='<div class="disp-v1028-alert info"><b>Önerilen sonraki adımlar</b><ul class="disp-v1028-list">'+r.plan.map(function(x){return'<li>'+H(x)+'</li>'}).join('')+'</ul></div><div class="disp-v1028-muted"><b>Güvenlik sınırı:</b> Bu araç yatış, sevk veya taburculuk kararını otomatikleştirmez; yerel olanaklar, hastanın tercihi, medikolegal koşullar ve klinik yargı birlikte değerlendirilmelidir.</div>';b.innerHTML=html}
+function summary(){var r=assess(),lines=['YATIŞ–SEVK–TABURCULUK KARAR ÖZETİ','Öneri: '+r.title,'Karar yükü: '+r.score];r.danger.forEach(function(x){lines.push('KRİTİK: '+x)});r.warn.forEach(function(x){lines.push('DİKKAT: '+x)});r.plan.forEach(function(x){lines.push('PLAN: '+x)});if(S.disp28Notes)lines.push('Not: '+S.disp28Notes);return lines.join('\n')}
+function card(){ensure();var h=E('stepContent');if(!h||E('dispV1028Card'))return;var page=typeof order==='function'?order()[currentStep]:null;if(![7,8,9,10,11].includes(page))return;var d=document.createElement('div');d.id='dispV1028Card';d.className='card disp-v1028-card';d.innerHTML='<div class="section-title"><h3>Yatış–Sevk–Taburculuk Karar Motoru</h3><span class="phase-badge">v10.28</span></div><div class="disp-v1028-grid"><div class="disp-v1028-section"><h4>Karar öncesi güvenlik kontrolü</h4><div class="disp-v1028-fields">'+sel('disp28Hemodynamics','Hemodinami',['Stabil','Sınırda','İnstabil'])+sel('disp28Airway','Hava yolu',['Güvenli','Riskli','Güvenli değil'])+sel('disp28Mental','Bilinç',['Normal','Değişken','Bozuk'])+sel('disp28Oxygen','Oksijenasyon',['Yeterli','Sınırda','Yetersiz'])+sel('disp28Pain','Semptom/ağrı',['Kontrollü','Kısmen kontrollü','Kontrolsüz'])+sel('disp28Oral','Oral alım',['Tolere ediyor','Kısıtlı','Tolere etmiyor'])+sel('disp28Mobility','Mobilizasyon',['Uygun','Kısıtlı','Güvenli değil'])+sel('disp28Support','Evde destek',['Var','Kısıtlı','Yok'])+sel('disp28Followup','Erken kontrol',['Mümkün','Belirsiz','Mümkün değil'])+sel('disp28CriticalTest','Kritik tetkik',['Yok','Belirsiz sonuç','Kritik sonuç'])+sel('disp28RepeatNeed','Seri tetkik gerekir mi?',['Hayır','Evet'])+sel('disp28TreatmentResponse','Tedavi yanıtı',['İyi','Kısmi','Yetersiz'])+'</div><h4 style="margin-top:12px">Kararı ağırlaştıran durumlar</h4><div class="disp-v1028-checks">'+chk('disp28RedFlag','Aktif kırmızı bayrak')+chk('disp28UncertainDx','Tanısal belirsizlik')+chk('disp28HighRiskComorb','Yüksek riskli komorbidite')+chk('disp28ProcedureNeed','Acil prosedür gereksinimi')+chk('disp28IVNeed','Süren IV tedavi gereksinimi')+chk('disp28ObservationNeed','Seri gözlem gereksinimi')+chk('disp28SpecialistNeed','Acil uzman değerlendirmesi')+chk('disp28TransferNeed','İleri merkeze transfer gereksinimi')+'</div><label style="margin-top:10px">Karar notu<textarea id="disp28Notes" rows="3" placeholder="Klinik gerekçe, sosyal durum, konsültasyon sonucu...">'+H(S.disp28Notes)+'</textarea></label><div class="disp-v1028-actions"><button type="button" class="secondary" id="disp28Copy">Karar özetini kopyala</button><button type="button" class="secondary" id="disp28Reset">Alanları sıfırla</button></div></div><div class="disp-v1028-section"><h4>Önerilen bakım düzeyi</h4><div id="dispV1028Body"></div></div></div>';h.appendChild(d);renderBody()}
+function collect(){document.querySelectorAll('#dispV1028Card input,#dispV1028Card select,#dispV1028Card textarea').forEach(function(e){S[e.id]=e.type==='checkbox'?e.checked:e.value});renderBody()}
+document.addEventListener('input',function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('#dispV1028Card'))collect()});document.addEventListener('change',function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('#dispV1028Card'))collect()});
+document.addEventListener('click',function(ev){var t=ev.target;if(!t)return;if(t.id==='disp28Copy'){var x=summary();if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(x);t.textContent='Kopyalandı';setTimeout(function(){t.textContent='Karar özetini kopyala'},1200)}if(t.id==='disp28Reset'){['disp28Hemodynamics','disp28Airway','disp28Mental','disp28Oxygen','disp28Pain','disp28Oral','disp28Mobility','disp28Support','disp28Followup','disp28CriticalTest','disp28RepeatNeed','disp28TreatmentResponse','disp28RedFlag','disp28UncertainDx','disp28HighRiskComorb','disp28ProcedureNeed','disp28IVNeed','disp28ObservationNeed','disp28SpecialistNeed','disp28TransferNeed','disp28Notes'].forEach(function(k){delete S[k]});var c=E('dispV1028Card');if(c)c.remove();ensure();card()}});
+var or=window.render;if(typeof or==='function')window.render=function(){var z=or.apply(this,arguments);try{card()}catch(e){console.warn('v10.28 karar motoru render',e)}return z};
+var ou=window.updateAll;if(typeof ou==='function')window.updateAll=function(){var z=ou.apply(this,arguments);try{var c=E('dispV1028Card');if(c)c.remove();card()}catch(e){console.warn('v10.28 karar motoru update',e)}return z};
+function mark(){window.ACA_APP_VERSION='v10.28.0';window.ACA_UPDATE_NAME='Yatış–Sevk–Taburculuk Karar Motoru';document.title='Acil Klinik Asistanı v10.28.0';var st=document.querySelector('.status');if(st)st.textContent='v10.28.0 • Yatış–Sevk–Taburculuk Karar Motoru';document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.28.0'});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Yatış–Sevk–Taburculuk Karar Motoru'})}
+function init(){ensure();card();mark()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,150)});else setTimeout(init,150);setTimeout(mark,1700);
+})();
+</script>
+
 </body>
 </html>
