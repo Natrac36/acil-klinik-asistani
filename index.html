@@ -7869,4 +7869,77 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<style id="aca-v990-chest-structured-css">
+.chest-structured-card{border:2px solid #14b8a6;background:linear-gradient(180deg,#ecfdf5,#fff);margin-top:12px}
+.chest-structured-card h3{color:#0f766e}.chest-structured-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.chest-structured-section{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.chest-structured-section h4{margin:0 0 8px;font-size:14px}.chest-time-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.chest-time-item{border:1px solid var(--line);border-radius:11px;padding:9px;background:#f8fafc}.chest-time-item label{font-size:12px}.chest-delta-box{border-left:5px solid #64748b;border-radius:11px;padding:10px;background:#f8fafc;margin-top:9px;font-size:12px}.chest-delta-box.ok{border-left-color:#16a34a;background:#f0fdf4}.chest-delta-box.warn{border-left-color:#f59e0b;background:#fffbeb}.chest-delta-box.critical{border-left-color:#dc2626;background:#fff1f2}.chest-inline-note{font-size:11px;color:var(--muted);margin-top:7px}.chest-risk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.chest-risk-grid .choice{padding:8px;font-size:12px}@media(max-width:650px){.chest-structured-grid,.chest-time-grid,.chest-risk-grid{grid-template-columns:1fr}}
+</style>
+<script id="aca-v990-chest-structured-js">
+(function(){
+'use strict';
+window.ACA_APP_VERSION='v9.9.0';
+window.ACA_UPDATE_NAME='Göğüs Ağrısı Yapılandırılmış Öykü, EKG ve Troponin Zaman Çizelgesi';
+function E(id){return document.getElementById(id)}
+function H(v){return typeof esc==='function'?esc(v):String(v==null?'':v)}
+function ensureState(){
+ if(!window.S)return;
+ var defs={chestPainQualities:[],chestRadiationExtended:[],chestRiskExtended:[],chestEcgClass:'Bekleniyor',chestSymptomStart:'',chestTrop0Time:'',chestTrop0Value:'',chestTrop1Time:'',chestTrop1Value:'',chestTrop2Time:'',chestTrop2Value:'',chestTrop3Time:'',chestTrop3Value:'',chestTropUnit:'ng/L',chestTropUrl:'',chestTropDeltaMode:'Mutlak delta'};
+ Object.keys(defs).forEach(function(k){if(typeof S[k]==='undefined')S[k]=Array.isArray(defs[k])?[]:defs[k]});
+}
+function setVal(k,v){ensureState();S[k]=v;try{if(typeof updateAll==='function')updateAll()}catch(_){} }
+function setCheck(k,v,on){ensureState();var a=Array.isArray(S[k])?S[k].slice():[],i=a.indexOf(v);if(on&&i<0)a.push(v);if(!on&&i>=0)a.splice(i,1);S[k]=a;try{if(typeof updateAll==='function')updateAll()}catch(_){} }
+window.acaChest990SetVal=setVal;window.acaChest990SetCheck=setCheck;
+function check(k,v,label){return '<label class="choice"><input type="checkbox" '+((S[k]||[]).includes(v)?'checked':'')+' onchange="acaChest990SetCheck(\''+k+'\',\''+v.replace(/'/g,"\\'")+'\',this.checked)">'+label+'</label>'}
+function option(v,t,current){return '<option value="'+H(v)+'" '+(String(current)===String(v)?'selected':'')+'>'+H(t||v)+'</option>'}
+function historyPanel(){
+ var host=E('stepContent');if(!host||E('chestStructuredHistory')||S.complaint!=='Göğüs ağrısı')return;
+ var div=document.createElement('div');div.id='chestStructuredHistory';div.className='card chest-structured-card';
+ div.innerHTML='<div class="section-title"><h3>Göğüs ağrısı — ayrıntılı klinik öykü</h3><span class="phase-badge">v9.9</span></div><div class="chest-structured-grid">'+
+ '<div class="chest-structured-section"><h4>Ağrı karakteri</h4><div class="chest-risk-grid">'+
+ check('chestPainQualities','Bası/sıkıştırıcı','Bası / sıkıştırıcı')+check('chestPainQualities','Ağırlık/ezilme','Ağırlık / ezilme')+check('chestPainQualities','Yanıcı','Yanıcı')+check('chestPainQualities','Batıcı','Batıcı')+check('chestPainQualities','Plevritik','Plevritik')+check('chestPainQualities','Yırtılır','Yırtılır tarzda')+check('chestPainQualities','Pozisyonel','Pozisyonla değişen')+check('chestPainQualities','Palpasyonla artan','Palpasyonla artan')+'</div></div>'+
+ '<div class="chest-structured-section"><h4>Yayılım</h4><div class="chest-risk-grid">'+
+ check('chestRadiationExtended','Sol kol','Sol kol')+check('chestRadiationExtended','Sağ kol','Sağ kol')+check('chestRadiationExtended','Her iki kol','Her iki kol')+check('chestRadiationExtended','Çene','Çene')+check('chestRadiationExtended','Boyun','Boyun')+check('chestRadiationExtended','İnterskapular','İnterskapular bölge')+check('chestRadiationExtended','Sırt','Sırt')+check('chestRadiationExtended','Epigastrium','Epigastrium')+'</div></div></div>';
+ host.appendChild(div);
+}
+function riskPanel(){
+ var host=E('stepContent');if(!host||E('chestStructuredRisk')||S.complaint!=='Göğüs ağrısı')return;
+ var div=document.createElement('div');div.id='chestStructuredRisk';div.className='card chest-structured-card';
+ div.innerHTML='<div class="section-title"><h3>Göğüs ağrısı — ayrıntılı risk profili</h3><span class="phase-badge">v9.9</span></div><div class="chest-risk-grid">'+
+ check('chestRiskExtended','Önceki MI','Önceki miyokard enfarktüsü')+check('chestRiskExtended','PCI','PCI / stent öyküsü')+check('chestRiskExtended','CABG','CABG öyküsü')+check('chestRiskExtended','Bilinen KAH','Bilinen koroner arter hastalığı')+check('chestRiskExtended','Erken aile öyküsü','Erken aile KAH öyküsü')+check('chestRiskExtended','Aktif sigara','Aktif sigara')+check('chestRiskExtended','Kokain/uyarıcı','Kokain / uyarıcı madde')+check('chestRiskExtended','Son cerrahi','Son 4 haftada cerrahi')+check('chestRiskExtended','İmmobilizasyon','Yakın immobilizasyon')+check('chestRiskExtended','Aktif malignite','Aktif malignite')+check('chestRiskExtended','Östrojen','Östrojen / OKS / HRT')+check('chestRiskExtended','Gebelik/postpartum','Gebelik veya postpartum')+'</div><div class="chest-inline-note">Mevcut genel özgeçmiş alanlarını tekrar etmez; önceki MI/PCI/CABG ve VTE’ye özgü ayrıntıları karar motoruna ayrı sinyal olarak verir.</div>';
+ host.appendChild(div);
+}
+function num(v){var x=parseFloat(v);return Number.isFinite(x)?x:null}
+function deltaSummary(){
+ var vals=[num(S.chestTrop0Value),num(S.chestTrop1Value),num(S.chestTrop2Value),num(S.chestTrop3Value)].filter(function(x){return x!==null});
+ if(vals.length<2)return{cls:'warn',text:'Delta hesaplamak için en az iki sayısal hs-troponin sonucu girin.'};
+ var first=vals[0],last=vals[vals.length-1],abs=last-first,rel=first!==0?(abs/Math.abs(first))*100:null;
+ var txt='İlk–son mutlak delta: '+abs.toFixed(2)+' '+H(S.chestTropUnit||'ng/L')+(rel===null?'':' • Göreceli değişim: '+rel.toFixed(1)+'%');
+ return{cls:abs===0?'ok':Math.abs(abs)>0?'warn':'ok',text:txt+' — Klinik yorum assay’e özgü valide eşiklerle yapılmalıdır.'};
+}
+function testsPanel(){
+ var host=E('stepContent');if(!host||E('chestStructuredTests')||S.complaint!=='Göğüs ağrısı')return;
+ var d=deltaSummary(),div=document.createElement('div');div.id='chestStructuredTests';div.className='card chest-structured-card';
+ var ecgs=['Bekleniyor','Normal / akut iskemi yok','STEMI / oklüzyon paterni','ST depresyonu','T inversiyonu','Yeni veya olası yeni LBBB','Nonspesifik ST-T değişikliği','Yaygın ST elevasyonu / perikardit paterni','Taşikardi / aritmi','Belirsiz / teknik yetersiz'];
+ div.innerHTML='<div class="section-title"><h3>Göğüs ağrısı — yapılandırılmış EKG ve hs-troponin</h3><span class="phase-badge">v9.9</span></div><div class="chest-structured-grid"><div class="chest-structured-section"><h4>EKG klinik sınıflama</h4><label>Özet sınıf<select onchange="acaChest990SetVal(\'chestEcgClass\',this.value)">'+ecgs.map(function(x){return option(x,x,S.chestEcgClass)}).join('')+'</select></label><div class="chest-inline-note">Ayrıntılı ritim, derivasyon ve morfoloji alanları aşağıdaki mevcut EKG modülünde korunur.</div></div><div class="chest-structured-section"><h4>Semptom zamanlaması</h4><label>Semptom başlangıç tarihi/saati<input type="datetime-local" value="'+H(S.chestSymptomStart)+'" onchange="acaChest990SetVal(\'chestSymptomStart\',this.value)"></label><div class="grid" style="margin-top:8px"><label>Troponin birimi<select onchange="acaChest990SetVal(\'chestTropUnit\',this.value)">'+['ng/L','ng/mL','µg/L'].map(function(x){return option(x,x,S.chestTropUnit)}).join('')+'</select></label><label>Laboratuvar üst referans sınırı<input type="number" step="any" value="'+H(S.chestTropUrl)+'" onchange="acaChest990SetVal(\'chestTropUrl\',this.value)"></label></div></div></div><div class="chest-time-grid" style="margin-top:10px">'+
+ [['0','İlk örnek'],['1','1. saat'],['2','2. saat'],['3','3. saat']].map(function(a){var k=a[0];return '<div class="chest-time-item"><b>'+a[1]+'</b><label>Örnek saati<input type="datetime-local" value="'+H(S['chestTrop'+k+'Time'])+'" onchange="acaChest990SetVal(\'chestTrop'+k+'Time\',this.value)"></label><label>hs-troponin değeri<input type="number" step="any" inputmode="decimal" value="'+H(S['chestTrop'+k+'Value'])+'" onchange="acaChest990SetVal(\'chestTrop'+k+'Value\',this.value)"></label></div>'}).join('')+'</div><div class="chest-delta-box '+d.cls+'"><b>Dinamik değişim:</b> '+d.text+'</div><div class="chest-inline-note">Uygulama mutlak/göreceli değişimi gösterir; rule-in/rule-out kararı kullanılan cihaz ve kurumun doğrulanmış 0/1 veya 0/2 saat algoritmasına göre verilmelidir.</div>';
+ var firstCard=host.querySelector('.card');if(firstCard)firstCard.insertAdjacentElement('afterend',div);else host.prepend(div);
+}
+function syncLegacy(){
+ ensureState();if(S.complaint!=='Göğüs ağrısı')return;
+ var q=S.chestPainQualities||[];if(q.includes('Bası/sıkıştırıcı')||q.includes('Ağırlık/ezilme'))S.painType='Baskı/sıkışma';else if(q.includes('Yırtılır'))S.painType='Yırtılır';else if(q.includes('Yanıcı'))S.painType='Yanıcı';else if(q.includes('Batıcı'))S.painType='Batıcı';
+ var r=S.chestRadiationExtended||[];var map={'Sol kol':'Sol kol/omuz','Çene':'Çene/boyun','Boyun':'Çene/boyun','Sırt':'Sırt','İnterskapular':'Sırt'};Object.keys(map).forEach(function(k){if(r.includes(k)&&!S.radiation.includes(map[k]))S.radiation.push(map[k])});
+ if(q.includes('Plevritik'))S.pleuritic='Evet';if(q.includes('Pozisyonel')&&!S.positional)S.positional='Pozisyonla değişiyor';if(q.includes('Palpasyonla artan'))S.palpation='Evet';
+ var rf=S.chestRiskExtended||[];if(rf.some(function(x){return ['Önceki MI','PCI','CABG','Bilinen KAH'].includes(x)})&&!S.history.includes('KAH/MI/PCI/CABG'))S.history.push('KAH/MI/PCI/CABG');if(rf.includes('Erken aile öyküsü')&&!S.history.includes('Erken aile KAH'))S.history.push('Erken aile KAH');if(rf.includes('Aktif malignite')&&!S.history.includes('Kanser'))S.history.push('Kanser');if((rf.includes('Son cerrahi')||rf.includes('İmmobilizasyon'))&&!S.history.includes('Yakın cerrahi/immobilizasyon'))S.history.push('Yakın cerrahi/immobilizasyon');
+ if(rf.includes('Aktif sigara'))S.smoking='Aktif';if(rf.includes('Kokain/uyarıcı'))S.substance='Kokain/amfetamin';
+ var ecgMap={'Normal / akut iskemi yok':'Normal/noniskemik','STEMI / oklüzyon paterni':'ST elevasyonu','ST depresyonu':'ST depresyonu/T inversiyonu','T inversiyonu':'ST depresyonu/T inversiyonu','Nonspesifik ST-T değişikliği':'Nonspesifik ST-T','Yaygın ST elevasyonu / perikardit paterni':'Yaygın ST elevasyonu/PR depresyonu','Taşikardi / aritmi':'Taşikardi/aritmi'};if(ecgMap[S.chestEcgClass])S.ecg=ecgMap[S.chestEcgClass];
+}
+function inject(){ensureState();var page=typeof order==='function'?order()[currentStep]:null;if(page===2)historyPanel();if(page===3)riskPanel();if(page===5)testsPanel();document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}
+var oldCollect=window.collect;if(typeof oldCollect==='function')window.collect=function(){var r=oldCollect.apply(this,arguments);syncLegacy();return r};
+var oldRender=window.render;if(typeof oldRender==='function')window.render=function(){var r=oldRender.apply(this,arguments);try{inject()}catch(e){console.warn('v9.9 inject',e)}return r};
+var oldUpdate=window.updateAll;if(typeof oldUpdate==='function')window.updateAll=function(){syncLegacy();var r=oldUpdate.apply(this,arguments);try{var box=E('chestStructuredTests');if(box){box.remove();testsPanel()}document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=window.ACA_APP_VERSION});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=window.ACA_UPDATE_NAME})}catch(e){console.warn('v9.9 update',e)}return r};
+function init(){ensureState();syncLegacy();inject();try{if(typeof updateAll==='function')updateAll()}catch(_){} }
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0)});else setTimeout(init,0);
+})();
+</script>
+
 </body></html>
