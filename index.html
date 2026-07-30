@@ -9060,5 +9060,133 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<style id="cross-v1023-style">
+.cross-v1023-card{border:1px solid #cbd5e1;background:linear-gradient(180deg,#fff,#f8fafc)}
+.cross-v1023-hero{padding:12px 14px;border-radius:14px;margin:10px 0;font-weight:800;border:1px solid #cbd5e1;background:#f8fafc;color:#334155}
+.cross-v1023-hero.critical{background:#fff1f2;border-color:#fda4af;color:#9f1239}
+.cross-v1023-hero.watch{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.cross-v1023-hero.stable{background:#ecfdf5;border-color:#86efac;color:#166534}
+.cross-v1023-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cross-v1023-section{padding:12px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}
+.cross-v1023-section h4{margin:0 0 8px;font-size:14px;color:#0f172a}
+.cross-v1023-item{padding:10px 11px;margin:7px 0;border-radius:11px;background:#f8fafc;border-left:4px solid #94a3b8;line-height:1.42}
+.cross-v1023-item.critical{background:#fff1f2;border-left-color:#e11d48}
+.cross-v1023-item.watch{background:#fffbeb;border-left-color:#f59e0b}
+.cross-v1023-item.info{background:#eff6ff;border-left-color:#3b82f6}
+.cross-v1023-item b{display:block;margin-bottom:3px}
+.cross-v1023-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.cross-v1023-tag{font-size:11px;font-weight:800;padding:4px 8px;border-radius:999px;background:#e2e8f0;color:#334155}
+.cross-v1023-note{font-size:12px;color:#64748b;margin-top:8px;line-height:1.45}
+@media(max-width:720px){.cross-v1023-grid{grid-template-columns:1fr}}
+</style>
+<script id="cross-v1023-script">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id)}
+function A(v){return Array.isArray(v)?v:(v?[v]:[])}
+function T(v){return String(v==null?'':v).toLocaleLowerCase('tr-TR')}
+function H(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]})}
+function N(v){var x=parseFloat(String(v==null?'':v).replace(',','.'));return Number.isFinite(x)?x:null}
+function has(v,term){return T(v).indexOf(T(term))>=0}
+function any(arr,terms){var txt=A(arr).join(' ');return terms.some(function(t){return has(txt,t)})}
+function truth(v){return v===true||v===1||v==='1'||v==='true'||v==='Evet'||v==='Var'||v==='Pozitif'}
+function valuesText(){
+ var out=[];
+ try{Object.keys(S||{}).forEach(function(k){var v=S[k];if(typeof v==='string'||typeof v==='number'||Array.isArray(v))out.push(k+' '+(Array.isArray(v)?v.join(' '):v))})}catch(e){}
+ return T(out.join(' | '));
+}
+function add(list,level,title,text,tags){
+ var key=title+'|'+text;if(list.some(function(x){return x.key===key}))return;
+ list.push({key:key,level:level,title:title,text:text,tags:tags||[]});
+}
+function evaluate(){
+ var c=S.complaint||'', all=valuesText(), age=N(S.age), sex=S.sex||'';
+ var alerts=[], actions=[];
+ var pregnant=truth(S.pregnant)||truth(S.isPregnant)||has(all,'gebelik pozitif')||has(all,'gebelik testi pozitif')||has(all,'hamile');
+ var postpartum=has(all,'postpartum')||has(all,'lohusa');
+ var anticoag=has(all,'antikoag')||has(all,'warfarin')||has(all,'apiksaban')||has(all,'rivaroksaban')||has(all,'dabigatran')||has(all,'enoksaparin');
+ var altered=has(all,'bilinç bozuk')||has(all,'bilinç değiş')||has(all,'gks')&&((N(S.gcs)||15)<15)||has(all,'konfüz')||has(all,'deliryum');
+ var hypogly=N(S.glucose)!==null&&N(S.glucose)<60 || N(S.bloodGlucose)!==null&&N(S.bloodGlucose)<60 || has(all,'hipoglisemi');
+ var fever=N(S.temp)!==null&&N(S.temp)>=38 || N(S.temperature)!==null&&N(S.temperature)>=38 || has(all,'ateş');
+ var hypotension=(N(S.sbp)!==null&&N(S.sbp)<90)||(N(S.sys)!==null&&N(S.sys)<90)||has(all,'hipotansiyon')||has(all,'şok');
+ var hypoxia=(N(S.spo2)!==null&&N(S.spo2)<92)||(N(S.sat)!==null&&N(S.sat)<92)||has(all,'hipoksemi')||has(all,'siyanoz');
+ var chest=has(c,'Göğüs')||has(all,'göğüs ağrısı');
+ var neuro=has(c,'İnme')||has(c,'Baş ağrısı')||has(c,'Bilinç')||has(all,'fokal nörolojik')||has(all,'hemiparezi');
+ var trauma=has(c,'Travma')||has(all,'travma mekanizması')||has(all,'kafa travması');
+ var poison=has(c,'Zehirlen')||has(all,'intoksikasyon')||has(all,'toksik');
+ var gi=has(c,'Gastrointestinal kanama')||has(all,'hematemez')||has(all,'melena')||has(all,'hematokezya');
+ var psych=has(c,'Psikiyatrik')||has(all,'özkıyım')||has(all,'intihar');
+ var environmental=has(c,'Çevresel')||has(all,'ısı çarpması')||has(all,'hipotermi')||has(all,'karbonmonoksit')||has(all,'boğulma');
+ var renalRisk=has(all,'rabdomiyoliz')||has(all,'ck yüksek')||has(all,'miyoglobin')||has(all,'koyu idrar');
+
+ if(pregnant&&(has(c,'Karın')||has(c,'Jinekolojik')||has(all,'vajinal kanama')||has(all,'pelvik ağrı'))){
+   add(alerts,'critical','Gebelik bağlantısı','Karın/pelvik ağrı veya kanamada ektopik gebelik ve obstetrik aciller dışlanmalıdır. Hemodinami, gebelik haftası, β-hCG ve uygun ultrason değerlendirmesini öne alın.',['Gebelik','Ektopik','USG']);
+   actions.push('Gebelik Acilleri güvenlik akışını eş zamanlı uygula');
+ }
+ if(postpartum&&(chest||has(c,'Nefes')||has(all,'dispne'))){
+   add(alerts,'critical','Postpartum kardiyopulmoner risk','Postpartum dönemde göğüs ağrısı/dispne; pulmoner emboli, peripartum kardiyomiyopati ve kanama ilişkili şok açısından yüksek risklidir.',['Postpartum','PE','Kardiyomiyopati']);
+ }
+ if(trauma&&(has(all,'görme kaybı')||has(all,'göz yaralan')||has(all,'rapd')||has(all,'açık glob'))){
+   add(alerts,'critical','Travma + göz acili','Göz yaralanması/açık glob şüphesinde göze bası yapmayın, tonometri uygulamayın; koruyucu kalkan ve acil oftalmoloji değerlendirmesi planlayın.',['Travma','Göz']);
+ }
+ if(poison&&(has(all,'qrs')||has(all,'qtc')||has(all,'aritmi')||has(c,'Çarpıntı'))){
+   add(alerts,'critical','Toksikoloji + ritim riski','Zehirlenmede QRS/QTc uzaması veya aritmi, sürekli monitörizasyon ve ajan-spesifik tedavi gerektirir. Seri EKG ve elektrolit düzeltmesini geciktirmeyin.',['Toksikoloji','EKG']);
+ }
+ if((has(c,'Endokrin')||has(all,'dka')||has(all,'hhs')||hypogly)&&altered){
+   add(alerts,'critical','Metabolik bilinç değişikliği','Bilinç değişikliğinde glukoz, keton, kan gazı, sodyum/osmolalite ve enfeksiyon odağı birlikte değerlendirilmelidir. Nörolojik tanı metabolik neden dışlanmadan kesinleştirilmemelidir.',['Endokrin','Nöroloji']);
+ }
+ if(environmental&&renalRisk){
+   add(alerts,'watch','Çevresel maruziyet + rabdomiyoliz','CK, kreatinin, potasyum, kalsiyum, idrar çıkışı ve EKG seri izlenmelidir; sıvı ve böbrek desteği klinik duruma göre planlanmalıdır.',['Çevresel','Böbrek']);
+ }
+ if(psych&&(altered||fever||hypogly||hypoxia||trauma||poison)){
+   add(alerts,'critical','Psikiyatrik görünümde organik neden','Ajitasyon/psikoz görünümüne eşlik eden bilinç dalgalanması, ateş, hipoglisemi, hipoksi, travma veya toksik maruziyet deliryum/organik neden kabul edilerek araştırılmalıdır.',['Psikiyatri','Deliryum']);
+ }
+ if(gi&&anticoag){
+   add(alerts,'critical','GİS kanama + antikoagülan','Antikoagülan kullanımı kanama şiddeti ve yeniden kanama riskini artırır. Son doz, böbrek fonksiyonu, hemoglobin, koagülasyon ve geri döndürme endikasyonunu erkenden değerlendirin.',['GİS Kanama','Antikoagülan']);
+ }
+ if(anticoag&&(trauma||neuro||has(c,'Baş ağrısı'))){
+   add(alerts,'critical','Antikoagülan + travma/nörolojik yakınma','İntrakraniyal kanama için düşük eşik kullanın; son ilaç dozu, nörolojik muayene ve uygun görüntülemeyi hızlandırın.',['Kanama','BT']);
+ }
+ if(fever&&hypotension){
+   add(alerts,'critical','Sepsis olasılığı','Ateş/enfeksiyon bulgusu ile hipotansiyon birlikteliğinde sepsis-şok yaklaşımı, laktat, kültür ve erken tedavi geciktirilmemelidir.',['Sepsis','Şok']);
+ }
+ if(hypoxia&&(altered||chest||has(c,'Nefes'))){
+   add(alerts,'critical','Hipoksemi bağlantısı','Hipoksemi; bilinç değişikliği, göğüs ağrısı veya dispneyle birlikteyse hava yolu/solunum desteği ve kardiyopulmoner nedenlerin eş zamanlı değerlendirilmesi gerekir.',['ABCDE','Solunum']);
+ }
+ if(age!==null&&age<3&&fever){
+   add(alerts,'critical','Küçük bebekte ateş','Üç aydan küçük bebekte ateş ciddi bakteriyel enfeksiyon açısından yüksek risklidir; pediatrik acil değerlendirme gerekir.',['Pediatri','Ateş']);
+ }
+ if(sex==='Kadın'&&!pregnant&&(has(c,'Jinekolojik')||has(all,'vajinal kanama')||has(all,'pelvik ağrı'))){
+   add(alerts,'watch','Gebelik testi doğrulaması','Üreme çağındaki hastada gebelik dışı jinekolojik akışa geçmeden önce gebelik durumu güvenilir biçimde doğrulanmalıdır.',['Jinekoloji','β-hCG']);
+ }
+ if(!alerts.length)add(alerts,'stable','Çapraz alarm saptanmadı','Girilen verilerde başka modülü zorunlu kılan belirgin bir çapraz alarm bulunmadı. Klinik değişiklik oldukça yeniden değerlendirin.',['Ortak motor']);
+ var rank={critical:3,watch:2,stable:1};alerts.sort(function(a,b){return rank[b.level]-rank[a.level]});
+ var level=alerts.some(function(x){return x.level==='critical'})?'critical':alerts.some(function(x){return x.level==='watch'})?'watch':'stable';
+ return{alerts:alerts,actions:Array.from(new Set(actions)),level:level};
+}
+function card(){
+ var h=E('stepContent');if(!h||E('crossV1023Card'))return;
+ var page=typeof order==='function'?order()[currentStep]:null;
+ if(![1,4,5,6,7,8,9,10,11].includes(page))return;
+ var q=evaluate(),d=document.createElement('div');d.id='crossV1023Card';d.className='card cross-v1023-card';
+ var count=q.alerts.filter(function(x){return x.level!=='stable'}).length;
+ d.innerHTML='<div class="section-title"><h3>Ortak klinik karar motoru</h3><span class="phase-badge">v10.23</span></div>'+
+ '<div class="cross-v1023-hero '+q.level+'">'+(q.level==='critical'?'Çapraz yüksek risk uyarısı':q.level==='watch'?'Çapraz dikkat noktası':'Çapraz değerlendirme tamamlandı')+(count?' • '+count+' bağlantı':'')+'</div>'+
+ '<div class="cross-v1023-grid"><div class="cross-v1023-section"><h4>Modüller arası bağlantılar</h4>'+q.alerts.map(function(x){return'<div class="cross-v1023-item '+x.level+'"><b>'+H(x.title)+'</b><div>'+H(x.text)+'</div><div class="cross-v1023-tags">'+x.tags.map(function(t){return'<span class="cross-v1023-tag">'+H(t)+'</span>'}).join('')+'</div></div>'}).join('')+'</div>'+
+ '<div class="cross-v1023-section"><h4>Uygulama ilkesi</h4><div class="cross-v1023-item info"><b>Ana şikâyet tek başına sınır değildir</b><div>Kırmızı bayrak başka bir modülü işaret ediyorsa ilgili güvenlik akışı eş zamanlı uygulanmalıdır.</div></div><div class="cross-v1023-item info"><b>Önce ABCDE ve zaman-kritik durum</b><div>Skorlar ve ayrıntılı algoritmalar resüsitasyonu, acil konsültasyonu veya sevki geciktirmemelidir.</div></div>'+(q.actions.length?'<h4 style="margin-top:12px">Otomatik öneriler</h4><ul>'+q.actions.map(function(x){return'<li>'+H(x)+'</li>'}).join('')+'</ul>':'')+'<div class="cross-v1023-note">Bu panel mevcut vaka verilerini çapraz tarar; kesin tanı yerine güvenlik ağı ve ikinci modül gereksinimini gösterir.</div></div></div>';
+ h.prepend(d);
+}
+function inject(){try{card()}catch(e){console.warn('v10.23 ortak karar motoru',e)}}
+var or=window.render;if(typeof or==='function')window.render=function(){var z=or.apply(this,arguments);inject();return z};
+var ou=window.updateAll;if(typeof ou==='function')window.updateAll=function(){var z=ou.apply(this,arguments);var x=E('crossV1023Card');if(x)x.remove();inject();return z};
+document.addEventListener('change',function(){setTimeout(function(){var x=E('crossV1023Card');if(x)x.remove();inject()},0)});
+document.addEventListener('input',function(){clearTimeout(window.__crossV1023Timer);window.__crossV1023Timer=setTimeout(function(){var x=E('crossV1023Card');if(x)x.remove();inject()},180)});
+function mark(){window.ACA_APP_VERSION='v10.23.0';window.ACA_UPDATE_NAME='Ortak Klinik Karar Motoru';document.title='Acil Klinik Asistanı v10.23.0';var st=document.querySelector('.status');if(st)st.textContent='v10.23.0 • Ortak Klinik Karar Motoru';document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.23.0'});document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Ortak Klinik Karar Motoru'})}
+function init(){inject();mark()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,60)});else setTimeout(init,60);setTimeout(mark,900);
+})();
+</script>
+
 </body>
 </html>
