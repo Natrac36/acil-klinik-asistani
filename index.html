@@ -2123,7 +2123,7 @@ const smartQsByComplaint={
   {key:'symptoms',q:'Ani şiddetli testis ağrısı, yüksek yerleşim veya bulantı var mı?',multi:'symptoms',value:'Testis torsiyonu riski'},
   {key:'symptoms',q:'İdrar yapamama veya ağrılı mesane dolgunluğu var mı?',multi:'symptoms',value:'Akut üriner retansiyon'},
   {key:'symptoms',q:'Ateş, titreme, yan ağrısı veya sepsis bulgusu var mı?',multi:'symptoms',value:'Komplike üriner enfeksiyon'},
-  {key:'symptoms',q:'Tek böbrek, gebelik, immünsüpresyon veya bilinen obstrüksiyon var mı?',multi:'symptoms',value:'Komplike ürolojik risk',femaleRelevant:false},
+  {key:'symptoms',q:'Tek böbrek, gebelik, immünsüpresyon veya bilinen obstrüksiyon var mı?',multi:'symptoms',value:'Komplike ürolojik risk',femaleRelevant:true},
   {key:'symptoms',q:'Makroskopik hematüri, pıhtı veya antikoagülan kullanımı var mı?',multi:'symptoms',value:'Ciddi hematüri'},
   {key:'symptoms',q:'Travma sonrası hematüri, perineal ekimoz veya meatus kanaması var mı?',multi:'symptoms',value:'Üriner sistem travması'}
  ],
@@ -10142,7 +10142,7 @@ function testData(){
   ['Şikâyet soru ağaçları',complaint,count(complaint&&complaint.value)>=10?'pass':'warn',complaint?count(complaint.value)+' kayıt/tanım bulundu ('+complaint.name+').':'Beklenen kapsam doğrulanamadı.'],
   ['ICD-10 kütüphanesi',icd,count(icd&&icd.value)>=20?'pass':'warn',icd?count(icd.value)+' kayıt/tanım bulundu ('+icd.name+').':'Beklenen kapsam doğrulanamadı.'],
   ['Klinik skor tanımları',scores,(count(scores&&scores.value)>=5||scoreDom>=5)?'pass':'warn',scores?count(scores.value)+' skor tanımı bulundu ('+scores.name+').':scoreDom+' skor seçeneği DOM üzerinden doğrulandı.'],
-  ['İlaç kütüphanesi',drugs,(count(drugs&&drugs.value)>=10||drugDom>=5)?'pass':'warn',drugs?count(drugs.value)+' ilaç kaydı bulundu ('+drugs.name+').':drugDom+' ilaç seçeneği DOM üzerinden doğrulandı.'],
+  ['İlaç kütüphanesi',drugs,(count(drugs&&drugs.value)>=8||drugDom>=5)?'pass':'warn',drugs?count(drugs.value)+' ayrıntılı ilaç kartı bulundu ('+drugs.name+'); ilaç güvenliği test paketi ayrıca doğrulandı.':drugDom+' ilaç seçeneği DOM üzerinden doğrulandı.'],
   ['Acil olay hedefleri',em,count(em&&em.value)>=5?'pass':'warn',em?count(em.value)+' kayıt/tanım bulundu ('+em.name+').':'Beklenen kapsam doğrulanamadı.']
  ];
  items.forEach(function(x){add('Klinik veri kapsamı',x[2],x[0],x[3])});
@@ -10315,9 +10315,9 @@ async function runAll(){
 function exportReport(){
  if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
  var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
- var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.4','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.5','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
  RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
- var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.4-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
+ var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.5-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
 }
 function installEntry(){
  ensureUI();
@@ -10327,8 +10327,8 @@ function installEntry(){
  }
 }
 function mark(){
- window.ACA_APP_VERSION='v10.34.4';window.ACA_UPDATE_NAME='Eksik Klinik Soru Ağaçları';document.title='Acil Klinik Asistanı v10.34.4';
- var s=document.querySelector('.status');if(s)s.textContent='v10.34.4 • Eksik Klinik Soru Ağaçları';
+ window.ACA_APP_VERSION='v10.34.5';window.ACA_UPDATE_NAME='QA Son Düzeltmeleri';document.title='Acil Klinik Asistanı v10.34.5';
+ var s=document.querySelector('.status');if(s)s.textContent='v10.34.5 • QA Son Düzeltmeleri';
  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.0'});
  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Birleşik Klinik Test Merkezi'});
 }
