@@ -10409,7 +10409,7 @@ async function runAll(){
 function exportReport(){
  if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
  var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
- var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.7','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.8','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
  RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.5-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
 }
@@ -10422,7 +10422,7 @@ function installEntry(){
 }
 function mark(){
  window.ACA_APP_VERSION='v10.34.6';window.ACA_UPDATE_NAME='Kontrollü Kod Sadeleştirmesi';document.title='Acil Klinik Asistanı v10.34.6';
- var s=document.querySelector('.status');if(s)s.textContent='v10.34.7 • Kompakt Ana Ekran';
+ var s=document.querySelector('.status');if(s)s.textContent='v10.34.8 • Gerçek Kompakt Ana Ekran';
  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.0'});
  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Birleşik Klinik Test Merkezi'});
 }
@@ -10475,12 +10475,214 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   window.ACA_APP_VERSION='v10.34.7';
   window.ACA_UPDATE_NAME='Kompakt Ana Ekran';
   document.title='Acil Klinik Asistanı v10.34.7';
-  var s=document.querySelector('.status');if(s)s.textContent='v10.34.7 • Kompakt Ana Ekran';
+  var s=document.querySelector('.status');if(s)s.textContent='v10.34.8 • Gerçek Kompakt Ana Ekran';
   document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.7'});
   document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Kompakt Ana Ekran'});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
  setTimeout(install,500);
+})();
+</script>
+
+
+<style id="aca-v10348-real-compact-home">
+/* Gerçek ana ekran elemanları */
+#commercialDashboard.aca-home-v1033{
+  gap:8px!important;
+  padding-bottom:76px!important;
+}
+#commercialDashboard .aca1033-command{
+  padding:13px!important;
+  border-radius:18px!important;
+  box-shadow:0 8px 22px rgba(7,27,53,.16)!important;
+}
+#commercialDashboard .aca1033-kicker.light{
+  font-size:8px!important;
+  letter-spacing:.09em!important;
+}
+#commercialDashboard .aca1033-command h3{
+  font-size:20px!important;
+  line-height:1.12!important;
+  margin:2px 0 3px!important;
+}
+#commercialDashboard .aca1033-command p{
+  font-size:12px!important;
+  line-height:1.35!important;
+  margin:0!important;
+}
+#commercialDashboard .aca1033-search-host{
+  margin-top:9px!important;
+}
+#commercialDashboard .aca1033-search-host .dashboard-search{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 68px 38px!important;
+  gap:6px!important;
+  margin:0!important;
+}
+#commercialDashboard .aca1033-search-host #moduleSearch{
+  min-height:44px!important;
+  height:44px!important;
+  border-radius:12px!important;
+  padding:0 12px!important;
+  font-size:14px!important;
+  min-width:0!important;
+}
+#commercialDashboard .aca1033-search-host .primary{
+  min-width:0!important;
+  width:68px!important;
+  min-height:44px!important;
+  height:44px!important;
+  padding:0 8px!important;
+  border-radius:12px!important;
+  font-size:14px!important;
+}
+#commercialDashboard .aca1033-search-host .universal-search-clear{
+  width:38px!important;
+  min-width:38px!important;
+  height:44px!important;
+  min-height:44px!important;
+  padding:0!important;
+  border-radius:12px!important;
+  font-size:18px!important;
+}
+#commercialDashboard .aca1033-search-host .universal-recent-searches{
+  margin-top:6px!important;
+  gap:5px!important;
+  font-size:10px!important;
+  white-space:nowrap!important;
+  overflow-x:auto!important;
+  flex-wrap:nowrap!important;
+  scrollbar-width:none;
+}
+#commercialDashboard .aca1033-search-host .universal-recent-searches::-webkit-scrollbar{display:none}
+#commercialDashboard .aca1033-search-host .universal-recent-searches button{
+  min-height:28px!important;
+  height:28px!important;
+  padding:4px 8px!important;
+  font-size:10px!important;
+  flex:0 0 auto!important;
+}
+
+/* Dört hızlı işlem: küçük 2x2 kartlar */
+#commercialDashboard .aca1033-primary-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin-top:9px!important;
+}
+#commercialDashboard .aca1033-primary-grid button{
+  min-height:72px!important;
+  height:72px!important;
+  padding:9px 10px!important;
+  border-radius:14px!important;
+  justify-content:center!important;
+}
+#commercialDashboard .aca1033-primary-grid span{
+  font-size:20px!important;
+  line-height:1!important;
+}
+#commercialDashboard .aca1033-primary-grid b{
+  font-size:13px!important;
+  line-height:1.08!important;
+  margin-top:3px!important;
+}
+#commercialDashboard .aca1033-primary-grid small{
+  font-size:9px!important;
+  line-height:1.15!important;
+  margin-top:1px!important;
+}
+
+/* Alt bölümler de kompakt */
+#commercialDashboard .aca1033-section{
+  padding:11px!important;
+  border-radius:16px!important;
+}
+#commercialDashboard .aca1033-section-head{
+  margin-bottom:7px!important;
+}
+#commercialDashboard .aca1033-section-head h3{
+  font-size:16px!important;
+}
+#commercialDashboard .aca1033-kicker{
+  font-size:8px!important;
+}
+#commercialDashboard .aca1033-menu-grid,
+#commercialDashboard .aca1033-flow{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+#commercialDashboard .aca1033-menu-grid button,
+#commercialDashboard .aca1033-flow button{
+  min-height:65px!important;
+  height:65px!important;
+  padding:7px!important;
+  border-radius:12px!important;
+}
+#commercialDashboard .aca1033-menu-grid span,
+#commercialDashboard .aca1033-flow span{
+  font-size:18px!important;
+}
+#commercialDashboard .aca1033-menu-grid b,
+#commercialDashboard .aca1033-flow b{
+  font-size:10px!important;
+  line-height:1.08!important;
+  margin-top:2px!important;
+}
+#commercialDashboard .aca1033-menu-grid small,
+#commercialDashboard .aca1033-flow small{
+  display:none!important;
+}
+#commercialDashboard .aca1033-complaints{
+  gap:5px!important;
+  flex-wrap:nowrap!important;
+  overflow-x:auto!important;
+  scrollbar-width:none;
+}
+#commercialDashboard .aca1033-complaints::-webkit-scrollbar{display:none}
+#commercialDashboard .aca1033-complaints button{
+  min-height:31px!important;
+  height:31px!important;
+  padding:5px 9px!important;
+  font-size:10px!important;
+  flex:0 0 auto!important;
+}
+
+/* Telefonlarda sürüm rozeti başlığa engel olmasın */
+#acaVersionBadge{
+  top:7px!important;
+  right:7px!important;
+  padding:5px 8px!important;
+  font-size:10px!important;
+}
+#acaVersionBadge small{display:none!important}
+
+@media(max-width:480px){
+ #commercialDashboard .aca1033-command{padding:11px!important}
+ #commercialDashboard .aca1033-command h3{font-size:18px!important}
+ #commercialDashboard .aca1033-command p{font-size:11px!important}
+ #commercialDashboard .aca1033-search-host .dashboard-search{
+   grid-template-columns:minmax(0,1fr) 58px 36px!important;
+ }
+ #commercialDashboard .aca1033-search-host .primary{width:58px!important;font-size:12px!important}
+ #commercialDashboard .aca1033-primary-grid button{height:68px!important;min-height:68px!important}
+ #commercialDashboard .aca1033-menu-grid,
+ #commercialDashboard .aca1033-flow{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+</style>
+<script id="aca-v10348-version">
+(function(){
+ function mark(){
+  window.ACA_APP_VERSION='v10.34.8';
+  window.ACA_UPDATE_NAME='Gerçek Kompakt Ana Ekran';
+  document.title='Acil Klinik Asistanı v10.34.8';
+  var b=document.getElementById('acaVersionBadge');
+  if(b)b.innerHTML='v10.34.8 <small>Gerçek Kompakt Ana Ekran</small>';
+  var s=document.querySelector('.status');
+  if(s)s.textContent='v10.34.8 • Gerçek Kompakt Ana Ekran';
+  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.8'});
+  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Gerçek Kompakt Ana Ekran'});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark);else mark();
+ setTimeout(mark,500);
 })();
 </script>
 
