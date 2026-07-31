@@ -10193,7 +10193,8 @@ function testPerformance(start){
  var scripts=document.scripts.length,styles=document.querySelectorAll('style').length;
  add('Performans ve yapı',scripts<70?'pass':'warn','JavaScript katmanları',scripts+' script bloğu.');
  add('Performans ve yapı',styles<70?'pass':'warn','CSS katmanları',styles+' stil bloğu.');
- add('Performans ve yapı','warn','Bakım riski','Tek dosyada çok sayıda sürüm katmanı korunuyor. İşlevsel olsa da kontrollü sadeleştirme önerilir.');
+ var maintenanceRisk=(nodes>=7000||htmlSize>=2500000||scripts>=70||styles>=70);
+ add('Performans ve yapı',maintenanceRisk?'warn':'pass','Bakım durumu',maintenanceRisk?'Kod veya DOM katmanları güvenli sınırların üzerinde; kontrollü sadeleştirme önerilir.':'DOM, dosya boyutu, JavaScript ve CSS katmanları belirlenen güvenli sınırlar içinde.');
 }
 
 function inferTarget(r){
@@ -10365,6 +10366,23 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 .aca-error-overview-empty{color:#08785f;background:#ecfdf3;border-color:#a6e6c8}
 .aca-error-overview-empty h3{color:#08785f}
 </style>
+
+
+<script id="aca-maintenance-warning-fix-version">
+(function(){
+ function mark(){
+  window.ACA_APP_VERSION='v10.34.6';
+  window.ACA_UPDATE_NAME='Bakım Uyarısı Doğrulaması';
+  document.title='Acil Klinik Asistanı v10.34.6';
+  var s=document.querySelector('.status');
+  if(s)s.textContent='v10.34.6 • Bakım Uyarısı Doğrulaması';
+  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.6'});
+  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Bakım Uyarısı Doğrulaması'});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark);else mark();
+ setTimeout(mark,300);
+})();
+</script>
 
 </body>
 </html>
