@@ -1808,6 +1808,64 @@ function quickOneScreenHTML(){
  <details class="risk-inputs"><summary>Risk skorları için ek kısa veri (gerektiğinde)</summary><div class="grid" style="margin-top:9px">${select('HEART öykü şüphesi','heartHistory',[['','Seçiniz'],['0','Az şüpheli'],['1','Orta şüpheli'],['2','Yüksek şüpheli']])}${select('HEART risk faktörü sayısı','heartRiskCount',[['','Seçiniz'],['0','0'],['1','1–2'],['2','≥3 veya bilinen ateroskleroz']])}${select('Ek oksijen alıyor mu?','newsOxygen',['Hayır','Evet'])}</div><div class="tiny-checks">${choices('peRisk',[["Klinik DVT bulgusu","Klinik DVT bulgusu"],["PE en olası tanı","PE en olası tanı"],["Yakın cerrahi/immobilizasyon","Son 4 haftada cerrahi/immobilizasyon"],["Önceki DVT/PE","Önceki DVT/PE"],["Hemoptizi","Hemoptizi"],["Aktif malignite","Aktif malignite"],["Östrojen kullanımı","Östrojen kullanımı"]])}</div></details><div class="panel info"><h3>Canlı ilk karar</h3>${quickConsultantHTML()}</div>`;
 }
 
+
+function inferTarget(r){
+ var s=((r&&r.name)||'')+' '+((r&&r.detail)||'');
+ var map=[
+  [/NIHSS|inme|stroke/i,['nihssCard','scoresCard','clinicalScores']],
+  [/CURB|NEWS|qSOFA|HEART|Wells|PERC|CHA.?DS|HAS.?BLED|skor/i,['scoresCard','clinicalScores','scoreCard']],
+  [/ICD/i,['icdCard','icd10Card','icdModule']],
+  [/ilaç|drug|medication|reçete/i,['medicationSafetyCard','prescriptionCard','drugCard']],
+  [/laboratuvar|lab/i,['laboratoryCard','labCard']],
+  [/radyoloji|görüntüleme|radiology/i,['radiologyCard','imagingCard']],
+  [/pediatr/i,['pediatricEmergencyCard','pediatricCard']],
+  [/doz|dose/i,['doseCalculatorCard','calculatorCard']],
+  [/tetkik/i,['testOrderCard','testsCard']],
+  [/QA|kalite/i,['acaTestCenterOverlay']]
+ ];
+ for(var i=0;i<map.length;i++)if(map[i][0].test(s)){for(var j=0;j<map[i][1].length;j++)if(E(map[i][1][j]))return map[i][1][j]}
+ return null;
+}
+function goToIssue(idx){
+ var r=RESULTS[idx];if(!r)return;
+ var target=inferTarget(r);
+ if(target==='acaTestCenterOverlay'){
+   var rows=[].slice.call(document.querySelectorAll('.aca-test-row'));
+   var hit=rows.find(function(x){return (x.textContent||'').indexOf(r.name)>=0});
+   if(hit){hit.scrollIntoView({behavior:'smooth',block:'center'});hit.style.outline='3px solid #f04438';setTimeout(function(){hit.style.outline=''},1800)}
+   return;
+ }
+ if(target&&E(target)){
+   close();
+   var el=E(target);el.hidden=false;el.style.display='';el.scrollIntoView({behavior:'smooth',block:'start'});
+   el.style.outline='3px solid #f04438';setTimeout(function(){el.style.outline=''},2000);
+ }else{
+   var rows=[].slice.call(document.querySelectorAll('.aca-test-row'));
+   var hit=rows.find(function(x){return (x.textContent||'').indexOf(r.name)>=0});
+   if(hit){hit.scrollIntoView({behavior:'smooth',block:'center'});hit.style.outline='3px solid #f04438';setTimeout(function(){hit.style.outline=''},1800)}
+ }
+}
+function copyIssue(idx){
+ var r=RESULTS[idx];if(!r)return;
+ var txt='['+String(r.status||'').toUpperCase()+'] '+r.section+' — '+r.name+'\n'+r.detail;
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(function(){alert('Hata ayrıntısı kopyalandı.')});
+ else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('Hata ayrıntısı kopyalandı.')}
+}
+function renderErrorOverview(){
+ var box=E('acaErrorOverview');if(!box)return;
+ var errs=RESULTS.map(function(r,i){return {r:r,i:i}}).filter(function(x){return x.r.status==='fail'});
+ if(!errs.length){
+  box.innerHTML='<div class="aca-error-overview aca-error-overview-empty"><h3>✅ Kritik hata bulunmadı</h3><p>Bu çalıştırmada başarısız kontrol yok.</p></div>';return;
+ }
+ box.innerHTML='<div class="aca-error-overview"><h3>🔴 Düzeltilmesi gereken '+errs.length+' hata</h3><p>Hatalar önem sırasına göre aşağıda listelenmiştir. “Git” düğmesi uygun modül bulunursa doğrudan açar; aksi halde ayrıntılı test satırına götürür.</p><div class="aca-error-list">'+
+ errs.map(function(x,n){
+   return '<div class="aca-error-card"><div class="aca-error-card-head"><div><b>'+(n+1)+'. '+esc(x.r.name)+'</b><small>'+esc(x.r.detail||'Ayrıntı sağlanmadı.')+'</small></div><span class="tag">'+esc(x.r.section)+'</span></div>'+
+   '<div class="aca-error-card-actions"><button class="primary" onclick="window.acaGoToIssue('+x.i+')">Git</button><button onclick="window.acaCopyIssue('+x.i+')">Ayrıntıyı kopyala</button></div></div>'
+ }).join('')+'</div></div>';
+}
+window.acaGoToIssue=goToIssue;
+window.acaCopyIssue=copyIssue;
+
 function render(){
  const page=order()[currentStep], total=order().length;
  el('mainTitle').textContent=fullSteps[page];el('stepName').textContent=`${currentStep+1}. ${fullSteps[page]}`;el('stepCount').textContent=`${currentStep+1}/${total}`;el('progressBar').style.width=`${(currentStep+1)/total*100}%`;el('backBtn').disabled=currentStep===0;el('nextBtn').textContent=currentStep===total-1?'Vakayı tamamla':(quickMode&&currentStep===0?'Karar ekranına geç':'Devam et');
@@ -9917,6 +9975,7 @@ function ensureUI(){
  '<div class="aca-test-kpi"><b id="acaTFail">0</b><span>Hata</span></div><div class="aca-test-kpi"><b id="acaTWarn">0</b><span>Uyarı</span></div>'+
  '<div class="aca-test-kpi"><b id="acaTTime">—</b><span>Çalışma süresi</span></div></div>'+
  '<div class="aca-test-progress"><i id="acaTestProgress"></i></div>'+
+ '<div id="acaErrorOverview"></div>'+
  '<div class="aca-test-filters"><button data-tf="all" class="active">Tümü</button><button data-tf="fail">Hatalar</button><button data-tf="warn">Uyarılar</button><button data-tf="pass">Geçenler</button></div>'+
  '<div id="acaTestResults"><div class="aca-test-empty">Testleri başlatmak için “Tüm testleri çalıştır” düğmesine basın.</div></div></div></div>';
  document.body.appendChild(o);
@@ -10020,6 +10079,7 @@ function testPerformance(start){
  add('Performans ve yapı','warn','Bakım riski','Tek dosyada çok sayıda sürüm katmanı korunuyor. İşlevsel olsa da kontrollü sadeleştirme önerilir.');
 }
 function render(){
+ renderErrorOverview();
  var box=E('acaTestResults');if(!box)return;
  var shown=RESULTS.filter(function(r){return ACTIVE_FILTER==='all'||r.status===ACTIVE_FILTER});
  if(!shown.length){box.innerHTML='<div class="aca-test-empty">Bu filtrede sonuç yok.</div>';return}
@@ -10043,14 +10103,22 @@ async function runAll(){
   await testBuiltIns();E('acaTestProgress').style.width='92%';
   testPerformance(start);E('acaTestProgress').style.width='100%';
  }catch(e){add('Test merkezi','fail','Beklenmeyen test merkezi hatası',e.stack||e.message||String(e))}
+ RESULTS.sort(function(a,b){
+  var p={fail:0,warn:1,pass:2,skip:3};
+  var pa=p[a.status]===undefined?4:p[a.status],pb=p[b.status]===undefined?4:p[b.status];
+  if(pa!==pb)return pa-pb;
+  if(a.section==='QA ayrıntıları'&&b.section!=='QA ayrıntıları')return -1;
+  if(b.section==='QA ayrıntıları'&&a.section!=='QA ayrıntıları')return 1;
+  return String(a.name).localeCompare(String(b.name),'tr');
+ });
  var ms=Math.round(performance.now()-start);updateSummary(ms);render();btn.disabled=false;btn.textContent='Tüm testleri yeniden çalıştır';btn.classList.remove('aca-test-running');
 }
 function exportReport(){
  if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
  var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
- var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.1','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.2','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
  RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
- var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.1-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
+ var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.2-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
 }
 function installEntry(){
  ensureUI();
@@ -10060,8 +10128,8 @@ function installEntry(){
  }
 }
 function mark(){
- window.ACA_APP_VERSION='v10.34.1';window.ACA_UPDATE_NAME='QA Ayrıntıları ve Arama Düzeltmeleri';document.title='Acil Klinik Asistanı v10.34.1';
- var s=document.querySelector('.status');if(s)s.textContent='v10.34.1 • QA Ayrıntıları ve Arama Düzeltmeleri';
+ window.ACA_APP_VERSION='v10.34.2';window.ACA_UPDATE_NAME='Eyleme Dönük Hata Merkezi';document.title='Acil Klinik Asistanı v10.34.2';
+ var s=document.querySelector('.status');if(s)s.textContent='v10.34.2 • Eyleme Dönük Hata Merkezi';
  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.0'});
  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Birleşik Klinik Test Merkezi'});
 }
@@ -10080,6 +10148,23 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #universalSearchPanel button small,#moduleSearchResults button small,.universal-search-results button small{display:block!important;color:#667085!important;margin-top:3px!important}
 #universalSearchPanel button span,#moduleSearchResults button span,.universal-search-results button span{white-space:nowrap}
 .aca-test-detail{white-space:normal;word-break:break-word}
+</style>
+
+
+<style id="aca-v10342-actionable-errors-css">
+.aca-error-overview{background:#fff7f6;border:1px solid #f6c7c2;border-radius:16px;padding:14px;margin:0 0 14px}
+.aca-error-overview h3{margin:0 0 8px;font-size:17px;color:#8f1d14}
+.aca-error-overview p{margin:0 0 10px;color:#6b3b37;font-size:13px}
+.aca-error-list{display:grid;gap:8px}
+.aca-error-card{background:#fff;border:1px solid #f0d2cf;border-radius:12px;padding:11px}
+.aca-error-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.aca-error-card b{font-size:14px}.aca-error-card small{display:block;margin-top:5px;color:#6a7078;line-height:1.4;word-break:break-word}
+.aca-error-card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.aca-error-card-actions button{border:1px solid #d8b5b1;background:#fff;border-radius:9px;padding:7px 10px;font-weight:700}
+.aca-error-card-actions button.primary{background:#9f2d23;color:#fff;border-color:#9f2d23}
+.aca-error-card .tag{font-size:11px;border-radius:999px;padding:4px 7px;background:#fee4e2;color:#9f2d23;white-space:nowrap}
+.aca-error-overview-empty{color:#08785f;background:#ecfdf3;border-color:#a6e6c8}
+.aca-error-overview-empty h3{color:#08785f}
 </style>
 
 </body>
