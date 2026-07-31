@@ -2,7 +2,34 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Acil Klinik Asistanı v10.31.0</title>
+<title>Acil Klinik Asistanı v10.35.0</title>
+<script id="aca-release-config">
+(function(){
+  'use strict';
+  var RELEASE=Object.freeze({
+    version:'v10.35.0',
+    updateName:'Tek Sürüm Kaynağı',
+    numericVersion:'10.35.0'
+  });
+  Object.defineProperty(window,'ACA_RELEASE',{value:RELEASE,writable:false,configurable:false});
+  Object.defineProperty(window,'ACA_APP_VERSION',{get:function(){return RELEASE.version},set:function(){},configurable:false});
+  Object.defineProperty(window,'ACA_UPDATE_NAME',{get:function(){return RELEASE.updateName},set:function(){},configurable:false});
+  window.acaApplyReleaseInfo=function(){
+    var title='Acil Klinik Asistanı '+RELEASE.version;
+    if(document.title!==title)document.title=title;
+    var status=document.querySelector('.status'), statusText=RELEASE.version+' • '+RELEASE.updateName;
+    if(status&&status.textContent!==statusText)status.textContent=statusText;
+    document.querySelectorAll('[data-app-version]').forEach(function(el){if(el.textContent!==RELEASE.version)el.textContent=RELEASE.version});
+    document.querySelectorAll('[data-update-name]').forEach(function(el){if(el.textContent!==RELEASE.updateName)el.textContent=RELEASE.updateName});
+  };
+  function boot(){
+    window.acaApplyReleaseInfo();
+    var observer=new MutationObserver(function(){window.acaApplyReleaseInfo()});
+    observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
 <style>
 :root{--navy:#0b1424;--teal:#0f766e;--teal2:#ccfbf1;--bg:#eef3f8;--line:#d8e1ec;--muted:#64748b;--red:#b91c1c;--redbg:#fff1f2;--amber:#a16207;--amberbg:#fffbeb;--green:#166534;--greenbg:#f0fdf4;--blue:#1d4ed8;--bluebg:#eff6ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.45}
@@ -553,7 +580,7 @@ body.module-view .layout{display:grid!important}
  <div class="card dashboard-hero dashboard-hero-compact">
   <div class="dashboard-hero-top">
    <div>
-    <span class="dashboard-version"><span data-app-version>v9.5.4</span> · <span data-update-name>Sağlık Testi Kart Sayımı Düzeltmesi</span></span>
+    <span class="dashboard-version"><span data-app-version>v10.35.0</span> · <span data-update-name>Sağlık Testi Kart Sayımı Düzeltmesi</span></span>
     <h2>Acil Klinik Asistanı</h2>
     <p>Vaka başlatın veya yapmak istediğiniz işlemi seçin.</p>
    </div>
@@ -620,7 +647,7 @@ body.module-view .layout{display:grid!important}
  <div class="doctor-system-grid">
   <div class="doctor-system-box"><b>Bağlantı durumu</b><span id="doctorNetworkStatus">Kontrol ediliyor…</span></div>
   <div class="doctor-system-box"><b>Yerel kayıt</b><span>Bu cihazda otomatik taslak koruması etkin</span></div>
-  <div class="doctor-system-box"><b>Sürüm</b><span data-app-version>v10.34.9</span></div>
+  <div class="doctor-system-box"><b>Sürüm</b><span data-app-version>v10.35.0</span></div>
  </div>
  <div class="compact-actions">
   <button class="primary" type="button" onclick="acaSaveRecoveryDraft(true)">Vaka taslağını yedekle</button>
@@ -7805,7 +7832,7 @@ function log(action,ok,detail){var h=read(HISTORY_KEY,[]);h.unshift({time:new Da
 window.acaAICommandRefresh=render;
 window.acaAICommandOpenPacket=function(){if(typeof openSingleModule==='function')openSingleModule('aiCompatibilityCard')};
 window.acaAICommandClearHistory=function(){if(confirm('Yapay zekâ işlem geçmişi temizlensin mi?')){write(HISTORY_KEY,[]);render()}};
-window.acaAICommandSend=async function(){var p=render(),action=(el('aiCommandAction')||{}).value||'clinical_decision_support',note=(el('aiCommandNote')||{}).value||'';if(!p.packet||!p.privacy||!p.caseData){setStatus('Vaka paketi eksik veya kimlik ayıklama denetimi başarısız.','bad');return}if(!p.https||!p.enabled||!p.online){setStatus('Güvenli AI bağlantısı hazır değil. Bağlantı ayarlarını kontrol edin.','bad');return}if(!p.quota){setStatus('Günlük paket kotası doldu.','bad');return}setStatus('Anonim vaka paketi gönderiliyor…','busy');try{var packet=buildAICompatibilityPacket();packet.clinician_request={action:action,note:note.slice(0,500)};var settings=acaAIConnectionReadSettings(),controller=new AbortController(),timer=setTimeout(function(){controller.abort()},settings.timeout||30000);var response=await fetch(settings.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:action,provider:settings.provider,packet:packet,response_schema:ACA_AI_RESPONSE_SCHEMA,client:{application:'Acil Klinik Asistanı',version:(window.ACA_APP_VERSION||'v9.5.4'),update_name:(window.ACA_UPDATE_NAME||'Sağlık Testi Kart Sayımı Düzeltmesi')}}),signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'});clearTimeout(timer);var body=await response.json().catch(function(){throw new Error('Sunucu geçerli JSON döndürmedi.')});if(!response.ok)throw new Error((body&&body.message)||('HTTP '+response.status));var data=typeof acaExtractAIResponse==='function'?acaExtractAIResponse(body):body,valid=typeof validateAIResponseContract==='function'?validateAIResponseContract(data):{ok:true,errors:[]};if(action==='clinical_decision_support'&&!valid.ok)throw new Error('Klinik yanıt şeması uyumsuz: '+valid.errors.join('; '));var u=todayUsage();u.count++;write(USAGE_KEY,u);window.ACA_AI_LAST_RESPONSE=data;var out=el('aiSecureResponsePreview');if(out)out.textContent=JSON.stringify(data,null,2);setStatus('Yanıt alındı. Hekim onayı olmadan order veya reçete uygulanmadı.','ok');log(action,true,'Yanıt alındı ve kaydedildi.')}catch(err){setStatus('Gönderim başarısız: '+err.message,'bad');log(action,false,err.message)}};
+window.acaAICommandSend=async function(){var p=render(),action=(el('aiCommandAction')||{}).value||'clinical_decision_support',note=(el('aiCommandNote')||{}).value||'';if(!p.packet||!p.privacy||!p.caseData){setStatus('Vaka paketi eksik veya kimlik ayıklama denetimi başarısız.','bad');return}if(!p.https||!p.enabled||!p.online){setStatus('Güvenli AI bağlantısı hazır değil. Bağlantı ayarlarını kontrol edin.','bad');return}if(!p.quota){setStatus('Günlük paket kotası doldu.','bad');return}setStatus('Anonim vaka paketi gönderiliyor…','busy');try{var packet=buildAICompatibilityPacket();packet.clinician_request={action:action,note:note.slice(0,500)};var settings=acaAIConnectionReadSettings(),controller=new AbortController(),timer=setTimeout(function(){controller.abort()},settings.timeout||30000);var response=await fetch(settings.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:action,provider:settings.provider,packet:packet,response_schema:ACA_AI_RESPONSE_SCHEMA,client:{application:'Acil Klinik Asistanı',version:((window.ACA_RELEASE||{}).version||'v10.35.0'),update_name:((window.ACA_RELEASE||{}).updateName||'Tek Sürüm Kaynağı')}}),signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'});clearTimeout(timer);var body=await response.json().catch(function(){throw new Error('Sunucu geçerli JSON döndürmedi.')});if(!response.ok)throw new Error((body&&body.message)||('HTTP '+response.status));var data=typeof acaExtractAIResponse==='function'?acaExtractAIResponse(body):body,valid=typeof validateAIResponseContract==='function'?validateAIResponseContract(data):{ok:true,errors:[]};if(action==='clinical_decision_support'&&!valid.ok)throw new Error('Klinik yanıt şeması uyumsuz: '+valid.errors.join('; '));var u=todayUsage();u.count++;write(USAGE_KEY,u);window.ACA_AI_LAST_RESPONSE=data;var out=el('aiSecureResponsePreview');if(out)out.textContent=JSON.stringify(data,null,2);setStatus('Yanıt alındı. Hekim onayı olmadan order veya reçete uygulanmadı.','ok');log(action,true,'Yanıt alındı ve kaydedildi.')}catch(err){setStatus('Gönderim başarısız: '+err.message,'bad');log(action,false,err.message)}};
 function init(){render();window.addEventListener('online',render);window.addEventListener('offline',render);try{var r=typeof ensureAppRegistry==='function'?ensureAppRegistry():window.APP_REGISTRY;if(r&&r.groups&&r.groups.diagnosis&&r.groups.diagnosis.ids.indexOf('aiCommandCenterCard')<0)r.groups.diagnosis.ids.unshift('aiCommandCenterCard');if(r&&r.testNames)r.testNames.aiCommandCenterCard='Yapay Zekâ Merkezi ve Güvenli Vaka Gönderimi'}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
@@ -10332,9 +10359,9 @@ async function runAll(){
 function exportReport(){
  if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
  var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
- var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.5','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: '+((window.ACA_RELEASE||{}).version||'v10.35.0'),'Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
  RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
- var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.5-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
+ var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-'+(((window.ACA_RELEASE||{}).version||'v10.35.0').replace(/^v/,''))+'-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
 }
 function installEntry(){
  ensureUI();
@@ -10417,24 +10444,7 @@ body[data-aca-workspace="summary"] .aca-structure-nav{
   .aca-structure-nav{display:none!important}
 }
 </style>
-<script id="aca-release-version">
-(function(){
- 'use strict';
- var VERSION='v10.34.8';
- var UPDATE='Vaka Araçları Navigasyon Temizliği';
- function apply(){
-  window.ACA_APP_VERSION=VERSION;
-  window.ACA_UPDATE_NAME=UPDATE;
-  document.title='Acil Klinik Asistanı '+VERSION;
-  var status=document.querySelector('.status');
-  if(status)status.textContent=VERSION+' • '+UPDATE;
-  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=VERSION});
-  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=UPDATE});
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
- setTimeout(apply,300);
-})();
-</script>
+
 
 </body>
 </html>
@@ -10445,10 +10455,9 @@ body[data-aca-workspace="summary"] .aca-structure-nav{
 <script id="aca-developer-mode-v10349-script">
 (function(){
  'use strict';
- var VERSION='10.34.9', UPDATE='Doktor ve geliştirici ekranı ayrımı';
  var TECHNICAL_IDS=['systemStabilityCard','aiConnectionCard','aiCompatibilityCard','aiClinicalReconciliationCard','guidelineCurrencyAuditCard'];
  function isDeveloper(){try{return localStorage.getItem('acaDeveloperMode')==='1'}catch(e){return false}}
- function applyVersion(){window.ACA_APP_VERSION=VERSION;window.ACA_UPDATE_NAME=UPDATE;document.querySelectorAll('[data-app-version]').forEach(function(el){el.textContent='v'+VERSION});document.querySelectorAll('[data-update-name]').forEach(function(el){el.textContent=UPDATE});var st=document.querySelector('.status');if(st)st.textContent='v'+VERSION+' • '+UPDATE;document.title='Acil Klinik Asistanı v'+VERSION}
+ function applyVersion(){if(typeof window.acaApplyReleaseInfo==='function')window.acaApplyReleaseInfo()}
  function updateNetwork(){var el=document.getElementById('doctorNetworkStatus');if(el)el.textContent=navigator.onLine?'Çevrimiçi':'Çevrimdışı — yerel kullanım devam ediyor'}
  function applyMode(){var on=isDeveloper();document.body.classList.toggle('aca-developer-mode',on);TECHNICAL_IDS.forEach(function(id){var el=document.getElementById(id);if(el)el.classList.add('developer-technical-card')});var btn=document.getElementById('developerModeToggle');if(btn)btn.textContent=on?'Geliştirici modunu kapat':'Geliştirici modunu aç';if(!on&&typeof closeAllSystemTests==='function')closeAllSystemTests()}
  window.acaToggleDeveloperMode=function(){try{localStorage.setItem('acaDeveloperMode',isDeveloper()?'0':'1')}catch(e){}applyMode();if(isDeveloper()&&typeof buildSystemHub==='function')buildSystemHub()};
