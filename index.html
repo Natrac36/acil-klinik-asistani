@@ -10409,7 +10409,7 @@ async function runAll(){
 function exportReport(){
  if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
  var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
- var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.6','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.7','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
  RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.5-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
 }
@@ -10422,7 +10422,7 @@ function installEntry(){
 }
 function mark(){
  window.ACA_APP_VERSION='v10.34.6';window.ACA_UPDATE_NAME='Kontrollü Kod Sadeleştirmesi';document.title='Acil Klinik Asistanı v10.34.6';
- var s=document.querySelector('.status');if(s)s.textContent='v10.34.6 • Kontrollü Kod Sadeleştirmesi';
+ var s=document.querySelector('.status');if(s)s.textContent='v10.34.7 • Kompakt Ana Ekran';
  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.0'});
  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Birleşik Klinik Test Merkezi'});
 }
@@ -10436,6 +10436,53 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 
+
+
+<style id="aca-v10347-compact-home-css">
+#acaVersionBadge{position:fixed;top:10px;right:10px;z-index:120000;background:rgba(10,30,44,.92);color:#fff;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:7px 10px;font:700 12px/1.1 system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.22);backdrop-filter:blur(8px)}
+#acaVersionBadge small{opacity:.78;font-weight:600;margin-left:4px}
+#professionalHome,.professional-home,[data-professional-home],#homeScreen,.home-screen{min-height:auto!important;padding-top:12px!important;padding-bottom:88px!important}
+#professionalHome .hero,.professional-home .hero,#professionalHome .home-hero,.professional-home .home-hero,#professionalHome .dashboard-hero,.professional-home .dashboard-hero{padding:18px 16px!important;border-radius:24px!important;min-height:auto!important}
+#professionalHome h1,.professional-home h1{font-size:clamp(26px,5.5vw,38px)!important;line-height:1.08!important;margin:0 0 10px!important}
+#professionalHome .hero p,.professional-home .hero p,#professionalHome .home-subtitle,.professional-home .home-subtitle{font-size:15px!important;line-height:1.45!important;margin:0 0 14px!important}
+#moduleSearch,#homeUniversalSearch,#professionalSearchInput{min-height:52px!important;height:52px!important;padding:0 16px!important;font-size:18px!important;border-radius:18px!important}
+#professionalHome .search-wrap,.professional-home .search-wrap,#professionalHome .home-search-wrap,.professional-home .home-search-wrap{margin:10px 0 8px!important}
+#professionalHome .search-button,.professional-home .search-button,#professionalHome button[data-search],.professional-home button[data-search]{min-height:46px!important;height:46px!important;padding:0 16px!important;border-radius:15px!important;margin-top:8px!important;font-size:17px!important}
+#professionalHome .recent-searches,.professional-home .recent-searches{margin:8px 0 12px!important;gap:6px!important}
+#professionalHome .recent-searches button,.professional-home .recent-searches button{min-height:34px!important;padding:6px 10px!important;border-radius:999px!important;font-size:12px!important}
+#professionalHome .home-actions,.professional-home .home-actions,#professionalHome .quick-actions,.professional-home .quick-actions,#professionalHome .dashboard-grid,.professional-home .dashboard-grid,#dashboardGrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+#professionalHome .home-action-card,.professional-home .home-action-card,#professionalHome .quick-action-card,.professional-home .quick-action-card,#professionalHome .dashboard-tile,.professional-home .dashboard-tile,#dashboardGrid .dashboard-tile{min-height:104px!important;height:auto!important;padding:12px!important;border-radius:17px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:3px!important}
+#professionalHome .home-action-card .icon,.professional-home .home-action-card .icon,#professionalHome .quick-action-card .icon,.professional-home .quick-action-card .icon,#professionalHome .dashboard-tile .icon,.professional-home .dashboard-tile .icon,#dashboardGrid .dashboard-tile .icon{font-size:25px!important;line-height:1!important;margin:0 0 4px!important}
+#professionalHome .home-action-card b,.professional-home .home-action-card b,#professionalHome .quick-action-card b,.professional-home .quick-action-card b,#professionalHome .dashboard-tile b,.professional-home .dashboard-tile b,#dashboardGrid .dashboard-tile b{font-size:15px!important;line-height:1.15!important;margin:0!important}
+#professionalHome .home-action-card small,.professional-home .home-action-card small,#professionalHome .quick-action-card small,.professional-home .quick-action-card small,#professionalHome .dashboard-tile small,.professional-home .dashboard-tile small,#dashboardGrid .dashboard-tile small{font-size:11px!important;line-height:1.25!important;margin:0!important}
+#professionalHome .bottom-nav,.professional-home .bottom-nav,.app-bottom-nav,.bottom-nav{min-height:66px!important;padding:7px 10px!important;border-radius:22px!important}
+#professionalHome .bottom-nav button,.professional-home .bottom-nav button,.app-bottom-nav button,.bottom-nav button{min-height:50px!important;padding:6px 8px!important;border-radius:16px!important;font-size:12px!important}
+@media(max-width:420px){
+ #acaVersionBadge{top:8px;right:8px;padding:6px 9px;font-size:11px}
+ #professionalHome .home-actions,.professional-home .home-actions,#professionalHome .quick-actions,.professional-home .quick-actions,#professionalHome .dashboard-grid,.professional-home .dashboard-grid,#dashboardGrid{gap:8px!important}
+ #professionalHome .home-action-card,.professional-home .home-action-card,#professionalHome .quick-action-card,.professional-home .quick-action-card,#professionalHome .dashboard-tile,.professional-home .dashboard-tile,#dashboardGrid .dashboard-tile{min-height:96px!important;padding:10px 8px!important}
+ #professionalHome .home-action-card b,.professional-home .home-action-card b,#professionalHome .quick-action-card b,.professional-home .quick-action-card b,#professionalHome .dashboard-tile b,.professional-home .dashboard-tile b,#dashboardGrid .dashboard-tile b{font-size:13px!important}
+ #professionalHome .home-action-card small,.professional-home .home-action-card small,#professionalHome .quick-action-card small,.professional-home .quick-action-card small,#professionalHome .dashboard-tile small,.professional-home .dashboard-tile small,#dashboardGrid .dashboard-tile small{font-size:10px!important}
+}
+</style>
+
+<script id="aca-v10347-version-badge-js">
+(function(){
+ function install(){
+  var b=document.getElementById('acaVersionBadge');
+  if(!b){b=document.createElement('div');b.id='acaVersionBadge';b.setAttribute('aria-label','Uygulama sürümü');document.body.appendChild(b)}
+  b.innerHTML='v10.34.7 <small>Kompakt Ana Ekran</small>';
+  window.ACA_APP_VERSION='v10.34.7';
+  window.ACA_UPDATE_NAME='Kompakt Ana Ekran';
+  document.title='Acil Klinik Asistanı v10.34.7';
+  var s=document.querySelector('.status');if(s)s.textContent='v10.34.7 • Kompakt Ana Ekran';
+  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.7'});
+  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Kompakt Ana Ekran'});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+ setTimeout(install,500);
+})();
+</script>
 
 </body>
 </html>
