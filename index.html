@@ -10384,5 +10384,43 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<style id="aca-case-only-navigation-css">
+/*
+ Klinik Akış Navigasyonu yalnızca aktif vaka çalışma alanlarında görünür.
+ Ana menü, vaka listesi, bağımsız araçlar ve sistem/test ekranlarında gizlidir.
+*/
+.aca-structure-nav{
+  display:none!important;
+}
+body[data-aca-workspace="case"] .aca-structure-nav,
+body[data-aca-workspace="summary"] .aca-structure-nav{
+  display:block!important;
+}
+@media print{
+  .aca-structure-nav{display:none!important}
+}
+</style>
+<script id="aca-case-only-navigation-version">
+(function(){
+ 'use strict';
+ function apply(){
+  window.ACA_APP_VERSION='v10.34.7';
+  window.ACA_UPDATE_NAME='Vaka Moduna Özel Klinik Navigasyon';
+  document.title='Acil Klinik Asistanı v10.34.7';
+  var status=document.querySelector('.status');
+  if(status)status.textContent='v10.34.7 • Vaka Moduna Özel Navigasyon';
+  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.7'});
+  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Vaka Moduna Özel Klinik Navigasyon'});
+ }
+ if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',apply);
+ }else{
+  apply();
+ }
+ setTimeout(apply,300);
+})();
+</script>
+
 </body>
 </html>
