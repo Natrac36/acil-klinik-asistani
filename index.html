@@ -601,11 +601,11 @@ body.module-view .layout{display:grid!important}
  </section>
 
  <details class="dashboard-more-tools" id="dashboardMoreTools">
-  <summary><span>🧰</span><div><b>Diğer araçlar</b><small>Eğitim, simülasyon, yapay zekâ ve sistem yönetimi</small></div><strong>＋</strong></summary>
+  <summary><span>🧰</span><div><b>Diğer araçlar</b><small>Eğitim, gelişmiş klinik araçlar ve güvenli sistem ayarları</small></div><strong>＋</strong></summary>
   <div class="dashboard-more-grid">
    <button onclick="openModuleGroup('tools')"><span>🧰</span><div><b>Gelişmiş klinik araçlar</b><small>Kılavuz, kural ve tutarlılık motorları</small></div></button>
    <button onclick="openModuleGroup('education')"><span>🎓</span><div><b>Eğitim ve simülasyon</b><small>Hazır vakalar ve performans değerlendirmesi</small></div></button>
-   <button onclick="openModuleGroup('system')"><span>⚙️</span><div><b>Sistem ve yönetim</b><small>Güncelleme, lisans ve teknik kontroller</small></div></button>
+   <button onclick="openModuleGroup('system')"><span>⚙️</span><div><b>Ayarlar ve veri güvenliği</b><small>Yedekleme, çevrimdışı çalışma ve sistem durumu</small></div></button>
   </div>
  </details>
 </div>
@@ -615,13 +615,28 @@ body.module-view .layout{display:grid!important}
 <div class="layout">
 <section>
 <div class="card system-hub" id="systemHubCard">
- <div class="section-title"><h2>Sistem kontrol merkezi</h2><span class="phase-badge">v6.8.3</span></div>
- <p class="muted">Kontrol etmek istediğiniz motoru seçin. Seçilen test paneli hemen aşağıda açılır.</p>
- <div id="stabilitySummary" class="panel neutral" style="margin:10px 0">Sistem sağlık kontrolü başlatılmadı.</div>
- <div class="compact-actions"><button id="stabilityCheckBtn" class="primary" type="button" onclick="runStabilityChecksSafe()">Sistem sağlık kontrolünü çalıştır</button></div>
- <details class="system-advanced-tests">
-  <summary>Gelişmiş teknik testler (isteğe bağlı)</summary>
-  <p class="muted" style="padding:0 12px">Günlük kullanımda gerekli değildir. Motor bazlı hata ayıklama ve geliştirme testlerini içerir.</p>
+ <div class="section-title"><h2>Ayarlar ve veri güvenliği</h2><span class="phase-badge">Doktor görünümü</span></div>
+ <p class="muted">Günlük kullanım için gerekli temel durum, yedekleme ve çevrimdışı çalışma araçları burada bulunur. Teknik testler doktor ekranından ayrılmıştır.</p>
+ <div class="doctor-system-grid">
+  <div class="doctor-system-box"><b>Bağlantı durumu</b><span id="doctorNetworkStatus">Kontrol ediliyor…</span></div>
+  <div class="doctor-system-box"><b>Yerel kayıt</b><span>Bu cihazda otomatik taslak koruması etkin</span></div>
+  <div class="doctor-system-box"><b>Sürüm</b><span data-app-version>v10.34.9</span></div>
+ </div>
+ <div class="compact-actions">
+  <button class="primary" type="button" onclick="acaSaveRecoveryDraft(true)">Vaka taslağını yedekle</button>
+  <button type="button" onclick="acaRestoreRecoveryDraft()">Son taslağı geri yükle</button>
+  <button type="button" onclick="openSingleModule('offlineCaseSyncCard')">Kayıt arşivi</button>
+  <button type="button" onclick="openSingleModule('offlineUpdateCard')">Çevrimdışı ve güncelleme</button>
+ </div>
+ <div id="stabilitySummary" class="panel neutral developer-only" style="margin:10px 0">Sistem sağlık kontrolü başlatılmadı.</div>
+ <div class="compact-actions developer-only"><button id="stabilityCheckBtn" class="primary" type="button" onclick="runStabilityChecksSafe()">Sistem sağlık kontrolünü çalıştır</button></div>
+ <div class="developer-access no-print">
+  <button id="developerModeToggle" type="button" onclick="acaToggleDeveloperMode()">Geliştirici modunu aç</button>
+  <small>Regresyon testleri, hata konsolu, API bağlantıları ve teknik motor denetimleri yalnızca geliştirici modunda görünür.</small>
+ </div>
+ <details class="system-advanced-tests developer-only">
+  <summary>Gelişmiş teknik testler</summary>
+  <p class="muted" style="padding:0 12px">Günlük klinik kullanım için gerekli değildir.</p>
   <div class="system-hub-grid" id="systemHubButtons"></div>
   <div class="compact-actions" style="padding:0 12px 12px"><button onclick="closeAllSystemTests()">Açık test panelini kapat</button></div>
  </details>
@@ -10423,3 +10438,27 @@ body[data-aca-workspace="summary"] .aca-structure-nav{
 
 </body>
 </html>
+
+<style id="aca-developer-mode-v10349">
+.doctor-system-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}.doctor-system-box{border:1px solid var(--line);border-radius:13px;padding:11px;background:#f8fafc}.doctor-system-box b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}.doctor-system-box span{font-size:13px;font-weight:800}.developer-access{margin-top:13px;padding-top:12px;border-top:1px dashed var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}.developer-access small{color:var(--muted);flex:1 1 280px}.developer-only{display:none!important}body.aca-developer-mode .developer-only{display:block!important}body.aca-developer-mode .compact-actions.developer-only{display:flex!important}.developer-technical-card{display:none!important}body.aca-developer-mode .developer-technical-card.module-visible{display:block!important}@media(max-width:700px){.doctor-system-grid{grid-template-columns:1fr}.developer-access button{width:100%}}
+</style>
+<script id="aca-developer-mode-v10349-script">
+(function(){
+ 'use strict';
+ var VERSION='10.34.9', UPDATE='Doktor ve geliştirici ekranı ayrımı';
+ var TECHNICAL_IDS=['systemStabilityCard','aiConnectionCard','aiCompatibilityCard','aiClinicalReconciliationCard','guidelineCurrencyAuditCard'];
+ function isDeveloper(){try{return localStorage.getItem('acaDeveloperMode')==='1'}catch(e){return false}}
+ function applyVersion(){window.ACA_APP_VERSION=VERSION;window.ACA_UPDATE_NAME=UPDATE;document.querySelectorAll('[data-app-version]').forEach(function(el){el.textContent='v'+VERSION});document.querySelectorAll('[data-update-name]').forEach(function(el){el.textContent=UPDATE});var st=document.querySelector('.status');if(st)st.textContent='v'+VERSION+' • '+UPDATE;document.title='Acil Klinik Asistanı v'+VERSION}
+ function updateNetwork(){var el=document.getElementById('doctorNetworkStatus');if(el)el.textContent=navigator.onLine?'Çevrimiçi':'Çevrimdışı — yerel kullanım devam ediyor'}
+ function applyMode(){var on=isDeveloper();document.body.classList.toggle('aca-developer-mode',on);TECHNICAL_IDS.forEach(function(id){var el=document.getElementById(id);if(el)el.classList.add('developer-technical-card')});var btn=document.getElementById('developerModeToggle');if(btn)btn.textContent=on?'Geliştirici modunu kapat':'Geliştirici modunu aç';if(!on&&typeof closeAllSystemTests==='function')closeAllSystemTests()}
+ window.acaToggleDeveloperMode=function(){try{localStorage.setItem('acaDeveloperMode',isDeveloper()?'0':'1')}catch(e){}applyMode();if(isDeveloper()&&typeof buildSystemHub==='function')buildSystemHub()};
+ var originalOpenSystemTest=window.openSystemTest;
+ window.openSystemTest=function(id){if(!isDeveloper()){alert('Bu panel yalnızca geliştirici modunda kullanılabilir.');return}return originalOpenSystemTest&&originalOpenSystemTest(id)};
+ var originalBuildSystemHub=window.buildSystemHub;
+ window.buildSystemHub=function(){if(originalBuildSystemHub)originalBuildSystemHub();applyMode()};
+ document.addEventListener('DOMContentLoaded',function(){applyVersion();applyMode();updateNetwork()});
+ window.addEventListener('load',function(){applyVersion();applyMode();updateNetwork()});
+ window.addEventListener('online',updateNetwork);window.addEventListener('offline',updateNetwork);
+ setTimeout(function(){applyVersion();applyMode();updateNetwork()},0);
+})();
+</script>
