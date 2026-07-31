@@ -9851,6 +9851,7 @@ body.dashboard-home .aca-structure-nav{display:none!important}
 @media(max-width:900px){.aca-structure-nav{top:88px}.aca-structure-search{grid-template-columns:1fr}.aca-structure-tools{width:100%}.aca-structure-tools button{flex:1}.aca-flow-tabs{margin-left:-3px;margin-right:-3px}}
 @media(max-width:560px){.aca-structure-nav{position:relative;top:auto;border-radius:14px;padding:9px}.aca-structure-title small{display:none}.aca-flow-tabs button{font-size:10px;padding:6px 8px}.aca-subnav button{font-size:9px}}
 @media print{.aca-structure-nav,.aca-card-badge,.aca-overlap-note{display:none!important}.aca-focus-hidden,.aca-search-hidden{display:block!important}}
+.aca-flow-help{font-size:12px;color:var(--muted);background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-top:8px}
 </style>
 
 <script id="acaV1031StructureScript">
@@ -9888,9 +9889,9 @@ function markCard(card){if(card.dataset.acaStructured)return;card.dataset.acaStr
 }
 function apply(){var visible=0;clinicalCards().forEach(function(card){markCard(card);var cat=card.dataset.acaCategory||categoryOf(card);var txt=norm(card.textContent);var categoryOK=activeCategory==='all'||cat===activeCategory;var searchOK=!searchTerm||txt.includes(searchTerm);var focusHidden=focusMode&&(legacyIds.has(card.id)||advancedIds.has(card.id));card.classList.toggle('aca-focus-hidden',focusHidden);card.classList.toggle('aca-search-hidden',!(categoryOK&&searchOK));if(!focusHidden&&categoryOK&&searchOK)visible++});var em=E('acaEmptySearch');if(em)em.classList.toggle('show',visible===0);document.querySelectorAll('.aca-flow-tabs button').forEach(function(b){b.classList.toggle('active',b.dataset.cat===activeCategory)});var fb=E('acaFocusBtn');if(fb)fb.textContent=focusMode?'Tüm araçları göster':'Düzenli görünüm'}
 function scrollCategory(cat){activeCategory=cat;apply();var target=clinicalCards().find(function(c){return !c.classList.contains('aca-focus-hidden')&&!c.classList.contains('aca-search-hidden')});if(target)target.scrollIntoView({behavior:'smooth',block:'start'})}
-function nav(){if(E('acaStructureNav'))return;var main=document.querySelector('main');if(!main)return;var n=document.createElement('section');n.id='acaStructureNav';n.className='aca-structure-nav no-print';n.innerHTML='<div class="aca-structure-head"><div class="aca-structure-title">🧭 Klinik Akış Navigasyonu <small>Mevcut motorlar korunarak düzenlendi</small><span class="aca-structure-ok">v10.31 aktif</span></div><div class="aca-structure-tools"><button type="button" id="acaFocusBtn">Tüm araçları göster</button><button type="button" id="acaClearFilter">Filtreyi temizle</button></div></div><div class="aca-structure-search"><input id="acaCardSearch" type="search" placeholder="Araç, ilaç, tetkik veya işlem ara…"><button type="button" id="acaSearchClear">Temizle</button></div><div class="aca-flow-tabs"><button data-cat="all" class="active">Tümü</button>'+Object.keys(categoryMap).map(function(k){return '<button data-cat="'+k+'">'+categoryMap[k].icon+' '+categoryMap[k].label+'</button>'}).join('')+'</div><div class="aca-subnav"><button data-jump="smartTreatmentOrderCard">Acil tedavi</button><button data-jump="medV1025Card">İlaç güvenliği</button><button data-jump="doseCalculatorCard">Doz</button><button data-jump="smartPrescriptionCard">Reçete</button><button data-jump="smartTestOrderCard">Tetkik istemi</button><button data-jump="labV1026Card">Tetkik yorumu</button><button data-jump="imgV1027Card">Görüntüleme</button><button data-jump="procedureV1030Card">Girişimler</button><button data-jump="dispV1028Card">Yatış–sevk</button><button data-jump="safetynetV1029Card">Taburculuk</button></div><div id="acaEmptySearch" class="aca-empty-search">Bu filtrede görünür araç bulunamadı. “Tüm araçları göster” veya “Filtreyi temizle” seçeneğini kullanın.</div>';
+function nav(){if(E('acaStructureNav'))return;var main=document.querySelector('main');if(!main)return;var n=document.createElement('section');n.id='acaStructureNav';n.className='aca-structure-nav no-print';n.innerHTML='<div class="aca-structure-head"><div class="aca-structure-title">🧭 Vaka Araçları <small>Aktif vaka içindeki bölümleri filtreler</small><span class="aca-structure-ok">Düzenli görünüm</span></div><div class="aca-structure-tools"><button type="button" id="acaFocusBtn">Tüm araçları göster</button><button type="button" id="acaClearFilter">Filtreyi temizle</button></div></div><div class="aca-structure-search"><input id="acaCardSearch" type="search" placeholder="Araç, ilaç, tetkik veya işlem ara…"><button type="button" id="acaSearchClear">Temizle</button></div><div class="aca-flow-tabs"><button data-cat="all" class="active">Tümü</button>'+Object.keys(categoryMap).map(function(k){return '<button data-cat="'+k+'">'+categoryMap[k].icon+' '+categoryMap[k].label+'</button>'}).join('')+'</div><div class="aca-flow-help">Kategori düğmeleri mevcut vaka ekranındaki ilgili kartları gösterir. Görünmeyen bir araç için vaka adımlarında ilgili bölüme ilerleyin.</div><div id="acaEmptySearch" class="aca-empty-search">Bu filtrede görünür araç bulunamadı. “Tüm araçları göster” veya “Filtreyi temizle” seçeneğini kullanın.</div>';
  main.insertBefore(n,main.firstChild);
- n.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.cat){scrollCategory(b.dataset.cat);return}if(b.dataset.jump){var target=E(b.dataset.jump);if(!target&&typeof window.render==='function'){try{window.render()}catch(_){}}target=E(b.dataset.jump);if(target){activeCategory='all';searchTerm='';var s=E('acaCardSearch');if(s)s.value='';apply();target.scrollIntoView({behavior:'smooth',block:'start'});target.setAttribute('open','')}return;}if(b.id==='acaFocusBtn'){focusMode=!focusMode;apply()}if(b.id==='acaClearFilter'||b.id==='acaSearchClear'){activeCategory='all';searchTerm='';var i=E('acaCardSearch');if(i)i.value='';apply()}});
+ n.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.cat){scrollCategory(b.dataset.cat);return}if(b.id==='acaFocusBtn'){focusMode=!focusMode;apply()}if(b.id==='acaClearFilter'||b.id==='acaSearchClear'){activeCategory='all';searchTerm='';var i=E('acaCardSearch');if(i)i.value='';apply()}});
  var input=E('acaCardSearch');if(input)input.addEventListener('input',function(){searchTerm=norm(input.value);apply()});
 }
 function boot(){nav();clinicalCards().forEach(markCard);apply();window.ACA_APP_VERSION=VERSION;window.ACA_UPDATE_NAME=UPDATE;document.title='Acil Klinik Asistanı '+VERSION;var st=document.querySelector('.status');if(st)st.textContent=VERSION+' • '+UPDATE}
@@ -10401,23 +10402,21 @@ body[data-aca-workspace="summary"] .aca-structure-nav{
   .aca-structure-nav{display:none!important}
 }
 </style>
-<script id="aca-case-only-navigation-version">
+<script id="aca-release-version">
 (function(){
  'use strict';
+ var VERSION='v10.34.8';
+ var UPDATE='Vaka Araçları Navigasyon Temizliği';
  function apply(){
-  window.ACA_APP_VERSION='v10.34.7';
-  window.ACA_UPDATE_NAME='Vaka Moduna Özel Klinik Navigasyon';
-  document.title='Acil Klinik Asistanı v10.34.7';
+  window.ACA_APP_VERSION=VERSION;
+  window.ACA_UPDATE_NAME=UPDATE;
+  document.title='Acil Klinik Asistanı '+VERSION;
   var status=document.querySelector('.status');
-  if(status)status.textContent='v10.34.7 • Vaka Moduna Özel Navigasyon';
-  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.7'});
-  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Vaka Moduna Özel Klinik Navigasyon'});
+  if(status)status.textContent=VERSION+' • '+UPDATE;
+  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent=VERSION});
+  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent=UPDATE});
  }
- if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',apply);
- }else{
-  apply();
- }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
  setTimeout(apply,300);
 })();
 </script>
