@@ -9872,5 +9872,176 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<style id="aca-v10340-test-center-css">
+#acaTestCenterOverlay{position:fixed;inset:0;z-index:100000;background:rgba(4,13,25,.72);backdrop-filter:blur(5px);display:none;align-items:flex-start;justify-content:center;padding:18px;overflow:auto}
+#acaTestCenterOverlay.open{display:flex}
+.aca-test-center{width:min(1180px,100%);background:#f7fafc;color:#172033;border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.35);overflow:hidden}
+.aca-test-head{position:sticky;top:0;z-index:3;background:linear-gradient(135deg,#0b3340,#0c6c68);color:#fff;padding:18px 20px;display:flex;gap:16px;justify-content:space-between;align-items:center}
+.aca-test-head h2{margin:0;font-size:22px}.aca-test-head small{display:block;color:#c8f5ef;margin-top:4px}
+.aca-test-actions{display:flex;gap:8px;flex-wrap:wrap}.aca-test-actions button{border:1px solid #ffffff55;background:#ffffff15;color:#fff;border-radius:11px;padding:10px 13px;font-weight:700}
+.aca-test-actions .run{background:#fff;color:#09635f}.aca-test-body{padding:18px}
+.aca-test-summary{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.aca-test-kpi{background:#fff;border:1px solid #dce6ec;border-radius:15px;padding:13px}.aca-test-kpi b{display:block;font-size:24px}.aca-test-kpi span{font-size:12px;color:#62717e}
+.aca-test-progress{height:9px;background:#dce6ec;border-radius:99px;overflow:hidden;margin:10px 0 16px}.aca-test-progress i{display:block;height:100%;width:0;background:#139d8f;transition:width .25s}
+.aca-test-filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.aca-test-filters button{border:1px solid #cbd9e1;background:#fff;border-radius:999px;padding:7px 11px}.aca-test-filters button.active{background:#173f4b;color:#fff}
+.aca-test-section{background:#fff;border:1px solid #dae5eb;border-radius:16px;margin:10px 0;overflow:hidden}.aca-test-section summary{cursor:pointer;padding:13px 15px;font-weight:800;display:flex;justify-content:space-between;gap:10px}.aca-test-section-body{padding:0 12px 12px}
+.aca-test-row{display:grid;grid-template-columns:86px minmax(180px,1fr) 2fr;gap:10px;padding:9px;border-top:1px solid #eef3f6;align-items:start;font-size:13px}.aca-test-status{font-weight:800}.aca-pass{color:#08785f}.aca-fail{color:#b42318}.aca-warn{color:#a15c00}.aca-skip{color:#667085}
+.aca-test-empty{padding:24px;text-align:center;color:#667085}.aca-test-running{animation:acaPulse 1s infinite}@keyframes acaPulse{50%{opacity:.55}}
+.aca-test-tool-btn{width:100%;text-align:left}
+@media(max-width:720px){.aca-test-summary{grid-template-columns:repeat(2,1fr)}.aca-test-row{grid-template-columns:70px 1fr}.aca-test-row .aca-test-detail{grid-column:1/-1}.aca-test-head{align-items:flex-start;flex-direction:column}}
+</style>
+<script id="aca-v10340-test-center-js">
+(function(){
+'use strict';
+var RESULTS=[],LAST_RUN=null,ACTIVE_FILTER='all';
+function E(id){return document.getElementById(id)}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+function add(section,status,name,detail,meta){RESULTS.push({section:section,status:status,name:name,detail:detail||'',meta:meta||null})}
+function normalizeStatus(x){return x===true?'pass':x===false?'fail':(x||'skip')}
+function ensureUI(){
+ if(E('acaTestCenterOverlay'))return;
+ var o=document.createElement('div');o.id='acaTestCenterOverlay';o.innerHTML=
+ '<div class="aca-test-center" role="dialog" aria-modal="true" aria-labelledby="acaTestCenterTitle">'+
+ '<div class="aca-test-head"><div><h2 id="acaTestCenterTitle">🧪 Birleşik Klinik Test Merkezi</h2><small>Gerçek zamanlı işlev, bağlantı, arama ve klinik motor denetimi</small></div>'+
+ '<div class="aca-test-actions"><button class="run" id="acaRunAllTests">Tüm testleri çalıştır</button><button id="acaExportTests">Raporu indir</button><button id="acaCloseTests">Kapat</button></div></div>'+
+ '<div class="aca-test-body"><div class="aca-test-summary">'+
+ '<div class="aca-test-kpi"><b id="acaTTotal">0</b><span>Toplam kontrol</span></div><div class="aca-test-kpi"><b id="acaTPass">0</b><span>Geçti</span></div>'+
+ '<div class="aca-test-kpi"><b id="acaTFail">0</b><span>Hata</span></div><div class="aca-test-kpi"><b id="acaTWarn">0</b><span>Uyarı</span></div>'+
+ '<div class="aca-test-kpi"><b id="acaTTime">—</b><span>Çalışma süresi</span></div></div>'+
+ '<div class="aca-test-progress"><i id="acaTestProgress"></i></div>'+
+ '<div class="aca-test-filters"><button data-tf="all" class="active">Tümü</button><button data-tf="fail">Hatalar</button><button data-tf="warn">Uyarılar</button><button data-tf="pass">Geçenler</button></div>'+
+ '<div id="acaTestResults"><div class="aca-test-empty">Testleri başlatmak için “Tüm testleri çalıştır” düğmesine basın.</div></div></div></div>';
+ document.body.appendChild(o);
+ o.addEventListener('click',function(ev){if(ev.target===o)close()});
+ E('acaCloseTests').onclick=close;E('acaRunAllTests').onclick=runAll;E('acaExportTests').onclick=exportReport;
+ o.querySelectorAll('[data-tf]').forEach(function(b){b.onclick=function(){ACTIVE_FILTER=b.dataset.tf;o.querySelectorAll('[data-tf]').forEach(function(x){x.classList.toggle('active',x===b)});render()}});
+}
+function open(){ensureUI();E('acaTestCenterOverlay').classList.add('open');document.body.style.overflow='hidden'}
+function close(){var o=E('acaTestCenterOverlay');if(o)o.classList.remove('open');document.body.style.overflow=''}
+window.openClinicalTestCenter=open;
+
+function testDom(){
+ var ids={},dups=[];document.querySelectorAll('[id]').forEach(function(x){if(ids[x.id])dups.push(x.id);ids[x.id]=1});
+ add('HTML ve DOM',dups.length?'fail':'pass','Yinelenen HTML kimlikleri',dups.length?dups.join(', '):Object.keys(ids).length+' benzersiz kimlik doğrulandı.');
+ var anchors=[];document.querySelectorAll('a[href^="#"]').forEach(function(a){var id=a.getAttribute('href').slice(1);if(id&&!E(id))anchors.push(id)});
+ add('HTML ve DOM',anchors.length?'fail':'pass','Sayfa içi bağlantılar',anchors.length?'Eksik hedef: '+anchors.join(', '):'Tüm sayfa içi hedefler mevcut.');
+ var cards=document.querySelectorAll('.card,[class*="card"]').length;
+ add('HTML ve DOM',cards>20?'pass':'warn','Klinik kart envanteri',cards+' kart benzeri bileşen bulundu.');
+ var controls=document.querySelectorAll('button,input,select,textarea').length;
+ add('HTML ve DOM',controls>100?'pass':'warn','Etkileşimli kontrol envanteri',controls+' kontrol bulundu.');
+}
+function testHandlers(){
+ var missing=[],checked=0;
+ document.querySelectorAll('[onclick]').forEach(function(el){
+  var s=el.getAttribute('onclick')||'',m=s.match(/^\s*(?:return\s+)?([A-Za-z_$][\w$]*)\s*\(/);if(!m)return;
+  checked++;if(typeof window[m[1]]!=='function')missing.push(m[1]);
+ });
+ missing=[...new Set(missing)];
+ add('Buton ve bağlantılar',missing.length?'fail':'pass','Inline buton fonksiyonları',missing.length?'Tanımsız: '+missing.join(', '):checked+' fonksiyon çağrısı doğrulandı.');
+ var moduleTargets=[],known={};
+ document.querySelectorAll('[id]').forEach(function(x){known[x.id]=1});
+ document.querySelectorAll('[onclick]').forEach(function(el){var s=el.getAttribute('onclick')||'',re=/(?:openSingleModule|scrollToModule|openModule)\(['"]([^'"]+)['"]\)/g,m;while((m=re.exec(s)))if(!known[m[1]])moduleTargets.push(m[1])});
+ moduleTargets=[...new Set(moduleTargets)];
+ add('Buton ve bağlantılar',moduleTargets.length?'warn':'pass','Modül hedef kimlikleri',moduleTargets.length?'DOM’da doğrudan bulunmayan dinamik hedefler: '+moduleTargets.join(', '):'Tüm statik modül hedefleri mevcut.');
+}
+function testData(){
+ var checks=[
+  ['Şikâyet soru ağaçları','smartQsByComplaint',function(v){return v&&Object.keys(v).length>=10}],
+  ['ICD-10 kütüphanesi','ICD10_LIBRARY',function(v){return Array.isArray(v)&&v.length>=20}],
+  ['Klinik skor tanımları','CLINICAL_SCORE_LIBRARY',function(v){return Array.isArray(v)&&v.length>=5}],
+  ['İlaç kütüphanesi','DRUG_LIBRARY',function(v){return Array.isArray(v)&&v.length>=10}],
+  ['Acil olay hedefleri','EM_TARGETS',function(v){return v&&Object.keys(v).length>=5}]
+ ];
+ checks.forEach(function(c){var v;try{v=eval('typeof '+c[1]+'!=="undefined"?'+c[1]+':null')}catch(e){v=null}var ok=false;try{ok=c[2](v)}catch(e){};var n=Array.isArray(v)?v.length:(v&&typeof v==='object'?Object.keys(v).length:0);add('Klinik veri kapsamı',ok?'pass':'warn',c[0],ok?n+' kayıt/tanım bulundu.':'Beklenen kapsam veya global erişim doğrulanamadı.')});
+}
+function testSearch(){
+ var queries=['CURB','CURB-65','göğüs ağrısı','dispne','R07.4','adrenalin','NEWS2','qSOFA','HEART','Wells','PERC','NIHSS'];
+ var input=E('moduleSearch'),panel=E('universalSearchPanel'),old=input?input.value:'';
+ if(typeof window.acaUniversalSearch!=='function'||!input||!panel){add('Evrensel arama','fail','Arama motoru erişimi','acaUniversalSearch, giriş veya sonuç paneli bulunamadı.');return}
+ queries.forEach(function(q){
+  try{input.value=q;window.acaUniversalSearch(q);var text=(panel.textContent||'').trim(),no=/bulunamadı|sonuç yok/i.test(text)||!text;add('Evrensel arama',no?'fail':'pass','“'+q+'” araması',no?'Sonuç üretmedi.':text.slice(0,180).replace(/\s+/g,' '));}
+  catch(e){add('Evrensel arama','fail','“'+q+'” araması',e.message)}
+ });
+ input.value=old;try{window.acaUniversalSearch(old)}catch(e){}
+}
+async function testBuiltIns(){
+ var names=['runDoseCalculatorTests','runIcdTests','runClinicalScoringTests','runEmergencyCoreTests','runMedicationSafetyTests','runLaboratoryEngineTests','runRadiologyEngineTests','runPrescriptionEngineTests','runPediatricEmergencyTests','runQATests'];
+ for(var i=0;i<names.length;i++){
+  var n=names[i],fn=window[n]||(function(){try{return eval('typeof '+n+'==="function"?'+n+':null')}catch(e){return null}})();
+  if(typeof fn!=='function'){add('Yerleşik test paketleri','skip',n,'Bu sürümde çağrılabilir değil.');continue}
+  try{
+   var r=fn(),arr=Array.isArray(r)?r:(r&&Array.isArray(r.results)?r.results:null);
+   if(r&&typeof r.then==='function')r=await r;
+   if(Array.isArray(r))arr=r;
+   if(arr){
+    var failed=arr.filter(function(x){return x&&(x.pass===false||x.status==='fail'||x.level==='critical')}).length;
+    var warned=arr.filter(function(x){return x&&(x.status==='warning'||x.level==='warning')}).length;
+    add('Yerleşik test paketleri',failed?'fail':warned?'warn':'pass',n,arr.length+' senaryo; '+failed+' hata, '+warned+' uyarı.');
+   }else add('Yerleşik test paketleri','pass',n,'Fonksiyon hatasız tamamlandı.');
+  }catch(e){add('Yerleşik test paketleri','fail',n,e.message||String(e))}
+  await new Promise(function(res){setTimeout(res,0)});
+ }
+}
+function testPerformance(start){
+ var nodes=document.getElementsByTagName('*').length,htmlSize=document.documentElement.outerHTML.length;
+ add('Performans ve yapı',nodes<7000?'pass':'warn','DOM düğüm sayısı',nodes+' düğüm.');
+ add('Performans ve yapı',htmlSize<2500000?'pass':'warn','Tek dosya çalışma boyutu',(htmlSize/1024/1024).toFixed(2)+' MB çalışma DOM’u.');
+ var scripts=document.scripts.length,styles=document.querySelectorAll('style').length;
+ add('Performans ve yapı',scripts<70?'pass':'warn','JavaScript katmanları',scripts+' script bloğu.');
+ add('Performans ve yapı',styles<70?'pass':'warn','CSS katmanları',styles+' stil bloğu.');
+ add('Performans ve yapı','warn','Bakım riski','Tek dosyada çok sayıda sürüm katmanı korunuyor. İşlevsel olsa da kontrollü sadeleştirme önerilir.');
+}
+function render(){
+ var box=E('acaTestResults');if(!box)return;
+ var shown=RESULTS.filter(function(r){return ACTIVE_FILTER==='all'||r.status===ACTIVE_FILTER});
+ if(!shown.length){box.innerHTML='<div class="aca-test-empty">Bu filtrede sonuç yok.</div>';return}
+ var groups={};shown.forEach(function(r){(groups[r.section]||(groups[r.section]=[])).push(r)});
+ box.innerHTML=Object.keys(groups).map(function(k){var a=groups[k],bad=a.filter(function(x){return x.status==='fail'}).length,warn=a.filter(function(x){return x.status==='warn'}).length;
+  return '<details class="aca-test-section" open><summary><span>'+esc(k)+'</span><span>'+(bad?'🔴 '+bad+' hata':warn?'🟠 '+warn+' uyarı':'🟢 geçti')+'</span></summary><div class="aca-test-section-body">'+
+  a.map(function(r){var label={pass:'GEÇTİ',fail:'HATA',warn:'UYARI',skip:'ATLANDI'}[r.status]||r.status;return '<div class="aca-test-row"><div class="aca-test-status aca-'+r.status+'">'+label+'</div><b>'+esc(r.name)+'</b><div class="aca-test-detail">'+esc(r.detail)+'</div></div>'}).join('')+'</div></details>'
+ }).join('');
+}
+function updateSummary(ms){
+ var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
+ E('acaTTotal').textContent=RESULTS.length;E('acaTPass').textContent=c.pass;E('acaTFail').textContent=c.fail;E('acaTWarn').textContent=c.warn;E('acaTTime').textContent=ms==null?'—':ms+' ms';
+}
+async function runAll(){
+ ensureUI();RESULTS=[];LAST_RUN=new Date();var start=performance.now(),btn=E('acaRunAllTests');btn.disabled=true;btn.textContent='Test ediliyor…';btn.classList.add('aca-test-running');E('acaTestProgress').style.width='8%';
+ try{
+  testDom();E('acaTestProgress').style.width='20%';await new Promise(function(r){setTimeout(r,0)});
+  testHandlers();E('acaTestProgress').style.width='35%';await new Promise(function(r){setTimeout(r,0)});
+  testData();E('acaTestProgress').style.width='50%';await new Promise(function(r){setTimeout(r,0)});
+  testSearch();E('acaTestProgress').style.width='68%';await new Promise(function(r){setTimeout(r,0)});
+  await testBuiltIns();E('acaTestProgress').style.width='92%';
+  testPerformance(start);E('acaTestProgress').style.width='100%';
+ }catch(e){add('Test merkezi','fail','Beklenmeyen test merkezi hatası',e.stack||e.message||String(e))}
+ var ms=Math.round(performance.now()-start);updateSummary(ms);render();btn.disabled=false;btn.textContent='Tüm testleri yeniden çalıştır';btn.classList.remove('aca-test-running');
+}
+function exportReport(){
+ if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
+ var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.0','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
+ var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
+}
+function installEntry(){
+ ensureUI();
+ var tools=E('dashboardMoreTools');if(tools&&!E('acaTestCenterToolButton')){
+  var host=tools.querySelector('.dashboard-more-grid')||tools;
+  var b=document.createElement('button');b.type='button';b.id='acaTestCenterToolButton';b.className='aca-test-tool-btn';b.innerHTML='<b>🧪 Birleşik Test Merkezi</b><small>Arama, modül, skor, ICD, doz ve bağlantı denetimi</small>';b.onclick=open;host.appendChild(b);
+ }
+}
+function mark(){
+ window.ACA_APP_VERSION='v10.34.0';window.ACA_UPDATE_NAME='Birleşik Klinik Test Merkezi';document.title='Acil Klinik Asistanı v10.34.0';
+ var s=document.querySelector('.status');if(s)s.textContent='v10.34.0 • Birleşik Klinik Test Merkezi';
+ document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.0'});
+ document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Birleşik Klinik Test Merkezi'});
+}
+function boot(){installEntry();mark();setTimeout(function(){installEntry();mark()},500)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
 </body>
 </html>
