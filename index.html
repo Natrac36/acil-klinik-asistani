@@ -2045,6 +2045,123 @@ const smartQsByComplaint={
   {key:'symptoms',q:'Nefes darlığı veya göğüs ağrısı var mı?',multi:'symptoms',value:'Toraks travması'},
   {key:'symptoms',q:'Karın ağrısı, hassasiyet veya distansiyon var mı?',multi:'symptoms',value:'Batın travması'},
   {key:'symptoms',q:'Aktif kanama veya ekstremite dolaşım bozukluğu var mı?',multi:'symptoms',value:'Kanama/nörovasküler risk'}
+ ],
+ 'Baş dönmesi / vertigo':[
+  {key:'onset',q:'Baş dönmesi ne zaman ve nasıl başladı; ani mi, kademeli mi?',text:true,ph:'Örn. 2 saat önce aniden'},
+  {key:'painType',q:'Yakınma tipi hangisine daha yakın?',opts:[['Dönme hissi','Çevre veya kendisi dönüyor'],['Dengesizlik','Yürümede dengesizlik'],['Sersemlik','Bayılacak gibi olma'],['Belirsiz','Tanımlanamıyor']]},
+  {key:'symptoms',q:'Yeni konuşma bozukluğu, çift görme, güçsüzlük, uyuşma veya şiddetli ataksi var mı?',multi:'symptoms',value:'Santral vertigo kırmızı bayrağı'},
+  {key:'symptoms',q:'Yeni şiddetli baş veya boyun ağrısı var mı?',multi:'symptoms',value:'Vasküler nörolojik risk'},
+  {key:'symptoms',q:'İşitme kaybı, tinnitus veya kulakta dolgunluk eşlik ediyor mu?',multi:'symptoms',value:'Otolojik eşlik'},
+  {key:'symptoms',q:'Baş hareketiyle kısa süreli tetikleniyor mu?',multi:'symptoms',value:'Pozisyonel tetiklenme'},
+  {key:'symptoms',q:'Senkop, göğüs ağrısı veya çarpıntı eşlik ediyor mu?',multi:'symptoms',value:'Kardiyovasküler eşlik'}
+ ],
+ 'Gastrointestinal kanama':[
+  {key:'onset',q:'Kanama ne zaman başladı ve yaklaşık miktarı nedir?',text:true,ph:'Örn. bugün 2 kez melena'},
+  {key:'painType',q:'Kanama görünümü nasıldır?',opts:[['Hematemez','Taze kan kusma'],['Kahve telvesi','Kahve telvesi kusma'],['Melena','Siyah katran dışkı'],['Hematokezya','Taze rektal kan'],['Gizli/belirsiz','Belirsiz']]},
+  {key:'symptoms',q:'Senkop, presenkop, göğüs ağrısı veya belirgin halsizlik var mı?',multi:'symptoms',value:'Hemodinamik etkilenme'},
+  {key:'symptoms',q:'Antikoagülan, antiagregan veya NSAİİ kullanımı var mı?',multi:'symptoms',value:'Kanama ilacı riski'},
+  {key:'symptoms',q:'Karaciğer hastalığı, varis kanaması veya alkol kullanım öyküsü var mı?',multi:'symptoms',value:'Varis kanaması riski'},
+  {key:'symptoms',q:'Şiddetli karın ağrısı, defans veya rebound var mı?',multi:'symptoms',value:'Akut batın eşliği'},
+  {key:'symptoms',q:'Daha önce GİS kanama, ülser veya endoskopik girişim oldu mu?',multi:'symptoms',value:'Önceki GİS kanama'}
+ ],
+ 'Gebelik acilleri':[
+  {key:'onset',q:'Gebelik haftası ve yakınmanın başlama zamanı nedir?',text:true,ph:'Örn. 28 hafta, 1 saattir',femaleRelevant:true},
+  {key:'symptoms',q:'Vajinal kanama veya su gelmesi var mı?',multi:'symptoms',value:'Obstetrik kanama/su gelmesi',femaleRelevant:true},
+  {key:'symptoms',q:'Şiddetli karın-kasık ağrısı, omuz ağrısı veya senkop var mı?',multi:'symptoms',value:'Ektopik/kanama riski',femaleRelevant:true},
+  {key:'symptoms',q:'Baş ağrısı, görme bozukluğu, epigastrik ağrı veya nöbet var mı?',multi:'symptoms',value:'Preeklampsi/eklampsi riski',femaleRelevant:true},
+  {key:'symptoms',q:'Fetal hareketlerde azalma var mı?',multi:'symptoms',value:'Fetal iyilik hali riski',femaleRelevant:true},
+  {key:'symptoms',q:'Düzenli kasılma veya doğum eylemi bulgusu var mı?',multi:'symptoms',value:'Doğum eylemi',femaleRelevant:true},
+  {key:'symptoms',q:'Postpartum dönemde aşırı kanama, ateş veya nefes darlığı var mı?',multi:'symptoms',value:'Postpartum acil',femaleRelevant:true}
+ ],
+ 'Pediatrik aciller':[
+  {key:'onset',q:'Çocuğun yaşı, kilosu ve yakınmanın başlangıcı nedir?',text:true,ph:'Örn. 2 yaş, 12 kg, 6 saattir'},
+  {key:'symptoms',q:'Beslenememe, emmeme veya belirgin sıvı kaybı var mı?',multi:'symptoms',value:'Dehidratasyon/beslenememe'},
+  {key:'symptoms',q:'Solunum sıkıntısı, çekilme, morarma veya apne var mı?',multi:'symptoms',value:'Pediatrik solunum kırmızı bayrağı'},
+  {key:'symptoms',q:'Uyandırmada güçlük, letarji, irritabilite veya nöbet var mı?',multi:'symptoms',value:'Pediatrik nörolojik kırmızı bayrak'},
+  {key:'symptoms',q:'Üç aydan küçük bebekte ateş veya hipotermi var mı?',multi:'symptoms',value:'Küçük bebek sepsis riski'},
+  {key:'symptoms',q:'Döküntü, ense sertliği veya kapiller dolum uzaması var mı?',multi:'symptoms',value:'Sepsis/menenjit riski'},
+  {key:'symptoms',q:'Travma, yabancı cisim veya zehirlenme olasılığı var mı?',multi:'symptoms',value:'Pediatrik özel risk'}
+ ],
+ 'Zehirlenmeler':[
+  {key:'onset',q:'Maruziyet ne zaman oldu; madde, miktar ve yol nedir?',text:true,ph:'Madde, doz, saat, oral/solunum/cilt'},
+  {key:'symptoms',q:'Bilinç değişikliği, nöbet veya ajitasyon var mı?',multi:'symptoms',value:'Toksik nörolojik bulgu'},
+  {key:'symptoms',q:'Solunum depresyonu, hipoksemi veya sekresyon artışı var mı?',multi:'symptoms',value:'Toksik solunum riski'},
+  {key:'symptoms',q:'Göğüs ağrısı, aritmi, hipotansiyon veya ciddi hipertansiyon var mı?',multi:'symptoms',value:'Toksik kardiyovasküler risk'},
+  {key:'symptoms',q:'Kasıtlı alım veya özkıyım riski var mı?',multi:'symptoms',value:'Kasıtlı maruziyet'},
+  {key:'symptoms',q:'Birden fazla madde, uzatılmış salınım veya bilinmeyen ilaç söz konusu mu?',multi:'symptoms',value:'Yüksek riskli maruziyet'},
+  {key:'symptoms',q:'Kapalı alanda gaz, karbonmonoksit veya kimyasal maruziyet var mı?',multi:'symptoms',value:'İnhalasyon maruziyeti'}
+ ],
+ 'Psikiyatrik aciller':[
+  {key:'onset',q:'Davranış veya ruhsal durum değişikliği ne zaman başladı?',text:true,ph:'Örn. 2 gündür'},
+  {key:'symptoms',q:'Kendine zarar verme düşüncesi, planı veya yakın girişimi var mı?',multi:'symptoms',value:'Özkıyım riski'},
+  {key:'symptoms',q:'Başkalarına zarar verme tehdidi veya kontrolsüz saldırganlık var mı?',multi:'symptoms',value:'Şiddet riski'},
+  {key:'symptoms',q:'Halüsinasyon, ağır ajitasyon, mani veya belirgin dezorganizasyon var mı?',multi:'symptoms',value:'Akut psikoz/mani'},
+  {key:'symptoms',q:'Deliryum düşündüren dalgalanan bilinç, ateş veya yeni nörolojik bulgu var mı?',multi:'symptoms',value:'Organik neden riski'},
+  {key:'symptoms',q:'Alkol veya madde kullanımı, intoksikasyon ya da yoksunluk var mı?',multi:'symptoms',value:'Madde ilişkili durum'},
+  {key:'symptoms',q:'Güvenli taburculuk için destek kişisi ve güvenli ortam mevcut mu?',multi:'symptoms',value:'Güvenli ortam eksikliği'}
+ ],
+ 'Göz acilleri':[
+  {key:'onset',q:'Göz yakınması ne zaman başladı; ani görme kaybı var mı?',text:true,ph:'Örn. 30 dakika önce aniden'},
+  {key:'symptoms',q:'Kimyasal temas veya yüksek hızlı yabancı cisim/metal işi öyküsü var mı?',multi:'symptoms',value:'Oküler travma/kimyasal risk'},
+  {key:'symptoms',q:'Şiddetli göz ağrısı, baş ağrısı, bulantı veya haleler var mı?',multi:'symptoms',value:'Akut glokom riski'},
+  {key:'symptoms',q:'Işık çakması, uçuşma veya perde inmesi tarifliyor mu?',multi:'symptoms',value:'Retina dekolmanı riski'},
+  {key:'symptoms',q:'Kontakt lens kullanımı, korneal opasite veya pürülan akıntı var mı?',multi:'symptoms',value:'Keratit riski'},
+  {key:'symptoms',q:'Diplopi, pitoz veya yeni nörolojik defisit var mı?',multi:'symptoms',value:'Nöro-oftalmik risk'},
+  {key:'symptoms',q:'Travma sonrası düzensiz pupil, hifema veya göz hareket kısıtlılığı var mı?',multi:'symptoms',value:'Açık glob/orbita riski'}
+ ],
+ 'KBB acilleri':[
+  {key:'onset',q:'KBB yakınması ne zaman başladı ve hızla ilerliyor mu?',text:true,ph:'Örn. 4 saattir hızla artıyor'},
+  {key:'symptoms',q:'Stridor, salya akması, boğuk ses veya solunum güçlüğü var mı?',multi:'symptoms',value:'Üst havayolu riski'},
+  {key:'symptoms',q:'Ani işitme kaybı veya tek taraflı belirgin işitme azalması var mı?',multi:'symptoms',value:'Ani işitme kaybı'},
+  {key:'symptoms',q:'Kontrol edilemeyen burun kanaması veya antikoagülan kullanımı var mı?',multi:'symptoms',value:'Ciddi epistaksis'},
+  {key:'symptoms',q:'Trismus, uvula deviasyonu, boyun şişliği veya toksik görünüm var mı?',multi:'symptoms',value:'Derin boyun enfeksiyonu'},
+  {key:'symptoms',q:'Yabancı cisim, kostik madde veya kesici-delici travma var mı?',multi:'symptoms',value:'KBB travma/yabancı cisim'},
+  {key:'symptoms',q:'Mastoid hassasiyet, yüz felci veya meningeal bulgu var mı?',multi:'symptoms',value:'Komplike enfeksiyon'}
+ ],
+ 'Ürolojik aciller':[
+  {key:'onset',q:'Ağrı veya üriner yakınma ne zaman başladı?',text:true,ph:'Örn. 6 saat önce'},
+  {key:'symptoms',q:'Ani şiddetli testis ağrısı, yüksek yerleşim veya bulantı var mı?',multi:'symptoms',value:'Testis torsiyonu riski'},
+  {key:'symptoms',q:'İdrar yapamama veya ağrılı mesane dolgunluğu var mı?',multi:'symptoms',value:'Akut üriner retansiyon'},
+  {key:'symptoms',q:'Ateş, titreme, yan ağrısı veya sepsis bulgusu var mı?',multi:'symptoms',value:'Komplike üriner enfeksiyon'},
+  {key:'symptoms',q:'Tek böbrek, gebelik, immünsüpresyon veya bilinen obstrüksiyon var mı?',multi:'symptoms',value:'Komplike ürolojik risk',femaleRelevant:false},
+  {key:'symptoms',q:'Makroskopik hematüri, pıhtı veya antikoagülan kullanımı var mı?',multi:'symptoms',value:'Ciddi hematüri'},
+  {key:'symptoms',q:'Travma sonrası hematüri, perineal ekimoz veya meatus kanaması var mı?',multi:'symptoms',value:'Üriner sistem travması'}
+ ],
+ 'Jinekolojik aciller':[
+  {key:'onset',q:'Son adet tarihi, gebelik olasılığı ve yakınmanın başlangıcı nedir?',text:true,ph:'SAT, gebelik olasılığı, başlangıç',femaleRelevant:true},
+  {key:'symptoms',q:'Şiddetli tek taraflı pelvik ağrı, omuz ağrısı veya senkop var mı?',multi:'symptoms',value:'Ektopik gebelik/torsiyon riski',femaleRelevant:true},
+  {key:'symptoms',q:'Yoğun vajinal kanama, saatte birden fazla ped veya pıhtı var mı?',multi:'symptoms',value:'Ciddi jinekolojik kanama',femaleRelevant:true},
+  {key:'symptoms',q:'Ateş, kötü kokulu akıntı veya belirgin pelvik hassasiyet var mı?',multi:'symptoms',value:'Pelvik enfeksiyon riski',femaleRelevant:true},
+  {key:'symptoms',q:'Cinsel saldırı, yabancı cisim veya travma öyküsü var mı?',multi:'symptoms',value:'Jinekolojik travma',femaleRelevant:true},
+  {key:'symptoms',q:'Yakın zamanda doğum, düşük, kürtaj veya jinekolojik işlem oldu mu?',multi:'symptoms',value:'İşlem/postpartum komplikasyon',femaleRelevant:true},
+  {key:'symptoms',q:'Antikoagülan kullanımı veya bilinen kanama bozukluğu var mı?',multi:'symptoms',value:'Kanama riski',femaleRelevant:true}
+ ],
+ 'Dermatolojik aciller':[
+  {key:'onset',q:'Deri bulgusu ne zaman başladı ve ne hızla yayılıyor?',text:true,ph:'Örn. 12 saatte hızla yayıldı'},
+  {key:'symptoms',q:'Cilt ağrısı, nekroz, bül, purpura veya hızla ilerleyen şişlik var mı?',multi:'symptoms',value:'Nekrotizan/ciddi deri bulgusu'},
+  {key:'symptoms',q:'Ağız, göz veya genital mukozada erozyon var mı?',multi:'symptoms',value:'SJS/TEN riski'},
+  {key:'symptoms',q:'Ateş, hipotansiyon, toksik görünüm veya bilinç değişikliği var mı?',multi:'symptoms',value:'Sistemik toksisite'},
+  {key:'symptoms',q:'Yeni ilaç başladı mı veya yakın zamanda doz değişti mi?',multi:'symptoms',value:'Ciddi ilaç reaksiyonu'},
+  {key:'symptoms',q:'Yüz-dil şişliği, hırıltı veya nefes darlığı var mı?',multi:'symptoms',value:'Anafilaksi/anjiyoödem'},
+  {key:'symptoms',q:'İmmünsüpresyon, diyabet, cerrahi yara veya hayvan/insan ısırığı var mı?',multi:'symptoms',value:'Yüksek riskli enfeksiyon'}
+ ],
+ 'Endokrin aciller':[
+  {key:'onset',q:'Yakınma ne zaman başladı; diyabet veya endokrin hastalık öyküsü var mı?',text:true,ph:'Örn. 1 gündür, tip 1 DM'},
+  {key:'symptoms',q:'Poliüri, polidipsi, kusma, karın ağrısı veya Kussmaul solunumu var mı?',multi:'symptoms',value:'DKA/HHS riski'},
+  {key:'symptoms',q:'Bilinç değişikliği, nöbet, fokal bulgu veya ciddi dehidratasyon var mı?',multi:'symptoms',value:'Endokrin nörolojik risk'},
+  {key:'symptoms',q:'Hipoglisemi düşündüren terleme, tremor veya davranış değişikliği var mı?',multi:'symptoms',value:'Hipoglisemi riski'},
+  {key:'symptoms',q:'Tiroid hastalığıyla birlikte ateş, taşikardi, ajitasyon veya hipotermi var mı?',multi:'symptoms',value:'Tiroid krizi riski'},
+  {key:'symptoms',q:'Steroid kullanımı, ani kesilme, hipotansiyon veya hiperpigmentasyon var mı?',multi:'symptoms',value:'Adrenal kriz riski'},
+  {key:'symptoms',q:'İlaç uyumsuzluğu, enfeksiyon veya yeni tetikleyici mevcut mu?',multi:'symptoms',value:'Endokrin tetikleyici'}
+ ],
+ 'Çevresel aciller':[
+  {key:'onset',q:'Maruziyet türü, süresi ve ortam koşulları nedir?',text:true,ph:'Sıcak/soğuk, su, yıldırım, irtifa vb.'},
+  {key:'symptoms',q:'Bilinç değişikliği, nöbet veya koordinasyon bozukluğu var mı?',multi:'symptoms',value:'Çevresel nörolojik risk'},
+  {key:'symptoms',q:'Çekirdek ısı yüksekliği veya hipotermi bulguları var mı?',multi:'symptoms',value:'Isı acili'},
+  {key:'symptoms',q:'Boğulma, aspirasyon, solunum sıkıntısı veya hipoksemi var mı?',multi:'symptoms',value:'Su/solunum maruziyeti'},
+  {key:'symptoms',q:'Yıldırım/elektrik temasında aritmi, yanık veya travma var mı?',multi:'symptoms',value:'Elektrik/yıldırım riski'},
+  {key:'symptoms',q:'Donma, dolaşım bozukluğu veya kompartman bulgusu var mı?',multi:'symptoms',value:'Soğuk yaralanması'},
+  {key:'symptoms',q:'Birden fazla kişi etkilenmiş mi veya karbonmonoksit/kapalı alan şüphesi var mı?',multi:'symptoms',value:'Toplu/CO maruziyeti'}
  ]
 };
 const testPresets={
@@ -10198,9 +10315,9 @@ async function runAll(){
 function exportReport(){
  if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
  var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
- var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.3','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.4','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
  RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
- var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.3-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
+ var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.4-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
 }
 function installEntry(){
  ensureUI();
@@ -10210,8 +10327,8 @@ function installEntry(){
  }
 }
 function mark(){
- window.ACA_APP_VERSION='v10.34.3';window.ACA_UPDATE_NAME='Test Sonuç Görünümü Düzeltmesi';document.title='Acil Klinik Asistanı v10.34.3';
- var s=document.querySelector('.status');if(s)s.textContent='v10.34.3 • Test Sonuç Görünümü Düzeltmesi';
+ window.ACA_APP_VERSION='v10.34.4';window.ACA_UPDATE_NAME='Eksik Klinik Soru Ağaçları';document.title='Acil Klinik Asistanı v10.34.4';
+ var s=document.querySelector('.status');if(s)s.textContent='v10.34.4 • Eksik Klinik Soru Ağaçları';
  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.0'});
  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Birleşik Klinik Test Merkezi'});
 }
