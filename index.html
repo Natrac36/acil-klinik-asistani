@@ -10409,7 +10409,7 @@ async function runAll(){
 function exportReport(){
  if(!RESULTS.length){alert('Önce testleri çalıştırın.');return}
  var c={pass:0,fail:0,warn:0,skip:0};RESULTS.forEach(function(r){c[r.status]=(c[r.status]||0)+1});
- var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.34.8','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
+ var lines=['ACİL KLİNİK ASİSTANI — BİRLEŞİK TEST RAPORU','Sürüm: v10.35.0','Tarih: '+(LAST_RUN||new Date()).toLocaleString('tr-TR'),'Toplam: '+RESULTS.length+' | Geçti: '+c.pass+' | Hata: '+c.fail+' | Uyarı: '+c.warn+' | Atlandı: '+c.skip,''];
  RESULTS.forEach(function(r){lines.push('['+r.status.toUpperCase()+'] '+r.section+' — '+r.name);lines.push('  '+r.detail)});
  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='acil-klinik-asistani-v10.34.5-test-raporu.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},600);
 }
@@ -10422,7 +10422,7 @@ function installEntry(){
 }
 function mark(){
  window.ACA_APP_VERSION='v10.34.6';window.ACA_UPDATE_NAME='Kontrollü Kod Sadeleştirmesi';document.title='Acil Klinik Asistanı v10.34.6';
- var s=document.querySelector('.status');if(s)s.textContent='v10.34.8 • Gerçek Kompakt Ana Ekran';
+ var s=document.querySelector('.status');if(s)s.textContent='v10.35.0 • Yapısal Mobil Kaydırma Düzeltmesi';
  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.0'});
  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Birleşik Klinik Test Merkezi'});
 }
@@ -10475,7 +10475,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   window.ACA_APP_VERSION='v10.34.7';
   window.ACA_UPDATE_NAME='Kompakt Ana Ekran';
   document.title='Acil Klinik Asistanı v10.34.7';
-  var s=document.querySelector('.status');if(s)s.textContent='v10.34.8 • Gerçek Kompakt Ana Ekran';
+  var s=document.querySelector('.status');if(s)s.textContent='v10.35.0 • Yapısal Mobil Kaydırma Düzeltmesi';
   document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.7'});
   document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Kompakt Ana Ekran'});
  }
@@ -10677,12 +10677,168 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   var b=document.getElementById('acaVersionBadge');
   if(b)b.innerHTML='v10.34.8 <small>Gerçek Kompakt Ana Ekran</small>';
   var s=document.querySelector('.status');
-  if(s)s.textContent='v10.34.8 • Gerçek Kompakt Ana Ekran';
+  if(s)s.textContent='v10.35.0 • Yapısal Mobil Kaydırma Düzeltmesi';
   document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.34.8'});
   document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Gerçek Kompakt Ana Ekran'});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark);else mark();
  setTimeout(mark,500);
+})();
+</script>
+
+
+<style id="aca-v10350-structural-layout-fix">
+/*
+  Yapısal mobil düzen:
+  - Üst başlık korunur.
+  - Tüm body yerine yalnızca #appMain kaydırılır.
+  - Android overscroll/pull boşluğu engellenir.
+  - Ana paneldeki yapay alt boşluk kaldırılır.
+*/
+@media screen {
+ html{
+   width:100%;
+   height:100%;
+   min-height:100%;
+   overflow:hidden!important;
+   overscroll-behavior:none!important;
+   background:#eef5f8;
+ }
+ body{
+   width:100%;
+   height:100%;
+   min-height:0!important;
+   margin:0!important;
+   padding:0!important;
+   display:flex!important;
+   flex-direction:column!important;
+   overflow:hidden!important;
+   overscroll-behavior:none!important;
+ }
+ body > header{
+   position:relative!important;
+   top:auto!important;
+   flex:0 0 auto!important;
+   margin:0!important;
+   z-index:40!important;
+ }
+ #appMain{
+   flex:1 1 auto!important;
+   width:100%!important;
+   min-height:0!important;
+   max-width:1240px!important;
+   margin:0 auto!important;
+   padding:10px 10px calc(84px + env(safe-area-inset-bottom,0px))!important;
+   overflow-x:hidden!important;
+   overflow-y:auto!important;
+   overscroll-behavior-y:contain!important;
+   -webkit-overflow-scrolling:touch;
+   scroll-behavior:smooth;
+   box-sizing:border-box!important;
+ }
+ body.dashboard-home #commercialDashboard{
+   margin:0!important;
+   padding:0!important;
+   padding-bottom:0!important;
+   min-height:0!important;
+   align-content:start!important;
+ }
+ body.dashboard-home #commercialDashboard.aca-home-v1033{
+   gap:8px!important;
+   padding-bottom:0!important;
+ }
+ body.dashboard-home #commercialDashboard .pro-home-topbar{
+   margin:0 0 8px!important;
+   padding:2px 0!important;
+ }
+ body.dashboard-home #commercialDashboard .aca1033-command,
+ body.dashboard-home #commercialDashboard .aca1033-section,
+ body.dashboard-home #commercialDashboard .aca1033-footerbar{
+   margin-top:0!important;
+   margin-bottom:0!important;
+ }
+ body.dashboard-home #commercialDashboard .aca1033-section + .aca1033-section{
+   margin-top:0!important;
+ }
+ body.dashboard-home #commercialDashboard .commercial-shell{
+   margin-bottom:0!important;
+ }
+ .mobile-dock{
+   bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;
+ }
+}
+
+@media screen and (max-width:560px){
+ body > header{
+   padding:9px 10px 8px!important;
+ }
+ body > header .head{
+   gap:7px!important;
+ }
+ body > header .head h1{
+   font-size:17px!important;
+   line-height:1.15!important;
+ }
+ body > header .head p{
+   font-size:10px!important;
+   margin-top:3px!important;
+ }
+ body > header .modebar{
+   margin-top:7px!important;
+ }
+ body > header .modebar button{
+   min-height:38px!important;
+   padding:7px 10px!important;
+ }
+ body > header .progress{
+   margin-top:7px!important;
+ }
+ body > header .step-label{
+   margin-top:5px!important;
+   font-size:10px!important;
+ }
+ #appMain{
+   padding:8px 8px calc(80px + env(safe-area-inset-bottom,0px))!important;
+ }
+ body.dashboard-home #commercialDashboard .pro-home-topbar{
+   margin-bottom:6px!important;
+ }
+}
+
+/* Baskıda normal belge akışına dön. */
+@media print{
+ html,body{
+   height:auto!important;
+   overflow:visible!important;
+   display:block!important;
+ }
+ #appMain{
+   height:auto!important;
+   overflow:visible!important;
+   padding:0!important;
+ }
+}
+</style>
+<script id="aca-v10350-layout-version">
+(function(){
+ function mark(){
+  window.ACA_APP_VERSION='v10.35.0';
+  window.ACA_UPDATE_NAME='Yapısal Mobil Kaydırma Düzeltmesi';
+  document.title='Acil Klinik Asistanı v10.35.0';
+  var b=document.getElementById('acaVersionBadge');
+  if(b)b.innerHTML='v10.35.0 <small>Yapısal Mobil Düzen</small>';
+  var s=document.querySelector('.status');
+  if(s)s.textContent='v10.35.0 • Yapısal Mobil Kaydırma Düzeltmesi';
+  document.querySelectorAll('[data-app-version]').forEach(function(x){x.textContent='v10.35.0'});
+  document.querySelectorAll('[data-update-name]').forEach(function(x){x.textContent='Yapısal Mobil Kaydırma Düzeltmesi'});
+ }
+ function normalizeHomeScroll(){
+  var main=document.getElementById('appMain');
+  if(document.body.classList.contains('dashboard-home')&&main&&main.scrollTop<0)main.scrollTop=0;
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){mark();normalizeHomeScroll()});
+ else{mark();normalizeHomeScroll()}
+ setTimeout(mark,400);
 })();
 </script>
 
